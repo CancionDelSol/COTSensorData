@@ -7,7 +7,7 @@ createDirs:
 	@mkdir src/build
 	@mkdir ../Delivery/RPi/
 
-main: $(FILE_LIST) createDirs
+raspPi: $(FILE_LIST) createDirs
 	$(CXX) $(CXXFLAGS) -c $(FILE_LIST) -o $(OBJ_FILES)
 	$(CXX) $(OBJ_FILES) -o ../Delivery/RPi/helloworld
 
