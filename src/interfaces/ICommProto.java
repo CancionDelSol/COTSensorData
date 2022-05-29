@@ -2,7 +2,7 @@ package interfaces;
 /**
  * Communication Protocol interface
  */
-interface ICommProto {
+public interface ICommProto {
 
     //region Properties
     /**
@@ -26,6 +26,12 @@ interface ICommProto {
      *  is incorrect
      */
     boolean EncryptedRoundTrip(String message, IEncryptionAlg encryptionAlg);
+
+    /**
+     * Get the protocol's easy
+     *  to read name
+     */
+    String getName();
     //endregion
 
 }
