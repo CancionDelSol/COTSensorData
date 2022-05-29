@@ -1,4 +1,6 @@
-import jata.util.*;
+import java.util.*;
+import java.time.Period;
+import java.time.temporal.TemporalAmount;
 
 /**
  * Stopwatch class used for timing
@@ -6,10 +8,17 @@ import jata.util.*;
  */
 class Stopwatch {
 
+    //region Constants
+    private static final String ALREADY_STARTED_ERR = "Should not call start on time that has already been started";
+    private static final String NOT_STARTED_ERR = "Stopwatch has not been started";
+    private static final String NO_FUNC_ERR = "No function to time available";
+    private static final String CALL_FAILURE_ERR = "Failure received";
+    //endregion
+
     //region Fields
     private Date _startTime;
     private Date _endTime;
-    private ITimeableFunction _timedMethod;
+    private ITimeableFunction _timedFunction;
     //endregion
 
     //region Properties
@@ -54,7 +63,7 @@ class Stopwatch {
      * Does not start function call
      */
     public Stopwatch(ITimeableFunction funcToTime) {
-        _funcToTime = funcToTime;
+        _timedFunction = funcToTime;
     }
     //endregion
 
@@ -66,7 +75,7 @@ class Stopwatch {
      */
     public void Start() throws Exception {
         if (_startTime != null)
-            throw new Exception("Should not call start on time that has already been started");
+            throw new Exception(ALREADY_STARTED_ERR);
 
         _startTime = new Date();
     }
@@ -74,11 +83,14 @@ class Stopwatch {
     /**
      * Get time since _startTime
      */
-    public Period GetTime() throws Exception {
+    public long GetTime() throws Exception {
         if (_startTime == null)
-            throw new Exception("Stopwatch has not been started");
+            throw new Exception(NOT_STARTED_ERR);
+        
+        Date currentTime = new Date();
+        long period = currentTime.getTime() - _startTime.getTime();
 
-        return new Period(_startTime, new Date());
+        return period;
     }
 
     /**
@@ -94,22 +106,22 @@ class Stopwatch {
      * Return time taken to run. Throw exception
      *  on failure from function
      */
-    public Period TimeFunction(Object param) throws Exception {
+    public long TimeFunction(Object param) throws Exception {
 
         // Throw Exception if no function
         //  is provided
-        if (_funcToTime == null)
-            throw new Exception ("No function to time available");
+        if (_timedFunction == null)
+            throw new Exception(NO_FUNC_ERR);
 
         // Save the starting time
         Start();
 
         // Run function
-        boolean res = _funcToTime.Run(param);
+        boolean res = _timedFunction.Run(param);
 
         // Throw exception on function failure
         if (!res)
-            throw new Exception("Failure received");
+            throw new Exception(CALL_FAILURE_ERR);
         
         // Call GetTime to return period
         return GetTime();

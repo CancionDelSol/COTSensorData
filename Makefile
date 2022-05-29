@@ -19,11 +19,11 @@ classpath:
 buildpath:
 	@mkdir -p $(BUILD_DIR)
 
-srccbuild: classpath buildpath
+javacbuild: classpath buildpath
 	@echo "Creating classes"
-	@srcc -sourcepath src -d $(CLASSES_OUTPUT) $(SOURCE_DIR)/**/*.src $(SOURCE_DIR)/*.src
+	@javac -sourcepath src -d $(CLASSES_OUTPUT) $(SOURCE_DIR)/**/*.java $(SOURCE_DIR)/*.java
 
-createmanifest: srccbuild
+createmanifest: javacbuild
 	@echo "Writing manifest"
 	@echo Main-Class: Program>src/myManifest
 
@@ -37,7 +37,7 @@ generate: createjar
 
 run: generate
 	@clear
-	@src -jar Telem.jar
+	@java -jar Telem.jar
 
 clean:
 	@echo "Cleaning up..."

@@ -1,10 +1,15 @@
-
+package interfaces;
+/**
+ * Communication Protocol interface
+ */
 interface ICommProto {
 
     //region Properties
+    /**
+     * Get successfully connected flag
+     */
     boolean getIsConnected();
     //endregion
-
 
     //region Methods
     /**
@@ -20,7 +25,7 @@ interface ICommProto {
      * Return false if message
      *  is incorrect
      */
-    boolean EncryptedRoundTry()
+    boolean EncryptedRoundTrip(String message, IEncryptionAlg encryptionAlg);
     //endregion
 
 }
