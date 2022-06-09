@@ -5,28 +5,30 @@ import interfaces.IEncryptionAlg;
 
 public class DummyCommProto implements ICommProto {
 
+    private String _stubName = "DummyCommProto";
     @Override
     public boolean getIsConnected() {
-        // TODO Auto-generated method stub
         return true;
     }
 
     @Override
     public boolean RoundTripMessage(String message) {
-        // TODO Auto-generated method stub
         return true;
     }
 
     @Override
     public boolean EncryptedRoundTrip(String message, IEncryptionAlg encryptionAlg) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return _stubName;
+    }
+
+    public DummyCommProto(String stubName) {
+        if (stubName != null & !stubName.equals(""))
+            _stubName = stubName;
     }
     
 }
