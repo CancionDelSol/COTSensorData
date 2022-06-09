@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,13 +18,14 @@ public class Program {
     private static HashMap<String, IEncryptionAlg> _encryptionAlgs = new HashMap<>();
 
     private static boolean _throwOnWarn = false;
+    private static String _message = "TestMessage";
     //endregion
     
     //region Main
     /**
      * Main entry point
      */
-    public static void Main(String[] args) {
+    public static void main(String[] args) {
 
         // Use reflection
         //  to get available
@@ -53,22 +55,32 @@ public class Program {
             CheckSetup();
         } catch (Exception exc) {
             Logger.Error ("Invalid configuration: " + exc.getMessage());
+            exc.printStackTrace();
             return;
         }
 
         // Time each protocol against each encryption
         //  algorithm, including no encryption
         List<RoundTripResult> results = new ArrayList<>();
-        ICommProto[] commProtos = (ICommProto[]) _communicationProtocols.values().toArray();
-        IEncryptionAlg[] encAlgs = (IEncryptionAlg[]) _encryptionAlgs.values().toArray();
+        int index = 0;
+        Collection<ICommProto> commProtos =  _communicationProtocols.values();
+        Collection<IEncryptionAlg> encAlgs =  _encryptionAlgs.values();
         for (ICommProto proto : commProtos) {
             for (IEncryptionAlg encAlg : encAlgs) {
                 
                 try {
 
-                    Stopwatch newWatch = new Stopwatch(param -> proto.EncryptedRoundTrip("", encAlg));
+                    Stopwatch newWatch = new Stopwatch(param -> proto.EncryptedRoundTrip(_message, encAlg));
 
                     long duration = newWatch.TimeFunction(null);
+
+                    RoundTripResult res = new RoundTripResult(duration,
+                                                              proto,
+                                                              encAlg,
+                                                              _message,
+                                                              "");
+
+                    results.set(index, res);
 
                 } catch (Exception exc) {
 
@@ -123,14 +135,13 @@ public class Program {
     private static void CheckSetup() throws Exception {
 
         // Check each connection
-        ICommProto[] protocols = (ICommProto[])_communicationProtocols.values().toArray();
-        for (int i = 0; i < _communicationProtocols.size(); i++) {
+        Collection<ICommProto> protocols = _communicationProtocols.values();
+        for (ICommProto proto : protocols) {
 
             // Check IsConnected
             //  Remove from hash
             //  map if it fails
             //  to connect
-            ICommProto proto = protocols[i];
             if (proto != null) {
                 // Check connection
                 boolean isConn = proto.getIsConnected();
