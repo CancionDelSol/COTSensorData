@@ -2,7 +2,7 @@ package interfaces;
 /**
  * Encryption Algorithm interface
  */
-interface IEncryptionAlg {
+public interface IEncryptionAlg {
     //region Methods
     /**
      *  Encrypt the input
@@ -13,5 +13,11 @@ interface IEncryptionAlg {
      * Decrypt the input
      */
     String Decrypt(String input);
+
+    /**
+     * Get the encryption
+     *  easy name
+     */
+    String getName();
     //endregion
 }
