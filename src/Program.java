@@ -95,7 +95,6 @@ public class Program {
     /**
      * Get available protocols
      *  and encryption algs
-     * TODO : Do this via reflection
      */
     private static void Discover() throws Exception {
 

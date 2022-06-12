@@ -2,17 +2,25 @@ package util;
 
 import java.util.HashMap;
 
+import interfaces.IConfigurable;
+
 /**
  * Provides a simple way to
  *  provide a configuration
  */
-public class Config {
+public class ConfigurableBase implements IConfigurable {
 
+    //region Fields
     // Cache of settings
     private HashMap<String, Object> _settings = new HashMap<>();
+    //endregion
+    
+    //region Properties
+
+    //endregion
 
     // Default Constructor
-    public Config() {
+    public ConfigurableBase() {
 
     }
 
@@ -30,5 +38,15 @@ public class Config {
 
         // Return null otherwise
         return null;
+    }
+
+    // Load Configuration from file
+    public void LoadConfiguration(String configPath) {
+
+    }
+
+    // Save Configuration to file
+    public void SaveConfiguration(String configPath) {
+
     }
 }
