@@ -8,9 +8,37 @@ import implem.DummyEncAlg;
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 import telemetry.RoundTripResult;
+import util.ConfigurableBase;
 import util.Logger;
 
-public class Program {
+/**
+ * Main program class
+ * Functions as the experiment controller
+ *  by centralizing all experimental logic
+ *  into one executable
+ * 
+ * Flow:
+ * 
+ *  - Load main program configuration from disk
+ *    This is done upon static field initialization
+ *    (i.e Program constructor calls ConfigurableBase.ctor())
+ * 
+ *  - Discover all available encryption algorithms
+ *     and communication protocols 
+ * 
+ *  - Process Command Line Arguments
+ * 
+ * The following 3rd party libraries are used:
+ * 
+ *   - Pi4J : https://pi4j.com/
+ *      Used to access GPIO on the RaspberryPi through
+ *      the JVM. It does this through native libraries and JNI
+ * 
+ *   - JArduino : https://github.com/SINTEF-9012/JArduino
+ *      Used to access serial communications with an arduino
+ * 
+ */
+public class Program extends ConfigurableBase {
 
     //region Fields
     private static String[] _args;
@@ -19,6 +47,19 @@ public class Program {
 
     private static boolean _throwOnWarn = false;
     private static String _message = "TestMessage";
+
+    private static Program _program = new Program();
+    //endregion
+
+    //region Properties
+
+    //endregion
+
+    //region Constructor
+    // Ensures configuration is loaded
+    public Program() {
+        super();
+    }
     //endregion
     
     //region Main

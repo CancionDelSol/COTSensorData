@@ -14,6 +14,7 @@ public class ConfigurableBase implements IConfigurable {
     //region Fields
     private HashMap<String, Object> _settings = new HashMap<>();
     private boolean _isConfigured = false;
+    private String _configPath = "";
     //endregion
 
     //region Properties
@@ -23,8 +24,10 @@ public class ConfigurableBase implements IConfigurable {
     //endregion
 
     //region Constructor
-    public ConfigurableBase() {
+    public ConfigurableBase(String configPath) {
+        _configPath = configPath;
 
+        LoadConfiguration(_configPath);
     }
     //endregion
 
@@ -47,7 +50,7 @@ public class ConfigurableBase implements IConfigurable {
 
     // Load Configuration from file
     public void LoadConfiguration(String configPath) {
-
+        
     }
 
     // Save Configuration to file
