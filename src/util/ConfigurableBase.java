@@ -5,25 +5,30 @@ import java.util.HashMap;
 import interfaces.IConfigurable;
 
 /**
- * Provides a simple way to
- *  provide a configuration
+ * The base class for a configurable
+ *  object. It loads, saves, and
+ *  provides access to settings
  */
 public class ConfigurableBase implements IConfigurable {
 
     //region Fields
-    // Cache of settings
     private HashMap<String, Object> _settings = new HashMap<>();
+    private boolean _isConfigured = false;
     //endregion
-    
+
     //region Properties
-
+    public boolean getIsConfigured() {
+        return _isConfigured;
+    }
     //endregion
 
-    // Default Constructor
+    //region Constructor
     public ConfigurableBase() {
 
     }
+    //endregion
 
+    //region Methods
     // Set a setting
     public void SetSetting(String name, Object value) {
         _settings.put(name, value);
@@ -49,4 +54,5 @@ public class ConfigurableBase implements IConfigurable {
     public void SaveConfiguration(String configPath) {
 
     }
+    //endregion
 }
