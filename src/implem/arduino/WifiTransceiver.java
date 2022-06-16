@@ -1,6 +1,6 @@
-package interfaces.arduino;
+package implem.arduino;
 
-public class BTTranceiver {
+public class WifiTransceiver {
     //region Fields
 
     //endregion

@@ -49,6 +49,7 @@ public class Program extends ConfigurableBase {
     private static String _message = "TestMessage";
 
     private static Program _program = new Program();
+    private static String _configFilePath = "MainConfig.cfg";
     //endregion
 
     //region Properties
@@ -58,7 +59,7 @@ public class Program extends ConfigurableBase {
     //region Constructor
     // Ensures configuration is loaded
     public Program() {
-        super();
+        super(_configFilePath);
     }
     //endregion
     
@@ -95,7 +96,7 @@ public class Program extends ConfigurableBase {
         try {
             CheckSetup();
         } catch (Exception exc) {
-            Logger.Error ("Invalid configuration: " + exc.getMessage());
+            Logger.Error("Invalid configuration: " + exc.getMessage());
             exc.printStackTrace();
             return;
         }
@@ -106,7 +107,11 @@ public class Program extends ConfigurableBase {
         int index = 0;
         Collection<ICommProto> commProtos =  _communicationProtocols.values();
         Collection<IEncryptionAlg> encAlgs =  _encryptionAlgs.values();
+
+        // Loop over protocols
         for (ICommProto proto : commProtos) {
+
+            // Loop over encryptions
             for (IEncryptionAlg encAlg : encAlgs) {
                 
                 try {
@@ -128,7 +133,6 @@ public class Program extends ConfigurableBase {
                 }
             }
         }
-
     }
     //endregion
 
@@ -149,11 +153,11 @@ public class Program extends ConfigurableBase {
 
         // Add all communication protocols
         _communicationProtocols.put(dummyProto1.getName(), dummyProto1);
-        _communicationProtocols.put(dummyProto1.getName(), dummyProto2);
+        _communicationProtocols.put(dummyProto2.getName(), dummyProto2);
 
         // Add all encryption algorithms
-        _encryptionAlgs.put(dummyProto1.getName(), dummyEncAlg1);
-        _encryptionAlgs.put(dummyProto1.getName(), dummyEncAlg2);
+        _encryptionAlgs.put(dummyEncAlg1.getName(), dummyEncAlg1);
+        _encryptionAlgs.put(dummyEncAlg2.getName(), dummyEncAlg2);
         _encryptionAlgs.put("None", null);
 
     }
@@ -199,7 +203,5 @@ public class Program extends ConfigurableBase {
 
     }
     //endregion
-
-
 
 }
