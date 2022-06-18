@@ -3,6 +3,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import enums.ProgramType;
 import implem.protocols.DummyCommProto;
 import implem.encryptionAlgorithms.DummyEncAlg;
 import interfaces.ICommProto;
@@ -28,7 +29,10 @@ import util.Stopwatch;
  *     and communication protocols 
  * 
  *  - Process Command Line Arguments
- *    - Local or Remote Program Type (-loc -rem)
+ *    - Program Type
+ *       Test
+ *       Local (Server)
+ *       Remote (Client)
  *    
  *
  *  - Perform necessary initialization
@@ -53,6 +57,11 @@ import util.Stopwatch;
  * 
  */
 public class Program extends ConfigurableBase {
+    //region Constants
+    private static final String TEST_PRGM_TYPE_FLAG = "-test";
+    private static final String REMOTE_PRGM_TYPE_FLAG = "-rem";
+    private static final String LOCAL_PRGM_TYPE_FLAG = "-loc";
+    //endregion
 
     //region Fields
     private static String[] _args;
@@ -64,6 +73,8 @@ public class Program extends ConfigurableBase {
 
     private static Program _program = new Program();
     private static String _configFilePath;
+
+    private static ProgramType _programType = ProgramType.TEST;
     //endregion
 
     //region Properties
@@ -116,8 +127,8 @@ public class Program extends ConfigurableBase {
 
         // Time each protocol against each encryption
         //  algorithm, including no encryption
-        List<RoundTripResult> results = new ArrayList<>();
         int index = 0;
+        List<RoundTripResult> results = new ArrayList<>();
         Collection<ICommProto> commProtos =  _communicationProtocols.values();
         Collection<IEncryptionAlg> encAlgs =  _encryptionAlgs.values();
 
@@ -181,7 +192,28 @@ public class Program extends ConfigurableBase {
      *  types
      */
     private static void ProcessCLIArgs() throws Exception {
-
+        try {
+            for (int i = 0; i < _args.length; i++) {
+                String curArg = _args[i];
+                switch (curArg) {
+                    case (REMOTE_PRGM_TYPE_FLAG):
+                        _programType = ProgramType.REMOTE;
+                        break;
+                    case (LOCAL_PRGM_TYPE_FLAG):
+                        _programType = ProgramType.LOCAL;
+                        break;
+                    case (TEST_PRGM_TYPE_FLAG):
+                        _programType = ProgramType.TEST;
+                        break;
+                }
+            }
+        } catch (Exception exc) {
+            // Log error
+            Logger.Error("Error processing args: " + exc.getLocalizedMessage());
+            
+            // Throw exception
+            throw exc;
+        }
     }
 
     /**

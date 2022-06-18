@@ -1,7 +1,7 @@
 package enums;
 
 public enum ProgramType {
-    CLIENT,
-    SERVER,
+    REMOTE,
+    LOCAL,
     TEST
 }
