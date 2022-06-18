@@ -24,8 +24,13 @@ import interfaces.callbacks.IErrorCallback;
  */
 public class ConfigurableBase implements IConfigurable {
 
+    //region Constants
+    private static final String KEY_XML_NAME = "key";
+    private static final String VALUE_XML_NAME = "value";
+    //endregion
+
     //region Fields
-    private HashMap<String, Object> _settings = new HashMap<>();
+    private HashMap<String, String> _settings = new HashMap<>();
     private boolean _isConfigured = false;
     private String _configPath = "";
     //endregion
@@ -40,18 +45,18 @@ public class ConfigurableBase implements IConfigurable {
     public ConfigurableBase(String configPath) {
         _configPath = configPath;
 
-        LoadConfiguration(_configPath);
+        LoadConfiguration(_configPath, null);
     }
     //endregion
 
     //region Methods
     // Set a setting
-    public void SetSetting(String name, Object value) {
+    public void SetSetting(String name, String value, IErrorCallback onError) {
         _settings.put(name, value);
     }
 
     // Get a setting
-    public Object GetSetting(String name) {
+    public String GetSetting(String name, IErrorCallback onError) {
 
         // Return the setting if present
         if (_settings.containsKey(name))
@@ -82,8 +87,21 @@ public class ConfigurableBase implements IConfigurable {
             // Get the setting elements
             NodeList nodeList = doc.getElementsByTagName("setting");
 
-            // Iterate through the nodes
-            //  and save the 
+            // Loop through elements and save the values
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                // Element
+                Element ele = (Element)nodeList.item(i);
+
+                // Save value and key into settings dictionary
+                String key = ele.getAttribute(KEY_XML_NAME);
+                String val = ele.getAttribute(VALUE_XML_NAME);
+
+                // Place into settings
+                if (!_settings.containsKey(key))
+                    _settings.put(key, val);
+                else
+                    Logger.Warn("Duplicate value for key: " + key);
+            }
 
         } catch (ParserConfigurationException | SAXException | IOException exc) {
             // Log exception
@@ -106,7 +124,7 @@ public class ConfigurableBase implements IConfigurable {
 
     // Save Configuration to file
     public boolean SaveConfiguration(String configPath, IErrorCallback onError) {
-
+        
     }
     //endregion
 }

@@ -1,19 +1,9 @@
-package implem;
+package implem.protocols;
 
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 
-/**
- * Bluetooth tranceiver
- * 
- * Server-Side:
- *  - Uses on-board bluetooth transmission
- *     for laptop
- * 
- * Client-Side:
- *  - Uses ESP-WROOM-32 module
- */
-public class BTTranceiver  implements ICommProto {
+public class LoPanCommProto implements ICommProto {
     //region Fields
 
     //endregion
@@ -27,13 +17,7 @@ public class BTTranceiver  implements ICommProto {
 
     @Override
     public String getName() {
-        return "BlueToothTranceiver";
-    }
-    //endregion
-
-    //region Constructor
-    public BTTranceiver() {
-        
+        return "6LoWPAN";
     }
     //endregion
 
@@ -46,7 +30,7 @@ public class BTTranceiver  implements ICommProto {
 
     @Override
     public boolean ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
-        // TODO 
+        // TODO Auto-generated method stub
         return false;
     }
     //endregion

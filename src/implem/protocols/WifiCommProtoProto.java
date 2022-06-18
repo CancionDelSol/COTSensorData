@@ -1,10 +1,10 @@
-package implem;
+package implem.protocols;
 
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 
-public class LoPan implements ICommProto {
-    //region Fields
+public class WifiCommProtoProto implements ICommProto {
+//region Fields
 
     //endregion
 
@@ -17,8 +17,12 @@ public class LoPan implements ICommProto {
 
     @Override
     public String getName() {
-        return "6LoWPAN";
+        return "WifiTranceiver";
     }
+    //endregion
+
+    //region Constructor
+    
     //endregion
 
     //region Methods
@@ -30,7 +34,7 @@ public class LoPan implements ICommProto {
 
     @Override
     public boolean ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
-        // TODO Auto-generated method stub
+        // TODO 
         return false;
     }
     //endregion

@@ -1,10 +1,20 @@
-package implem;
+package implem.protocols;
 
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 
-public class WifiTransceiver implements ICommProto {
-//region Fields
+/**
+ * Bluetooth tranceiver
+ * 
+ * Server-Side:
+ *  - Uses on-board bluetooth transmission
+ *     for laptop
+ * 
+ * Client-Side:
+ *  - Uses ESP-WROOM-32 module
+ */
+public class BlueToothCommProto  implements ICommProto {
+    //region Fields
 
     //endregion
 
@@ -17,12 +27,14 @@ public class WifiTransceiver implements ICommProto {
 
     @Override
     public String getName() {
-        return "WifiTranceiver";
+        return "BlueToothTranceiver";
     }
     //endregion
 
     //region Constructor
-    
+    public BlueToothCommProto() {
+        
+    }
     //endregion
 
     //region Methods

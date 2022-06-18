@@ -10,7 +10,7 @@ public interface IConfigurable {
     //region Methods
     boolean LoadConfiguration(String configPath, IErrorCallback onError);
     boolean SaveConfiguration(String configPath, IErrorCallback onError);
-    Object GetSetting(String name, IErrorCallback onError);
-    void SetSetting(String name, Object value, IErrorCallback onError);
+    String GetSetting(String name, IErrorCallback onError);
+    void SetSetting(String name, String value, IErrorCallback onError);
     //endregion
 }

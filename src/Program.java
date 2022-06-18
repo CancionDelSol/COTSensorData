@@ -27,8 +27,14 @@ import util.Logger;
  *     and communication protocols 
  * 
  *  - Process Command Line Arguments
- * 
- *  - Confirm all protocols can connect
+ *    - Local or Remote Program Type (-loc -rem)
+ *    
+ *
+ *  - Perform necessary initialization
+ *    - Remote (Client):
+ *       Read sensor data from file
+ *    - Local (Server):
+ *       Confirm all protocols can connect 
  * 
  *  - Test each protocol's round trip communication
  *    time with each encryption algorithm
@@ -104,7 +110,6 @@ public class Program extends ConfigurableBase {
             CheckSetup();
         } catch (Exception exc) {
             Logger.Error("Invalid configuration: " + exc.getMessage());
-            exc.printStackTrace();
             return;
         }
 
