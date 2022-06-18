@@ -1,3 +1,5 @@
+package util;
+
 import java.util.*;
 import java.time.Period;
 import java.time.temporal.TemporalAmount;
@@ -6,7 +8,7 @@ import java.time.temporal.TemporalAmount;
  * Stopwatch class used for timing
  *  function execution
  */
-class Stopwatch {
+public class Stopwatch {
 
     //region Constants
     private static final String ALREADY_STARTED_ERR = "Should not call start on time that has already been started";

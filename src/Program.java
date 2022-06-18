@@ -3,13 +3,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import implem.DummyCommProto;
-import implem.DummyEncAlg;
+import implem.protocols.DummyCommProto;
+import implem.encryptionAlgorithms.DummyEncAlg;
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 import telemetry.RoundTripResult;
 import util.ConfigurableBase;
 import util.Logger;
+import util.Stopwatch;
 
 /**
  * Main program class

@@ -1,18 +1,22 @@
 package util;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-import java.io.File;
 
 import interfaces.IConfigurable;
 import interfaces.callbacks.IErrorCallback;
@@ -27,6 +31,7 @@ public class ConfigurableBase implements IConfigurable {
     //region Constants
     private static final String KEY_XML_NAME = "key";
     private static final String VALUE_XML_NAME = "value";
+    private static final String SETTING_XML_NAME = "setting";
     //endregion
 
     //region Fields
@@ -85,7 +90,7 @@ public class ConfigurableBase implements IConfigurable {
             doc.getDocumentElement().normalize();
             
             // Get the setting elements
-            NodeList nodeList = doc.getElementsByTagName("setting");
+            NodeList nodeList = doc.getElementsByTagName(SETTING_XML_NAME);
 
             // Loop through elements and save the values
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -124,7 +129,70 @@ public class ConfigurableBase implements IConfigurable {
 
     // Save Configuration to file
     public boolean SaveConfiguration(String configPath, IErrorCallback onError) {
-        
+        Document doc;
+        Element e = null;
+
+        // Factory
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        try {
+            // Document builder
+            DocumentBuilder db = dbf.newDocumentBuilder();
+
+            // Document
+            doc = db.newDocument();
+
+            // Root element
+            Element rootEle = doc.createElement("roles");
+
+            // Loop over settings
+            for (String key : _settings.keySet()) {
+                // New Element
+                e = doc.createElement(SETTING_XML_NAME);
+
+                // Set the key and value attributes
+                e.setAttribute(KEY_XML_NAME, key);
+                e.setAttribute(VALUE_XML_NAME, _settings.get(key));
+
+                // Append to root
+                rootEle.appendChild(e);
+            }
+
+            // Append root to document
+            doc.appendChild(rootEle);
+
+            try {
+                // Transformer
+                Transformer tr = TransformerFactory.newInstance().newTransformer();
+
+                // Set properties
+                tr.setOutputProperty(OutputKeys.INDENT, "yes");
+                tr.setOutputProperty(OutputKeys.METHOD, "xml");
+                tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "roles.dtd");
+                tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+                // Send DOM to file
+                tr.transform(new DOMSource(doc), 
+                                    new StreamResult(
+                                        new FileOutputStream(configPath)
+                                        )
+                                        );
+
+            } catch (Exception exc) {
+                // Throw to outer exception
+               throw exc;
+            }
+
+        } catch (Exception exc) {
+            // Log exception
+            Logger.Error("Error saving config file: " + exc.getMessage());
+
+            // Return failure
+            return false;
+        }
+
+        // Return success
+        return true;
     }
     //endregion
 }
