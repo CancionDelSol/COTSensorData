@@ -117,6 +117,26 @@ public class Program extends ConfigurableBase {
             return;
         }
 
+        try {
+            switch (_programType) {
+                case LOCAL:
+                    RunLocalLogic();
+                    break;
+                case REMOTE:
+    
+                    break;
+                case TEST:
+    
+                    break;
+                default:
+                    Logger.Error("Unknown program type");
+            }
+        } catch (Exception exc) {
+            Logger.Error("Exception program type logic: " + exc.getMessage());
+            return;
+        }
+        
+
         // Check for invalid configurations
         try {
             CheckSetup();
@@ -193,20 +213,29 @@ public class Program extends ConfigurableBase {
      */
     private static void ProcessCLIArgs() throws Exception {
         try {
-            for (int i = 0; i < _args.length; i++) {
+
+            // Loop through arguments
+            for (int i = 0; i < _args.length;) {
                 String curArg = _args[i];
                 switch (curArg) {
                     case (REMOTE_PRGM_TYPE_FLAG):
                         _programType = ProgramType.REMOTE;
+                        i++;
                         break;
                     case (LOCAL_PRGM_TYPE_FLAG):
                         _programType = ProgramType.LOCAL;
+                        i++;
                         break;
                     case (TEST_PRGM_TYPE_FLAG):
                         _programType = ProgramType.TEST;
+                        i++;
+                        break;
+                    default:
+                        i++;
                         break;
                 }
             }
+
         } catch (Exception exc) {
             // Log error
             Logger.Error("Error processing args: " + exc.getLocalizedMessage());
@@ -246,6 +275,27 @@ public class Program extends ConfigurableBase {
 
         }
 
+    }
+    
+    /**
+     * Run logic for a "local" machine (Server)
+     */
+    private static void RunLocalLogic() throws Exception {
+        // TODO : Implement local logic
+    }
+
+    /**
+     * Run logic for a "remote" machine (Client)
+     */
+    private static void RunRemoteLogic() throws Exception {
+        // TODO : Implement remote logic
+    }
+
+    /**
+     * Run test suite
+     */
+    private static void RunTests() throws Exception {
+        // TODO : Implement test suite
     }
     //endregion
 
