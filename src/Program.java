@@ -28,6 +28,13 @@ import util.Logger;
  * 
  *  - Process Command Line Arguments
  * 
+ *  - Confirm all protocols can connect
+ * 
+ *  - Test each protocol's round trip communication
+ *    time with each encryption algorithm
+ * 
+ *  - Save experimental results to disk
+ * 
  * The following 3rd party libraries are used:
  * 
  *   - Pi4J : https://pi4j.com/
@@ -53,7 +60,7 @@ public class Program extends ConfigurableBase {
     //endregion
 
     //region Properties
-
+    public static ConfigurableBase getConfiguration() { return _program; }
     //endregion
 
     //region Constructor
@@ -116,7 +123,7 @@ public class Program extends ConfigurableBase {
                 
                 try {
 
-                    Stopwatch newWatch = new Stopwatch(param -> proto.EncryptedRoundTrip(_message, encAlg));
+                    Stopwatch newWatch = new Stopwatch(param -> proto.RoundTripMessage(_message, encAlg));
 
                     long duration = newWatch.TimeFunction(null);
 

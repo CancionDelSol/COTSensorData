@@ -4,8 +4,7 @@ import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 
 public class WifiTransceiver implements ICommProto {
-
-    //region Fields
+//region Fields
 
     //endregion
 
@@ -18,7 +17,7 @@ public class WifiTransceiver implements ICommProto {
 
     @Override
     public String getName() {
-        return "WifiTransceiver";
+        return "WifiTranceiver";
     }
     //endregion
 
@@ -28,17 +27,15 @@ public class WifiTransceiver implements ICommProto {
 
     //region Methods
     @Override
-    public boolean RoundTripMessage(String message) {
+    public boolean RoundTripMessage(String message, IEncryptionAlg encryptionAlg) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean EncryptedRoundTrip(String message, IEncryptionAlg encryptionAlg) {
-        // TODO Auto-generated method stub
+    public boolean ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
+        // TODO 
         return false;
     }
-
-    
     //endregion
 }

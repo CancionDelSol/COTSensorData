@@ -13,19 +13,20 @@ public interface ICommProto {
 
     //region Methods
     /**
-     * Round trip a message
-     *  Return false if message
-     *  is incorrect
-     */
-    boolean RoundTripMessage(String message);
-
-    /**
      * Do an encrypted round
-     *  trip
+     *  trip. Null encAlg
+     *  for no encryption
      * Return false if message
      *  is incorrect
+     * Called server-side
      */
-    boolean EncryptedRoundTrip(String message, IEncryptionAlg encryptionAlg);
+    boolean RoundTripMessage(String message, IEncryptionAlg encryptionAlg);
+
+    /**
+     * Client-side receive message
+     *  and respond
+     */
+    boolean ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg);
 
     /**
      * Get the protocol's easy

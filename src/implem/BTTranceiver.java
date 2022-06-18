@@ -3,8 +3,17 @@ package implem;
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 
+/**
+ * Bluetooth tranceiver
+ * 
+ * Server-Side:
+ *  - Uses on-board bluetooth transmission
+ *     for laptop
+ * 
+ * Client-Side:
+ *  - Uses ESP-WROOM-32 module
+ */
 public class BTTranceiver  implements ICommProto {
-
     //region Fields
 
     //endregion
@@ -23,19 +32,21 @@ public class BTTranceiver  implements ICommProto {
     //endregion
 
     //region Constructor
-    
+    public BTTranceiver() {
+        
+    }
     //endregion
 
     //region Methods
     @Override
-    public boolean RoundTripMessage(String message) {
+    public boolean RoundTripMessage(String message, IEncryptionAlg encryptionAlg) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public boolean EncryptedRoundTrip(String message, IEncryptionAlg encryptionAlg) {
-        // TODO Auto-generated method stub
+    public boolean ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
+        // TODO 
         return false;
     }
     //endregion
