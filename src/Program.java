@@ -56,7 +56,7 @@ public class Program extends ConfigurableBase {
     private static String _message = "TestMessage";
 
     private static Program _program = new Program();
-    private static String _configFilePath = "MainConfig.cfg";
+    private static String _configFilePath;
     //endregion
 
     //region Properties
