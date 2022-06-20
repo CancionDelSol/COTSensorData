@@ -35,9 +35,17 @@ createjar: createmanifest
 generate: createjar
 	@echo "Complete"
 
-run: generate
+tests: generate
 	@clear
-	@java -jar Telem.jar
+	@java -jar Telem.jar -test
+
+startRemote: generate
+	@clear
+	@java -jar Telem.jar -rem
+
+startLocal: generate
+	@clear
+	@java -jar Telem.jar -loc
 
 clean:
 	@echo "Cleaning up..."
