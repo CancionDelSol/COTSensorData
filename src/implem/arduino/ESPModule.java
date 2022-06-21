@@ -1,9 +1,13 @@
-package interfaces.arduino;
+package implem.arduino;
 
 /**
  * Interface for the Esp-Wroom-32 module
  */
-public interface IESP {
+public class ESPModule {
+    //region Fields
+
+    //endregion
+
     //region Properties
 
     //endregion

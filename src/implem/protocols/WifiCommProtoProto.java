@@ -3,6 +3,7 @@ package implem.protocols;
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 import util.ConfigurableBase;
+import util.Globals;
 
 public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
 //region Fields
@@ -23,7 +24,9 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
     //endregion
 
     //region Constructor
-    
+    public WifiCommProtoProto() {
+        super(Globals.WIFI_PROTO_CONFIG_FILE);
+    }
     //endregion
 
     //region Methods

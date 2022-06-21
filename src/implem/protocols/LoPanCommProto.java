@@ -2,8 +2,10 @@ package implem.protocols;
 
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
+import util.ConfigurableBase;
+import util.Globals;
 
-public class LoPanCommProto implements ICommProto {
+public class LoPanCommProto extends ConfigurableBase implements ICommProto {
     //region Fields
 
     //endregion
@@ -21,6 +23,12 @@ public class LoPanCommProto implements ICommProto {
     }
     //endregion
 
+    //region Constructor
+    public LoPanCommProto() {
+        super(Globals.SIX_LOWPAN_PROTO_CONFIG_FILE);
+    }
+    //endregion
+
     //region Methods
     @Override
     public boolean RoundTripMessage(String message, IEncryptionAlg encryptionAlg) {
@@ -32,6 +40,13 @@ public class LoPanCommProto implements ICommProto {
     public String ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
         // TODO Auto-generated method stub
         return message;
+    }
+    //endregion
+
+    //region ConfigurableBase
+    @Override
+    protected void _setDefaults() {
+        SetSetting("Timeout", "15000");
     }
     //endregion
 }
