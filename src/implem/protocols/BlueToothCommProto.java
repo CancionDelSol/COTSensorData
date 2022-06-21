@@ -2,6 +2,8 @@ package implem.protocols;
 
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
+import util.ConfigurableBase;
+import util.Globals;
 
 /**
  * Bluetooth tranceiver
@@ -13,7 +15,7 @@ import interfaces.IEncryptionAlg;
  * Client-Side:
  *  - Uses ESP-WROOM-32 module
  */
-public class BlueToothCommProto  implements ICommProto {
+public class BlueToothCommProto extends ConfigurableBase implements ICommProto {
     //region Fields
 
     //endregion
@@ -27,13 +29,13 @@ public class BlueToothCommProto  implements ICommProto {
 
     @Override
     public String getName() {
-        return "BlueToothTranceiver";
+        return "BlueToothCommProto";
     }
     //endregion
 
     //region Constructor
     public BlueToothCommProto() {
-        
+        super(Globals.BLUETOOTH_PROTO_CONFIG_FILE);
     }
     //endregion
 
@@ -48,6 +50,14 @@ public class BlueToothCommProto  implements ICommProto {
     public boolean ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
         // TODO 
         return false;
+    }
+    //endregion
+
+    //region ConfigurableBase
+    @Override
+    protected void _setDefaults() {
+        SetSetting("UseESP", "false");
+        SetSetting("Timeout", "15000");
     }
     //endregion
 }

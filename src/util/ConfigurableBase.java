@@ -26,7 +26,7 @@ import interfaces.callbacks.IErrorCallback;
  *  object. It loads, saves, and
  *  provides access to settings
  */
-public class ConfigurableBase implements IConfigurable {
+public abstract class ConfigurableBase implements IConfigurable {
 
     //region Constants
     private static final String KEY_XML_NAME = "key";
@@ -56,6 +56,9 @@ public class ConfigurableBase implements IConfigurable {
 
     //region Methods
     // Set a setting
+    public void SetSetting(String name, String value) {
+        SetSetting(name, value, null);
+    }
     public void SetSetting(String name, String value, IErrorCallback onError) {
         _settings.put(name, value);
     }
@@ -194,5 +197,7 @@ public class ConfigurableBase implements IConfigurable {
         // Return success
         return true;
     }
+
+    protected abstract void _setDefaults();
     //endregion
 }
