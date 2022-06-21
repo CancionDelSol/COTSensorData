@@ -4,6 +4,7 @@ import java.util.Random;
 
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
+import util.CommonMath;
 import util.ConfigurableBase;
 
 public class DummyCommProto extends ConfigurableBase implements ICommProto {
@@ -37,13 +38,14 @@ public class DummyCommProto extends ConfigurableBase implements ICommProto {
 
         // Sleep for a random amount of time
         try {
-            Thread.sleep(Util..nextLong() % 5000L);
+            Thread.sleep(CommonMath.Uniform(0L, 5000L));
         } catch (Exception exc) {
             return false;
         }
         
-        // Return success
-        return true;
+        // Randomly return failure
+        //  5% of the time
+        return CommonMath.Uniform(0, 100) > 5 ? true : false;
     }
 
 
