@@ -50,9 +50,9 @@ public class DummyCommProto extends ConfigurableBase implements ICommProto {
 
 
     @Override
-    public boolean ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
-        // TODO Auto-generated method stub
-        return false;
+    public String ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
+        // Fake failure
+        return message;
     }
     //endregion
     

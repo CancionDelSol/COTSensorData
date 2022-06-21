@@ -2,8 +2,9 @@ package implem.protocols;
 
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
+import util.ConfigurableBase;
 
-public class WifiCommProtoProto implements ICommProto {
+public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
 //region Fields
 
     //endregion
@@ -33,9 +34,17 @@ public class WifiCommProtoProto implements ICommProto {
     }
 
     @Override
-    public boolean ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
+    public String ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
         // TODO 
-        return false;
+        return message;
+    }
+    //endregion
+
+    //region ConfigurableBase
+    @Override
+    protected void _setDefaults() {
+        SetSetting("UseESP", "false");
+        SetSetting("Timeout", "15000");
     }
     //endregion
 }

@@ -26,7 +26,7 @@ public interface ICommProto {
      * Client-side receive message
      *  and respond
      */
-    boolean ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg);
+    String ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg);
 
     /**
      * Get the protocol's easy

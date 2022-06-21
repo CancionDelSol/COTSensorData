@@ -47,9 +47,9 @@ public class BlueToothCommProto extends ConfigurableBase implements ICommProto {
     }
 
     @Override
-    public boolean ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
+    public String ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
         // TODO 
-        return false;
+        return message;
     }
     //endregion
 
