@@ -1,9 +1,12 @@
 package implem.protocols;
 
+import java.util.Random;
+
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
+import util.ConfigurableBase;
 
-public class DummyCommProto implements ICommProto {
+public class DummyCommProto extends ConfigurableBase implements ICommProto {
 
     //region Properties
     private String _stubName = "DummyCommProto";
@@ -20,15 +23,27 @@ public class DummyCommProto implements ICommProto {
 
     //region Methods
     public DummyCommProto(String stubName) {
+        super(stubName + "Config");
         if (stubName != null & !stubName.equals(""))
             _stubName = stubName;
     }
 
-
+    /**
+     * Sleep for a short amount of time to simulate
+     *  a round trip message
+     */
     @Override
     public boolean RoundTripMessage(String message, IEncryptionAlg encryptionAlg) {
-        // TODO Auto-generated method stub
-        return false;
+
+        // Sleep for a random amount of time
+        try {
+            Thread.sleep(Util..nextLong() % 5000L);
+        } catch (Exception exc) {
+            return false;
+        }
+        
+        // Return success
+        return true;
     }
 
 
@@ -39,4 +54,15 @@ public class DummyCommProto implements ICommProto {
     }
     //endregion
     
+    //region ConfigurableBase
+    @Override
+    protected void _setDefaults() {
+        SetSetting("TestSettingOne", "TestValueOne");
+        SetSetting("TestSettingTwo", "TestValueTwo");
+        SetSetting("TestSettingThree", "TestValueThree");
+        SetSetting("TestSettingFour", "TestValueFour");
+        SetSetting("TestSettingFive", "TestValueFive");
+        SetSetting("TestSettingSix", "TestValueSix");
+    }
+    //endregion
 }
