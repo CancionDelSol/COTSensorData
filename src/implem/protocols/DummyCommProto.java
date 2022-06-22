@@ -24,7 +24,7 @@ public class DummyCommProto extends ConfigurableBase implements ICommProto {
 
     //region Methods
     public DummyCommProto(String stubName) {
-        super(stubName + "Config");
+        super(stubName + "Config.cfg");
         if (stubName != null & !stubName.equals(""))
             _stubName = stubName;
     }

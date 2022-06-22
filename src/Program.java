@@ -95,17 +95,6 @@ public class Program extends ConfigurableBase {
      */
     public static void main(String[] args) {
 
-        // Use reflection
-        //  to get available
-        //  encryption algs and
-        //  communication protos
-        try {
-            Discover();
-        } catch (Exception exc) {
-            Logger.Error("Exception during discovery: " + exc.getMessage());
-            return;
-        }
-
         // Save reference to arguments
         //  for potential future use
         _args = args;
@@ -115,6 +104,17 @@ public class Program extends ConfigurableBase {
             ProcessCLIArgs();
         } catch (Exception exc) {
             Logger.Error("Exception processing args: " + exc.getMessage());
+            return;
+        }
+
+        // Use reflection
+        //  to get available
+        //  encryption algs and
+        //  communication protos
+        try {
+            Discover();
+        } catch (Exception exc) {
+            Logger.Error("Exception during discovery: " + exc.getMessage());
             return;
         }
 
