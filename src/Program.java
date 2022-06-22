@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import enums.ProgramType;
+import implem.protocols.BlueToothCommProto;
 import implem.protocols.DummyCommProto;
+import implem.protocols.LoPanCommProto;
+import implem.protocols.WifiCommProtoProto;
 import implem.encryptionAlgorithms.DummyEncAlg;
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
@@ -188,22 +191,46 @@ public class Program extends ConfigurableBase {
      */
     private static void Discover() throws Exception {
 
-        // Construct the communication protocols
-        ICommProto dummyProto1 = new DummyCommProto("CommProtoOne");
-        ICommProto dummyProto2 = new DummyCommProto("CommProtoTwo");
+        // Unit Tests
+        if (_programType == ProgramType.TEST) {
+            // Construct the communication protocols
+            ICommProto dummyProto1 = new DummyCommProto("CommProtoOne");
+            ICommProto dummyProto2 = new DummyCommProto("CommProtoTwo");
 
-        // Encryption algorithm
-        IEncryptionAlg dummyEncAlg1 = new DummyEncAlg("AlgStubOne");
-        IEncryptionAlg dummyEncAlg2 = new DummyEncAlg("AlgStubTwo");
+            // Encryption algorithm
+            IEncryptionAlg dummyEncAlg1 = new DummyEncAlg("AlgStubOne");
+            IEncryptionAlg dummyEncAlg2 = new DummyEncAlg("AlgStubTwo");
 
-        // Add all communication protocols
-        _communicationProtocols.put(dummyProto1.getName(), dummyProto1);
-        _communicationProtocols.put(dummyProto2.getName(), dummyProto2);
+            // Add all communication protocols
+            _communicationProtocols.put(dummyProto1.getName(), dummyProto1);
+            _communicationProtocols.put(dummyProto2.getName(), dummyProto2);
 
-        // Add all encryption algorithms
-        _encryptionAlgs.put(dummyEncAlg1.getName(), dummyEncAlg1);
-        _encryptionAlgs.put(dummyEncAlg2.getName(), dummyEncAlg2);
+            // Add all encryption algorithms
+            _encryptionAlgs.put(dummyEncAlg1.getName(), dummyEncAlg1);
+            _encryptionAlgs.put(dummyEncAlg2.getName(), dummyEncAlg2);
+
+        // Production
+        } else {
+            // Construct the protocols
+            ICommProto btProto = new BlueToothCommProto();
+            ICommProto wifiProto = new WifiCommProtoProto();
+            ICommProto loPanProto = new LoPanCommProto();
+
+            // Construct the encryption algorithms
+            // TODO
+
+            // Add all communication protocols
+            _communicationProtocols.put(btProto.getName(), btProto);
+            _communicationProtocols.put(wifiProto.getName(), wifiProto);
+            _communicationProtocols.put(loPanProto.getName(), loPanProto);
+
+            // Add all encryption algorithms
+            // TODO
+        }
+
+        // Place the null encryption algorithm
         _encryptionAlgs.put("None", null);
+        
 
     }
 
