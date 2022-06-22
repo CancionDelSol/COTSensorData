@@ -10,6 +10,7 @@ import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 import telemetry.RoundTripResult;
 import util.ConfigurableBase;
+import util.Globals;
 import util.Logger;
 import util.Stopwatch;
 
@@ -71,8 +72,8 @@ public class Program extends ConfigurableBase {
     private static boolean _throwOnWarn = false;
     private static String _message = "TestMessage";
 
+    private static String _configFilePath = Globals.MAIN_CONFIG_FILE;
     private static Program _program = new Program();
-    private static String _configFilePath;
 
     private static ProgramType _programType = ProgramType.TEST;
     //endregion
@@ -296,6 +297,13 @@ public class Program extends ConfigurableBase {
      */
     private static void RunTests() throws Exception {
         // TODO : Implement test suite
+    }
+    //endregion
+
+    //region ConfigurableBase
+    @Override
+    protected void _setDefaults() {
+        SetSetting("", "");
     }
     //endregion
 

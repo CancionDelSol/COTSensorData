@@ -77,7 +77,11 @@ public abstract class ConfigurableBase implements IConfigurable {
     // Load Configuration from file
     public boolean LoadConfiguration(String configPath, IErrorCallback onError) {
         // Use the configPath as filename
+        Logger.Verbose("Loading config file: " + configPath);;
         File fXmlFile = new File(configPath);
+
+        // Success flag
+        boolean success = false;
 
         // Document builder factory
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -111,9 +115,11 @@ public abstract class ConfigurableBase implements IConfigurable {
                     Logger.Warn("Duplicate value for key: " + key);
             }
 
-        } catch (ParserConfigurationException | SAXException | IOException exc) {
+            success = true;
+
+        } catch (ParserConfigurationException parseExc) {
             // Log exception
-            Logger.Error("Parsing error: " + exc.getMessage());
+            Logger.Error("Parsing error: " + parseExc.getMessage());
 
             // Callback
             try {
@@ -125,9 +131,39 @@ public abstract class ConfigurableBase implements IConfigurable {
 
             // Return failure
             return false;
+        } catch (SAXException saxExc){
+            // Log exception
+            Logger.Error("SAX error: " + saxExc.getMessage());
+
+            // Callback
+            try {
+                if (onError != null) 
+                    onError.onError();
+            } catch (Exception onErrorException) {
+                Logger.Error("Error occurred in callback: " + onErrorException.getMessage());
+            }
+
+            // Return failure
+            return false;
+        } catch(IOException ioExc) {
+            // Log exception
+            Logger.Error("IO error: " + ioExc.getMessage());
+
+            // Callback
+            try {
+                if (onError != null) 
+                    onError.onError();
+            } catch (Exception onErrorException) {
+                Logger.Error("Error occurred in callback: " + onErrorException.getMessage());
+            }
+        }
+
+        if (!success) {
+            _setDefaults();
+            SaveConfiguration(configPath, null);
         }
         
-        return true;
+        return success;
     }
 
     // Save Configuration to file
