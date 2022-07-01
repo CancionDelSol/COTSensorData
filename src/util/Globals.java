@@ -13,4 +13,12 @@ public class Globals {
     public static final String WIFI_PROTO_CONFIG_FILE = "WifiProtoConfig.cfg";
     public static final String BLUETOOTH_PROTO_CONFIG_FILE = "BluetoothProtoConfig.cfg";
     //endregion
+
+    //region Arrays
+    public static final String PORT_NAMES[] = {
+        "/dev/tty.usbserial-A9007UX1", // Mac OS X
+        "/dev/ttyUSB0", // Linux
+        "COM4", // Windows
+    };
+    //endregion
 }

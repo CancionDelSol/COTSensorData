@@ -11,7 +11,7 @@ BUILD_DIR := src/build
 CLASSES_OUTPUT := src/build/classes
 
 # Source files
-src_FILES := $(find . -name '*.src')
+JAVA_FILES := $(find . -name '*.java')
 
 classpath:
 	@mkdir -p $(CLASSES_OUTPUT)
@@ -21,7 +21,7 @@ buildpath:
 
 javacbuild: classpath buildpath
 	@echo "Creating classes"
-	@javac -sourcepath src -d $(CLASSES_OUTPUT) $(SOURCE_DIR)/**/*.java $(SOURCE_DIR)/*.java
+	@javac -cp "./lib/RXTXcomm-2.2pre2.jar" -sourcepath src -d $(CLASSES_OUTPUT) $(SOURCE_DIR)/**/*.java $(SOURCE_DIR)/*.java
 
 createmanifest: javacbuild
 	@echo "Writing manifest"
