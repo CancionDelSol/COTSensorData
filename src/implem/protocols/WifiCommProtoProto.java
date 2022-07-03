@@ -1,20 +1,20 @@
 package implem.protocols;
 
+import implem.ESPModule;
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 import util.ConfigurableBase;
 import util.Globals;
 
 public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
-//region Fields
-
+    //region Fields
+    private static ESPModule _espModule = ESPModule.getModule();
     //endregion
 
     //region Properties
     @Override
     public boolean getIsConnected() {
-        // TODO Auto-generated method stub
-        return false;
+        return _espModule != null;
     }
 
     @Override
@@ -32,13 +32,13 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
     //region Methods
     @Override
     public boolean RoundTripMessage(String message, IEncryptionAlg encryptionAlg) {
-        // TODO Auto-generated method stub
+        
         return false;
     }
 
     @Override
     public String ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
-        // TODO 
+        
         return message;
     }
     //endregion

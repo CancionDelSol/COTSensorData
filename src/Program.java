@@ -191,47 +191,51 @@ public class Program extends ConfigurableBase {
      */
     private static void Discover() throws Exception {
 
+        ICommProto[] commProtos;
+        IEncryptionAlg[] encAlgs;
+
         // Unit Tests
         if (_programType == ProgramType.TEST) {
-            // Construct the communication protocols
-            ICommProto dummyProto1 = new DummyCommProto("CommProtoOne");
-            ICommProto dummyProto2 = new DummyCommProto("CommProtoTwo");
 
-            // Encryption algorithm
-            IEncryptionAlg dummyEncAlg1 = new DummyEncAlg("AlgStubOne");
-            IEncryptionAlg dummyEncAlg2 = new DummyEncAlg("AlgStubTwo");
+            // Communication protocols
+            commProtos = new ICommProto[] {
+                new DummyCommProto("CommProtoOne"),
+                new DummyCommProto("CommProtoTwo"),
+                new WifiCommProtoProto()
+            };
 
-            // Add all communication protocols
-            _communicationProtocols.put(dummyProto1.getName(), dummyProto1);
-            _communicationProtocols.put(dummyProto2.getName(), dummyProto2);
-
-            // Add all encryption algorithms
-            _encryptionAlgs.put(dummyEncAlg1.getName(), dummyEncAlg1);
-            _encryptionAlgs.put(dummyEncAlg2.getName(), dummyEncAlg2);
+            // Encryption algorithms
+            encAlgs = new IEncryptionAlg[] {
+                new DummyEncAlg("AlgStubOne"),
+                new DummyEncAlg("AlgStubTwo")
+            };
 
         // Production
         } else {
-            // Construct the protocols
-            ICommProto btProto = new BlueToothCommProto();
-            ICommProto wifiProto = new WifiCommProtoProto();
-            ICommProto loPanProto = new LoPanCommProto();
+            // Communication protocols
+            commProtos = new ICommProto[] {
+                new BlueToothCommProto(),
+                new LoPanCommProto(),
+                new WifiCommProtoProto()
+            };
 
-            // Construct the encryption algorithms
-            // TODO
+            // Encryption algorithms
+            encAlgs = new IEncryptionAlg[] {
+                new DummyEncAlg("AlgStubOne"),
+                new DummyEncAlg("AlgStubTwo")
+            };
+        }
 
-            // Add all communication protocols
-            _communicationProtocols.put(btProto.getName(), btProto);
-            _communicationProtocols.put(wifiProto.getName(), wifiProto);
-            _communicationProtocols.put(loPanProto.getName(), loPanProto);
+        for (ICommProto cP : commProtos) {
+            _communicationProtocols.put(cP.getName(), cP);
+        }
 
-            // Add all encryption algorithms
-            // TODO
+        for (IEncryptionAlg eA : encAlgs) {
+            _encryptionAlgs.put(eA.getName(), eA);
         }
 
         // Place the null encryption algorithm
         _encryptionAlgs.put("None", null);
-        
-
     }
 
     /**
