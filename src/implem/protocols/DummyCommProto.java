@@ -34,7 +34,7 @@ public class DummyCommProto extends ConfigurableBase implements ICommProto {
      *  a round trip message
      */
     @Override
-    public boolean RoundTripMessage(String message, IEncryptionAlg encryptionAlg) {
+    public boolean RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
 
         // Sleep for a random amount of time
         try {

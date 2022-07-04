@@ -25,7 +25,7 @@ javacbuild: classpath buildpath
 
 createmanifest: javacbuild
 	@echo "Writing manifest"
-	@echo Main-Class: Program>src/myManifest
+	@echo "Main-Class: Program\nClass-Path: ./lib/RXTXcomm-2.2pre2.jar">src/myManifest
 
 createjar: createmanifest
 	@echo "Creating jar"

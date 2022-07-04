@@ -181,7 +181,7 @@ public abstract class ConfigurableBase implements IConfigurable {
             doc = db.newDocument();
 
             // Root element
-            Element rootEle = doc.createElement("roles");
+            Element rootEle = doc.createElement("settings");
 
             // Loop over settings
             for (String key : _settings.keySet()) {
@@ -207,7 +207,6 @@ public abstract class ConfigurableBase implements IConfigurable {
                 tr.setOutputProperty(OutputKeys.INDENT, "yes");
                 tr.setOutputProperty(OutputKeys.METHOD, "xml");
                 tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-                tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "roles.dtd");
                 tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
                 // Send DOM to file

@@ -41,7 +41,7 @@ public class BlueToothCommProto extends ConfigurableBase implements ICommProto {
 
     //region Methods
     @Override
-    public boolean RoundTripMessage(String message, IEncryptionAlg encryptionAlg) {
+    public boolean RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
         // TODO Auto-generated method stub
         return false;
     }
