@@ -24,6 +24,7 @@ import javax.imageio.plugins.tiff.GeoTIFFTagSet;
  *  GETDATA   - Makes request for ESP module
  *              to get sensor data from a
  *              collector source over WiFi
+ *  SYNC      - Used to synchonize loops
  */
 public class ESPModule extends ConfigurableBase {
     //region Constants

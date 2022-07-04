@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import implem.protocols.WifiCommProtoProto;
 import implem.encryptionAlgorithms.DummyEncAlg;
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
+import reporting.ReportBuilder;
 import telemetry.RoundTripResult;
 import util.ConfigurableBase;
 import util.Globals;
@@ -97,6 +99,7 @@ public class Program extends ConfigurableBase {
      * Main entry point
      */
     public static void main(String[] args) {
+        Logger.Debug("Start of program");
 
         // Save reference to arguments
         //  for potential future use
@@ -151,7 +154,6 @@ public class Program extends ConfigurableBase {
 
         // Time each protocol against each encryption
         //  algorithm, including no encryption
-        int index = 0;
         List<RoundTripResult> results = new ArrayList<>();
         Collection<ICommProto> commProtos =  _communicationProtocols.values();
         Collection<IEncryptionAlg> encAlgs =  _encryptionAlgs.values();
@@ -164,7 +166,7 @@ public class Program extends ConfigurableBase {
                 
                 try {
 
-                    Stopwatch newWatch = new Stopwatch(param -> proto.RoundTripMessage(_message, encAlg));
+                    Stopwatch newWatch = new Stopwatch(param -> proto.RequestAndVerifySensorData(encAlg));
 
                     long duration = newWatch.TimeFunction(null);
 
@@ -174,13 +176,27 @@ public class Program extends ConfigurableBase {
                                                               _message,
                                                               "");
 
-                    results.set(index, res);
+                    results.add(res);
 
                 } catch (Exception exc) {
-
+                    Logger.Error("Exception during expirment: " + exc.getMessage());
                 }
             }
         }
+
+        ReportBuilder repBldr = new ReportBuilder();
+        repBldr.AddLine("Roger Johnson: " + (new Date()));
+
+        // Build report,
+        for (RoundTripResult res : results) {
+            repBldr.AddLine("Result from: " + res.getCommProtoName());
+            repBldr.AddLine(res.toString());
+            repBldr.AddLine("----------------------------------------");
+        }
+
+        String report = repBldr.Build();
+
+        System.out.println(report);
     }
     //endregion
 
@@ -334,7 +350,7 @@ public class Program extends ConfigurableBase {
     //region ConfigurableBase
     @Override
     protected void _setDefaults() {
-        SetSetting("", "");
+        SetSetting("LogLevel", "DEBUG");
     }
     //endregion
 

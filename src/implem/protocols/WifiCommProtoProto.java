@@ -5,6 +5,7 @@ import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 import util.ConfigurableBase;
 import util.Globals;
+import util.Logger;
 
 public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
     //region Fields
@@ -31,9 +32,22 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
 
     //region Methods
     @Override
-    public boolean RoundTripMessage(String message, IEncryptionAlg encryptionAlg) {
-        
-        return false;
+    public boolean RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
+        if (_espModule == null) {
+            Logger.Error("No module available");
+            return false;
+        }
+
+        boolean success = true;
+
+        try {
+            String resp = ESPModule.SendMessage("DataRequest:" + encryptionAlg.getName(), true);
+        } catch (Exception exc) {
+            Logger.Error("Error requesting data: " + exc.getMessage());
+            success = false;
+        }
+
+        return success;
     }
 
     @Override

@@ -20,7 +20,7 @@ public interface ICommProto {
      *  is incorrect
      * Called server-side
      */
-    boolean RoundTripMessage(String message, IEncryptionAlg encryptionAlg);
+    boolean RequestAndVerifySensorData(IEncryptionAlg encryptionAlg);
 
     /**
      * Client-side receive message

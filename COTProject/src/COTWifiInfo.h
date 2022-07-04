@@ -1,6 +1,13 @@
 #ifndef COT_WIFI_INFO
 #define COT_WIFI_INFO
 
+/**
+ * Macros
+ */
+#define HANDSHAKE "HANDSHAKE"
+#define GETDATA "GETDATA"
+#define SYNC "SYNC"
+
 // Mandatory includes
 #include <Arduino.h>
 
