@@ -13,12 +13,16 @@
 
 #include "COTWifiInfo.h"
 
+#define BUFFER_SIZE 4
+
 /*
  * WIFI Client
  * Attached via serial COM port to the laptop running
  * the telemetry JAR. A request will be made via serial
  * port to this ESP module. 
  */
+
+
 
 // Setup
 void setup() {
@@ -51,36 +55,76 @@ int flip = 0;
 String serverPath = "http://192.168.4.1/";
 String ledOnEndpoint = "led/on";
 String ledOffEndpoint = "led/off";
-String sensorDataEnpoint = "sensordata/";
-String encryptedEndpoint = "encrypted";
+String sensorDataEndpoint = "sensordata/";
+
+// Use integers for individual requests
+int DATA_REQUEST = 1;
+int LED_FLIP = 2;
+// TODO : Add the rest of the encryptions
 
 // Main loop
 void loop() {
   if (WiFi.status() == WL_CONNECTED) {
     String curEndpoint;
 
-    if (flip == 0) {
-      flip = 1;
-      curEndpoint = serverPath + ledOffEndpoint;
-      
-      
-    } else {
-      flip = 0;
-      curEndpoint = serverPath + ledOnEndpoint;
-      
+    // Read serial and make
+    //  appropriate request
+    int* buffer = (int*)malloc(sizeof(int) * BUFFER_SIZE);
+    int index = 0;
+    while (Serial.available() > 0) {
+      buffer[index++] = (int)Serial.read();
     }
-  
-    // Make http get call
-    String html = httpGETRequest(curEndpoint.c_str());
-  
-    // Log
-    Serial.println(html);
 
+    String resp;
+    if (index > 0) {
+      switch(buffer[0]) {
+        case 0:
+          // Invalid
+          Serial.print("No Action for input 0");
+          break;
+        case 1:
+          resp = FlipLED();
+          Serial.print(resp);
+          break;
+        case 2:
+          break;
+        case 3:
+          // Make raw data request
+          //  index will be the offset
+          //  for encryption type
+          resp = GetDataFromSensorProvider(index - 1);
+          Serial.print(resp);
+          break;
+      }
+    }
+  }
+}
+
+// 0 - No encryption
+String GetDataFromSensorProvider(int encryption) {
+  String curEndpoint = serverPath + sensorDataEndpoint;
+
+  if (encryption > 0) {
+    curEndpoint += "encType" + String(encryption);
+  }
+  
+  return httpGETRequest(curEndpoint.c_str());
+}
+
+// Flip the LED and return server's
+//  response
+String FlipLED() {
+  String curEndpoint = serverPath;
     
+  if (flip == 0) {
+    flip = 1;
+    curEndpoint += sensorDataEndpoint;
+  } else {
+    flip = 0;
+    curEndpoint += ledOnEndpoint;
   }
 
-    // 5 seconds between calls
-    delay(5000);
+  return httpGETRequest(curEndpoint.c_str());
 }
 
 String httpGETRequest(const char* serverName) {

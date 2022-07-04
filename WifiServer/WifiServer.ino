@@ -103,7 +103,7 @@ void loop(){
             
             // Send encrypted data back
             String response;
-            if (header.indexOf("GET /sensordata/encrypted") >= 0) {
+            if (header.indexOf("GET /sensordata/encType1") >= 0) {
               Serial.println("Get encrypted data");
               response = "encrypted data";
 

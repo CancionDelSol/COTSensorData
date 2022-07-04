@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.imageio.plugins.tiff.GeoTIFFTagSet;
+
 import enums.ProgramType;
 import implem.protocols.BlueToothCommProto;
 import implem.protocols.DummyCommProto;
@@ -18,6 +20,7 @@ import util.ConfigurableBase;
 import util.Globals;
 import util.Logger;
 import util.Stopwatch;
+import util.Logger.LogLevel;
 
 /**
  * Main program class
@@ -67,6 +70,8 @@ public class Program extends ConfigurableBase {
     private static final String TEST_PRGM_TYPE_FLAG = "-test";
     private static final String REMOTE_PRGM_TYPE_FLAG = "-rem";
     private static final String LOCAL_PRGM_TYPE_FLAG = "-loc";
+
+    private static final String LOG_LEVEL = "LogLevel";
     //endregion
 
     //region Fields
@@ -101,6 +106,14 @@ public class Program extends ConfigurableBase {
     public static void main(String[] args) {
         Logger.Debug("Start of program");
 
+        // Load settings from configuration
+        try {
+            LoadConfig();
+        } catch (Exception e) {
+            Logger.Error("Error loading config");
+            return;
+        }
+
         // Save reference to arguments
         //  for potential future use
         _args = args;
@@ -133,70 +146,32 @@ public class Program extends ConfigurableBase {
     
                     break;
                 case TEST:
-    
+                    // Add any unit tests here
+                    //  Then run regular local
+                    //  logic
+                    RunLocalLogic();
                     break;
                 default:
                     Logger.Error("Unknown program type");
             }
         } catch (Exception exc) {
-            Logger.Error("Exception program type logic: " + exc.getMessage());
+            Logger.Error("Exception running program-type logic");
+            exc.printStackTrace();
             return;
         }
         
 
         // Check for invalid configurations
         try {
-            CheckSetup();
+            if (Logger.getLevel() != LogLevel.DEBUG)
+                CheckSetup();
+
         } catch (Exception exc) {
             Logger.Error("Invalid configuration: " + exc.getMessage());
             return;
         }
 
-        // Time each protocol against each encryption
-        //  algorithm, including no encryption
-        List<RoundTripResult> results = new ArrayList<>();
-        Collection<ICommProto> commProtos =  _communicationProtocols.values();
-        Collection<IEncryptionAlg> encAlgs =  _encryptionAlgs.values();
-
-        // Loop over protocols
-        for (ICommProto proto : commProtos) {
-
-            // Loop over encryptions
-            for (IEncryptionAlg encAlg : encAlgs) {
-                
-                try {
-
-                    Stopwatch newWatch = new Stopwatch(param -> proto.RequestAndVerifySensorData(encAlg));
-
-                    long duration = newWatch.TimeFunction(null);
-
-                    RoundTripResult res = new RoundTripResult(duration,
-                                                              proto,
-                                                              encAlg,
-                                                              _message,
-                                                              "");
-
-                    results.add(res);
-
-                } catch (Exception exc) {
-                    Logger.Error("Exception during expirment: " + exc.getMessage());
-                }
-            }
-        }
-
-        ReportBuilder repBldr = new ReportBuilder();
-        repBldr.AddLine("Roger Johnson: " + (new Date()));
-
-        // Build report,
-        for (RoundTripResult res : results) {
-            repBldr.AddLine("Result from: " + res.getCommProtoName());
-            repBldr.AddLine(res.toString());
-            repBldr.AddLine("----------------------------------------");
-        }
-
-        String report = repBldr.Build();
-
-        System.out.println(report);
+        
     }
     //endregion
 
@@ -249,9 +224,8 @@ public class Program extends ConfigurableBase {
         for (IEncryptionAlg eA : encAlgs) {
             _encryptionAlgs.put(eA.getName(), eA);
         }
-
-        // Place the null encryption algorithm
-        _encryptionAlgs.put("None", null);
+        IEncryptionAlg nullAlg = new DummyEncAlg("None");
+        _encryptionAlgs.put(nullAlg.getName(), nullAlg);
     }
 
     /**
@@ -329,21 +303,75 @@ public class Program extends ConfigurableBase {
      * Run logic for a "local" machine (Server)
      */
     private static void RunLocalLogic() throws Exception {
-        // TODO : Implement local logic
+        // Time each protocol against each encryption
+        //  algorithm, including no encryption
+        List<RoundTripResult> results = new ArrayList<>();
+        Collection<ICommProto> commProtos =  _communicationProtocols.values();
+        Collection<IEncryptionAlg> encAlgs =  _encryptionAlgs.values();
+
+        // Loop over protocols
+        for (ICommProto proto : commProtos) {
+            Logger.Debug("Loop iter start for proto: " + proto.getName());
+
+            // Loop over encryptions
+            for (IEncryptionAlg encAlg : encAlgs) {
+                Logger.Debug("Loop iter start for enc alg: " + encAlg.getName());
+
+                try {
+                    Logger.Debug("Creating stopwatch");
+                    Stopwatch newWatch = new Stopwatch(param -> proto.RequestAndVerifySensorData(encAlg));
+
+                    Logger.Debug("Time execution of RequestAndVerifySensorData");
+                    long duration = newWatch.TimeFunction(null);
+
+                    Logger.Debug("Creating results");
+                    RoundTripResult res = new RoundTripResult(duration,
+                                                              proto,
+                                                              encAlg,
+                                                              _message,
+                                                              "");
+
+                    
+                    Logger.Debug("Adding to list");
+                    results.add(res);
+
+                } catch (Exception exc) {
+                    Logger.Error("Exception during experiment: " + exc.getMessage());
+                    RoundTripResult res = new RoundTripResult(0,
+                                                              proto,
+                                                              encAlg,
+                                                              _message,
+                                                              "Failure: " + exc.getMessage());
+                    results.add(res);
+                }
+            }
+        }
+
+        Logger.Debug("Creating report");
+        ReportBuilder repBldr = new ReportBuilder();
+        repBldr.AddLine("Roger Johnson: " + (new Date()));
+
+        // Build report,
+        Logger.Debug("Looping through results and adding to report");
+        for (RoundTripResult res : results) {
+            repBldr.AddLine("Result from: " + res.getCommProtoName());
+            repBldr.AddLine(res.toString());
+            repBldr.AddLine("----------------------------------------");
+        }
+
+        String report = repBldr.Build();
+
+        System.out.println(report);
     }
 
-    /**
-     * Run logic for a "remote" machine (Client)
-     */
-    private static void RunRemoteLogic() throws Exception {
-        // TODO : Implement remote logic
-    }
+    private static void LoadConfig() throws Exception {
+        if (_program == null)
+            Logger.Throw("Program is null");
 
-    /**
-     * Run test suite
-     */
-    private static void RunTests() throws Exception {
-        // TODO : Implement test suite
+        String logLevel = _program.GetSetting(LOG_LEVEL, () -> _program.SetSetting(LOG_LEVEL, "GUI"));
+        if (logLevel != null && logLevel.length() > 0)
+            Logger.setLevel(LogLevel.valueOf(logLevel));
+
     }
     //endregion
 

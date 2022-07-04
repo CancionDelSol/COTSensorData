@@ -43,4 +43,19 @@ public class RoundTripResult {
         _encAlgName = encryptionAlgUsed.getName();
     }
     //endregion
+
+    //region Object
+    @Override
+    public String toString() {
+        StringBuilder bldr = new StringBuilder();
+        bldr.append(" EncAlg: ")
+            .append(_encAlgName)
+            .append('\n')
+            .append(" Duration: ")
+            .append(_duration)
+            .append('\n');
+        return bldr.toString();
+
+    }
+    //endregion
 }
