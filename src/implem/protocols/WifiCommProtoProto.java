@@ -41,7 +41,10 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
         boolean success = true;
 
         try {
-            String resp = ESPModule.SendMessage("DataRequest:" + encryptionAlg.getName(), true);
+            String resp = ESPModule.DataRequest(encryptionAlg);
+
+            // TODO : Check for validity of response
+            
         } catch (Exception exc) {
             Logger.Error("Error requesting data: " + exc.getMessage());
             success = false;

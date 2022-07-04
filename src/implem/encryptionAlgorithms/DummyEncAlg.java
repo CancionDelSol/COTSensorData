@@ -28,4 +28,6 @@ public class DummyEncAlg implements IEncryptionAlg {
         _stubName = stubName;
 
     }
+
+    public int getIndex() { return 0; }
 }

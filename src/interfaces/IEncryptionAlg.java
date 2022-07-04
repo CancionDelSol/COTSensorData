@@ -19,5 +19,12 @@ public interface IEncryptionAlg {
      *  easy name
      */
     String getName();
+
+    /**
+     * Get the index for
+     *  this encryption algorithm
+     *  for use with ESPModule
+     */
+    int getIndex();
     //endregion
 }

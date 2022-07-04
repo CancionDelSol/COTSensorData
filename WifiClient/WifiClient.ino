@@ -88,7 +88,11 @@ void loop() {
           break;
         case 2:
           break;
-        case 3:
+        
+        // Anything above 3
+        //  is considered a data request
+        //  with 3 being no encryption
+        default:
           // Make raw data request
           //  index will be the offset
           //  for encryption type

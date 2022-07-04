@@ -91,11 +91,13 @@ public class ESPModule extends ConfigurableBase {
     //endregion
 
     //region Methods
-    public static String DataRequest(IEncryptionAlg alg) {
+    public static String DataRequest(IEncryptionAlg alg) throws Exception {
         // Construct the message to send via serial
         StringBuilder bldr = new StringBuilder();
-        bldr.append((char)1);
-        bldr.append()
+
+        bldr.append((char)3 + alg.getIndex());
+
+        return SendMessage(bldr.toString(), true);
     }
 
     /**
