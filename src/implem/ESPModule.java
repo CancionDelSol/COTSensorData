@@ -7,6 +7,7 @@ import util.Logger;
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
+import interfaces.IEncryptionAlg;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -90,6 +91,13 @@ public class ESPModule extends ConfigurableBase {
     //endregion
 
     //region Methods
+    public static String DataRequest(IEncryptionAlg alg) {
+        // Construct the message to send via serial
+        StringBuilder bldr = new StringBuilder();
+        bldr.append((char)1);
+        bldr.append()
+    }
+
     /**
      * Sends a message via serial port
      *  to the connected ESP Module, returns
