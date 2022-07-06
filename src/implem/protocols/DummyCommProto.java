@@ -39,7 +39,9 @@ public class DummyCommProto extends ConfigurableBase implements ICommProto {
 
         // Sleep for a random amount of time
         try {
-            Thread.sleep(CommonMath.Uniform(0L, 5000L));
+            long sleepTime = CommonMath.Uniform(1L, 5000L);
+            Thread.sleep(sleepTime);
+            
         } catch (Exception exc) {
             Logger.Error("Can't sleep: " + exc.getMessage());
             return false;
