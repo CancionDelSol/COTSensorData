@@ -51,7 +51,7 @@ deconfig:
 	@rm -rf *.cfg
 
 config:
-	@cp data/*.cfg ./
+	@cp data/configFileDefaults/*.cfg ./
 
 clean:
 	@echo "Cleaning up..."

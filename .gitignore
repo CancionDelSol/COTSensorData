@@ -23,7 +23,13 @@ Telem.jar
 *.rar
 
 # Config files
-./*.cfg
+ArdConfig.cfg
+BluetoothProtoConfig.cfg
+6LoWPANProtoConfig.cfg
+ESPConfig.cfg
+LoPanModule.cfg
+MainConfig.cfg
+WifiProtoConfig.cfg
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
