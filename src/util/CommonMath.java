@@ -21,7 +21,7 @@ public class CommonMath {
     }
 
     public static long Uniform(long under, long over) {
-        return _rand.nextLong() % (over - under) + under;
+        return Math.abs(_rand.nextLong()) % (over - under) + under;
     }
     //endregion
 }
