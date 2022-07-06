@@ -18,7 +18,7 @@ public class RoundTripResult {
     private String _commProtoName;
     private String _encAlgName;
     private String _serverMessage;
-    private String _clientResponse;
+    private String _status;
     //endregion
 
     //region Properties
@@ -26,7 +26,7 @@ public class RoundTripResult {
     public String getCommProtoName() { return _commProtoName; }
     public String getEncAlgName() { return _encAlgName; }
     public String getServerMessage() { return _serverMessage; }
-    public String getClientResponse() { return _clientResponse; }
+    public String getStatus() { return _status; }
     //endregion
 
     //region Constructor
@@ -36,11 +36,11 @@ public class RoundTripResult {
     public RoundTripResult(long duration,
                             ICommProto protocolUsed,
                             IEncryptionAlg encryptionAlgUsed,
-                            String serverMessage,
-                            String clientResponse) {
+                            String status) {
         _duration = duration;
         _commProtoName = protocolUsed.getName();
         _encAlgName = encryptionAlgUsed.getName();
+        _status = status;
     }
     //endregion
 
@@ -53,6 +53,9 @@ public class RoundTripResult {
             .append('\n')
             .append(" Duration: ")
             .append(_duration)
+            .append('\n')
+            .append(" Status: ")
+            .append(_status)
             .append('\n');
         return bldr.toString();
 

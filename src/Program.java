@@ -328,8 +328,7 @@ public class Program extends ConfigurableBase {
                     RoundTripResult res = new RoundTripResult(duration,
                                                               proto,
                                                               encAlg,
-                                                              _message,
-                                                              "");
+                                                              "Success");
 
                     
                     Logger.Debug("Adding to list");
@@ -340,7 +339,6 @@ public class Program extends ConfigurableBase {
                     RoundTripResult res = new RoundTripResult(-1,
                                                               proto,
                                                               encAlg,
-                                                              _message,
                                                               "Failure: " + exc.getMessage());
                     results.add(res);
                 }
