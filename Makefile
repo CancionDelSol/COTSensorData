@@ -47,6 +47,12 @@ startLocal: generate
 	@clear
 	@java -jar Telem.jar -loc
 
+deconfig:
+	@rm -rf *.cfg
+
+config:
+	@cp data/*.cfg ./
+
 clean:
 	@echo "Cleaning up..."
 	@rm -r src/build/classes
