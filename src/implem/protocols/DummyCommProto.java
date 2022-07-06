@@ -6,6 +6,7 @@ import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 import util.CommonMath;
 import util.ConfigurableBase;
+import util.Logger;
 
 public class DummyCommProto extends ConfigurableBase implements ICommProto {
 
@@ -40,6 +41,7 @@ public class DummyCommProto extends ConfigurableBase implements ICommProto {
         try {
             Thread.sleep(CommonMath.Uniform(0L, 5000L));
         } catch (Exception exc) {
+            Logger.Error("Can't sleep: " + exc.getMessage());
             return false;
         }
         
