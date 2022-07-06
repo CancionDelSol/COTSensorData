@@ -337,7 +337,7 @@ public class Program extends ConfigurableBase {
 
                 } catch (Exception exc) {
                     Logger.Error("Exception during experiment: " + exc.getMessage());
-                    RoundTripResult res = new RoundTripResult(0,
+                    RoundTripResult res = new RoundTripResult(-1,
                                                               proto,
                                                               encAlg,
                                                               _message,
