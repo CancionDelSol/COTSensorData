@@ -53,7 +53,16 @@ public class ESPModule extends ConfigurableBase {
         super(Globals.ESP_MODULE_CONFIG_FILE);
 
         try {
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(GetSetting(PORT_NAME, null));
+            // Get serial port name from settings
+            String portName = GetSetting(PORT_NAME, null);
+            Logger.Debug("Attempting to connect to port: " + portName);
+
+            // Connect to serial port
+            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
+            
+            if (portIdentifier == null)
+                Logger.Throw("Null port identifier");
+
             if ( portIdentifier.isCurrentlyOwned() )
             {
                 Logger.Error("Error: Port is currently in use");
