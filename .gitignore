@@ -14,7 +14,7 @@
 *myManifest*
 
 # Package Files #
-*.jar
+Telem.jar
 *.war
 *.nar
 *.ear

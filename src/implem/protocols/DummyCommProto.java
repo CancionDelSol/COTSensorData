@@ -45,7 +45,7 @@ public class DummyCommProto extends ConfigurableBase implements ICommProto {
         
         // Randomly return failure
         //  5% of the time
-        return CommonMath.Uniform(0, 100) > 5 ? true : false;
+        return true;
     }
 
 
