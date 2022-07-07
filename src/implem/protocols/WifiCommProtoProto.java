@@ -63,7 +63,7 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
     //region ConfigurableBase
     @Override
     protected void _setDefaults() {
-        SetSetting("UseESP", "false");
+        SetSetting("UseESP", "true");
         SetSetting("Timeout", "15000");
     }
     //endregion
