@@ -192,7 +192,6 @@ public class Program extends ConfigurableBase {
             commProtos = new ICommProto[] {
                 new DummyCommProto("CommProtoOne"),
                 new DummyCommProto("CommProtoTwo"),
-                new WifiCommProtoProto()
             };
 
             // Encryption algorithms
@@ -205,15 +204,13 @@ public class Program extends ConfigurableBase {
         } else {
             // Communication protocols
             commProtos = new ICommProto[] {
-                new BlueToothCommProto(),
-                new LoPanCommProto(),
+                //new BlueToothCommProto(),
+                //new LoPanCommProto(),
                 new WifiCommProtoProto()
             };
 
             // Encryption algorithms
             encAlgs = new IEncryptionAlg[] {
-                new DummyEncAlg("AlgStubOne"),
-                new DummyEncAlg("AlgStubTwo")
             };
         }
 

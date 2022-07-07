@@ -6,6 +6,7 @@ import util.Logger;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
 import gnu.io.SerialPort;
 import interfaces.IEncryptionAlg;
 
@@ -52,9 +53,11 @@ public class ESPModule extends ConfigurableBase {
     private ESPModule() {
         super(Globals.ESP_MODULE_CONFIG_FILE);
 
+        String portName = "";
+
         try {
             // Get serial port name from settings
-            String portName = GetSetting(PORT_NAME, null);
+            portName = GetSetting(PORT_NAME, null);
             Logger.Debug("Attempting to connect to port: " + portName);
 
             // Connect to serial port
@@ -63,18 +66,21 @@ public class ESPModule extends ConfigurableBase {
             if (portIdentifier == null)
                 Logger.Throw("Null port identifier");
 
-            if ( portIdentifier.isCurrentlyOwned() )
+            if (portIdentifier.isCurrentlyOwned() )
             {
                 Logger.Error("Error: Port is currently in use");
             }
             else
             {
-                CommPort commPort = portIdentifier.open(this.getClass().getName(),2000);
+                CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
                 
-                if ( commPort instanceof SerialPort )
+                if (commPort instanceof SerialPort)
                 {
                     SerialPort serialPort = (SerialPort) commPort;
-                    serialPort.setSerialPortParams(57600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
+                    serialPort.setSerialPortParams(57600,
+                                                    SerialPort.DATABITS_8,
+                                                    SerialPort.STOPBITS_1,
+                                                    SerialPort.PARITY_NONE);
                     
                     _reader = new SerialReader(serialPort.getInputStream());
                     _writer = new SerialWriter(serialPort.getOutputStream());
@@ -85,9 +91,22 @@ public class ESPModule extends ConfigurableBase {
                 {
                     Logger.Error("Error: Only serial ports are handled by this example.");
                 }
-            }     
+            }
+        } catch (NoSuchPortException nspExc) {
+            Logger.Error("Port " + portName + " does not exist");
+
+            Logger.Error("Open serial ports (Include full name in cfg file): ");
+
+            java.util.Enumeration<CommPortIdentifier> portEnum = CommPortIdentifier.getPortIdentifiers();
+            while (portEnum.hasMoreElements())
+            {
+                CommPortIdentifier portIdentifier = portEnum.nextElement();
+                Logger.Error(" " + portIdentifier.getName() + " | " +  getPortTypeName(portIdentifier.getPortType()));
+            }    
+
         } catch (Exception exc) {
             Logger.Error("Unable to connect to esp via serial: " + exc.getMessage());
+            exc.printStackTrace();
         }
         
         _singleton = this;
@@ -225,6 +244,27 @@ public class ESPModule extends ConfigurableBase {
             {
                 Logger.Error("Error writing serial: " + e.getMessage());
             }            
+        }
+    }
+    //endregion
+
+    //region Private
+    static String getPortTypeName ( int portType )
+    {
+        switch ( portType )
+        {
+            case CommPortIdentifier.PORT_I2C:
+                return "I2C";
+            case CommPortIdentifier.PORT_PARALLEL:
+                return "Parallel";
+            case CommPortIdentifier.PORT_RAW:
+                return "Raw";
+            case CommPortIdentifier.PORT_RS485:
+                return "RS485";
+            case CommPortIdentifier.PORT_SERIAL:
+                return "Serial";
+            default:
+                return "unknown type";
         }
     }
     //endregion
