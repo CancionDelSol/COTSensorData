@@ -82,6 +82,7 @@ public class ESPModule extends ConfigurableBase {
                                                     SerialPort.STOPBITS_1,
                                                     SerialPort.PARITY_NONE);
                     
+                    Logger.Debug("Creating reader and writer");
                     _reader = new SerialReader(serialPort.getInputStream());
                     _writer = new SerialWriter(serialPort.getOutputStream());
 
@@ -134,8 +135,12 @@ public class ESPModule extends ConfigurableBase {
      *  the module's response
      */
     public static String SendMessage(String msg, boolean requiresResponse) throws Exception {
-        if (_writer == null || _reader == null || !_isConnected) 
-            Logger.Throw("No connection");
+        
+        if (_writer == null)
+            Logger.Throw("No writer");
+
+        if (_reader == null)
+            Logger.Throw("No reader");
 
         _writer.WriteSerial(msg);
 
@@ -151,7 +156,7 @@ public class ESPModule extends ConfigurableBase {
      * @throws Exception
      */
     public static String ReadBuffer() throws Exception {
-        if (_writer == null || _reader == null || !_isConnected) 
+        if (_writer == null || _reader == null) 
             Logger.Throw("No connection");
 
         StringBuilder bldr = new StringBuilder();
