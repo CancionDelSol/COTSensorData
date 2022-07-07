@@ -119,7 +119,13 @@ public class Stopwatch {
         Start();
 
         // Run function
-        boolean res = _timedFunction.Run(param);
+        boolean res = false;
+        try {
+            res = _timedFunction.Run(param);
+        } catch (Exception exc) {
+            
+        }
+        
 
         // Throw exception on function failure
         if (!res)
