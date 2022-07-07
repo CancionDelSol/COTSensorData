@@ -105,12 +105,12 @@ void loop(){
             String response;
             if (header.indexOf("GET /sensordata/encType1") >= 0) {
               Serial.println("Get encrypted data");
-              response = "encrypted data";
+              response = "Encrypted Data Type 1";
 
             // Send unencrypted data back
             } else if (header.indexOf("GET /sensordata/") >= 0) { 
               Serial.println("Get unencrypted data");
-              response = "unencrypted data";
+              response = "Unncrypted Data";
 
             // Turn the len on
             } else if (header.indexOf("GET /led/on") >= 0) {
