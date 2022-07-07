@@ -13,7 +13,9 @@
 
 #include "COTWifiInfo.h"
 
-#define BUFFER_SIZE 4
+// Use macros for individual requests
+#define NO_ENC 0
+#define ENC_TYPE_ONE 1
 
 /*
  * WIFI Client
@@ -21,8 +23,6 @@
  * the telemetry JAR. A request will be made via serial
  * port to this ESP module. 
  */
-
-
 
 // Setup
 void setup() {
@@ -50,17 +50,17 @@ void setup() {
   Serial.println(WiFi.localIP());
 }
 
-// Loop
+// Integer to track LED flip state
 int flip = 0;
+
+// Endpoints
 String serverPath = "http://192.168.4.1/";
 String ledOnEndpoint = "led/on";
 String ledOffEndpoint = "led/off";
 String sensorDataEndpoint = "sensordata/";
 
-// Use integers for individual requests
-int DATA_REQUEST = 1;
-int LED_FLIP = 2;
-// TODO : Add the rest of the encryptions
+// Here is the sensor data
+String sensorData = "Sensor Data Test";
 
 // Main loop
 void loop() {
@@ -69,38 +69,18 @@ void loop() {
 
     // Read serial and make
     //  appropriate request
-    int* buffer = (int*)malloc(sizeof(int) * BUFFER_SIZE);
-    int index = 0;
+    int req = -1;
     while (Serial.available() > 0) {
-      buffer[index++] = (int)Serial.read();
+      req = (int)Serial.read();
     }
 
-    String resp;
-    if (index > 0) {
-      switch(buffer[0]) {
-        case 0:
-          // Invalid
-          Serial.print("No Action for input 0");
-          break;
-        case 1:
-          resp = FlipLED();
-          Serial.print(resp);
-          break;
-        case 2:
-          break;
-        
-        // Anything above 3
-        //  is considered a data request
-        //  with 3 being no encryption
-        default:
-          // Make raw data request
-          //  index will be the offset
-          //  for encryption type
-          resp = GetDataFromSensorProvider(index - 1);
-          Serial.print(resp);
-          break;
-      }
-    }
+    // Make raw data request
+    //  index will be the offset
+    //  for encryption type
+    String resp = GetDataFromSensorProvider(req);
+
+    // Communicate back response
+    Serial.print(resp);
   }
 }
 
@@ -108,26 +88,10 @@ void loop() {
 String GetDataFromSensorProvider(int encryption) {
   String curEndpoint = serverPath + sensorDataEndpoint;
 
-  if (encryption > 0) {
-    curEndpoint += "encType" + String(encryption);
+  if (encryption > NO_ENC) {
+    curEndpoint += "encType" + String(encryption) + "/";
   }
   
-  return httpGETRequest(curEndpoint.c_str());
-}
-
-// Flip the LED and return server's
-//  response
-String FlipLED() {
-  String curEndpoint = serverPath;
-    
-  if (flip == 0) {
-    flip = 1;
-    curEndpoint += sensorDataEndpoint;
-  } else {
-    flip = 0;
-    curEndpoint += ledOnEndpoint;
-  }
-
   return httpGETRequest(curEndpoint.c_str());
 }
 
@@ -144,14 +108,9 @@ String httpGETRequest(const char* serverName) {
   String payload = "{}"; 
   
   if (httpResponseCode>0) {
-    Serial.print("HTTP Response code: ");
-    Serial.println(httpResponseCode);
     payload = http.getString();
   }
-  else {
-    Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
-  }
+
   // Free resources
   http.end();
 

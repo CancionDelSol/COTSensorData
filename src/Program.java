@@ -312,13 +312,13 @@ public class Program extends ConfigurableBase {
 
             // Loop over encryptions
             for (IEncryptionAlg encAlg : encAlgs) {
-                Logger.Debug("Loop iter start for enc alg: " + encAlg.getName());
+                Logger.Debug("Process Encryption Algorithm: " + encAlg.getName());
 
                 try {
                     Logger.Debug("Creating stopwatch");
                     Stopwatch newWatch = new Stopwatch(param -> proto.RequestAndVerifySensorData(encAlg));
 
-                    Logger.Debug("Time execution of RequestAndVerifySensorData");
+                    Logger.Debug("Time execution");
                     long duration = newWatch.TimeFunction(null);
 
                     Logger.Debug("Creating results");
