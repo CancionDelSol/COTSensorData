@@ -55,8 +55,6 @@ int flip = 0;
 
 // Endpoints
 String serverPath = "http://192.168.4.1/";
-String ledOnEndpoint = "led/on";
-String ledOffEndpoint = "led/off";
 String sensorDataEndpoint = "sensordata/";
 
 // Here is the sensor data
@@ -69,10 +67,16 @@ void loop() {
 
     // Read serial and make
     //  appropriate request
-    int req = -1;
-    while (Serial.available() > 0) {
-      req = (int)Serial.read();
+    String req = "";
+    bool hasRequest = false;
+    if (Serial.available() > 0) {
+      req = Serial.readString();
+      hasRequest = true;
     }
+
+    
+    if (!hasRequest)
+      return;
 
     // Make raw data request
     //  index will be the offset
@@ -85,12 +89,10 @@ void loop() {
 }
 
 // 0 - No encryption
-String GetDataFromSensorProvider(int encryption) {
+String GetDataFromSensorProvider(String encryption) {
   String curEndpoint = serverPath + sensorDataEndpoint;
 
-  if (encryption > NO_ENC) {
-    curEndpoint += "encType" + String(encryption) + "/";
-  }
+  curEndpoint += "encType" + String(encryption) + "/";
   
   return httpGETRequest(curEndpoint.c_str());
 }

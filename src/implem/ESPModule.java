@@ -124,7 +124,7 @@ public class ESPModule extends ConfigurableBase {
         // Construct the message to send via serial
         StringBuilder bldr = new StringBuilder();
 
-        bldr.append((char)(alg.getIndex()));
+        bldr.append(alg.getName());
 
         return SendMessage(bldr.toString(), true);
     }

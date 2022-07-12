@@ -101,16 +101,26 @@ void loop(){
             client.println("Connection: close");
             client.println();
             
-            // Send encrypted data back
-            String response;
-            if (header.indexOf("GET /sensordata/encType1") >= 0) {
-              Serial.println("Get encrypted data");
-              response = "Encrypted Data Type 1";
-
             // Send unencrypted data back
-            } else if (header.indexOf("GET /sensordata/") >= 0) { 
+            String response;
+            if (header.indexOf("GET /sensordata/encTypeNone") >= 0) {
               Serial.println("Get unencrypted data");
-              response = "Unncrypted Data";
+              response = "Unencrypted Data";
+
+            // Send aes encrypted data back
+            } else if (header.indexOf("GET /sensordata/encTypeAES") >= 0) { 
+              Serial.println("Get AES encrypted data");
+              response = "AES Encrypted Data";
+
+            // Send des data back
+            } else if (header.indexOf("GET /sensordata/encTypeDES") >= 0) { 
+              Serial.println("Get DES encrypted data");
+              response = "DES Encrypted Data";
+
+            // Send des data back
+            } else if (header.indexOf("GET /sensordata/encTypeECC") >= 0) { 
+              Serial.println("Get ECC encrypted data");
+              response = "ECC Encrypted Data";
 
             // Turn the len on
             } else if (header.indexOf("GET /led/on") >= 0) {
@@ -126,25 +136,27 @@ void loop(){
               
             }
             
-            // HTML containing response
-            client.println("<!DOCTYPE html><html>");
-            client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head>");
-            client.println("<link rel=\"icon\" href=\"data:,\">");
+            client.println(response);
             
-            // Start of body
-            client.println("<body>");
+            // // HTML containing response
+            // client.println("<!DOCTYPE html><html>");
+            // client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head>");
+            // client.println("<link rel=\"icon\" href=\"data:,\">");
+            
+            // // Start of body
+            // client.println("<body>");
 
-            // Header
-            client.println("<h1>COT Project</h1>");
+            // // Header
+            // client.println("<h1>COT Project</h1>");
             
-            // Test response for now
-            client.println("<p>" + response + "</p>");
+            // // Test response for now
+            // client.println("<p>" + response + "</p>");
             
-            // End body
-            client.println("</body>");
+            // // End body
+            // client.println("</body>");
 
-            // End html
-            client.println("</html>");
+            // // End html
+            // client.println("</html>");
             
             // The HTTP response ends with another blank line
             client.println();
