@@ -142,12 +142,20 @@ public class ESPModule extends ConfigurableBase {
         if (_reader == null)
             Logger.Throw("No reader");
 
+        // Builder for full message
+        StringBuilder bldr = new StringBuilder();
+        bldr.append(new Date().getTime());
+        bldr.append("|");
         _writer.WriteSerial(msg);
 
         if (!requiresResponse)
             return "NULL";
 
-        return ReadBuffer();
+        String resp = ReadBuffer();
+        bldr.append(resp);
+        bldr.append((new Date()).getTime());
+
+        return bldr.toString();
     }
 
     /**

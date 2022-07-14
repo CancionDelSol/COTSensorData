@@ -44,13 +44,24 @@ public class RoundTripResult {
 
     //region Constructor
     /**
-     * Main constructor
+     * Failure constructor
      */
+    public RoundTripResult(ICommProto protocolUsed,
+                            IEncryptionAlg encryptionAlgUsed,
+                            String status) {
+        this(0L, 0L, 0L, 0L, 0L,0L,
+        protocolUsed,
+        encryptionAlgUsed,
+        status
+        );
+    }
+
     public RoundTripResult(long duration,
                             long procStartTimeStamp,
                             long reqSentFromTransTimeStamp,
                             long reqRecByRecTimeStamp,
                             long respSentByRecTimeStamp,
+                            long respRecByTransTimeStamp,
                             ICommProto protocolUsed,
                             IEncryptionAlg encryptionAlgUsed,
                             String status) {
@@ -60,6 +71,7 @@ public class RoundTripResult {
         _reqSentFromTransTimeStamp = reqSentFromTransTimeStamp;
         _reqRecByRecTimeStamp = reqRecByRecTimeStamp;
         _respSentByRecTimeStamp = respSentByRecTimeStamp;
+        _respRecByTransTimeStamp = respRecByTransTimeStamp;
         _commProtoName = protocolUsed.getName();
         _encAlgName = encryptionAlgUsed.getName();
         _status = status;

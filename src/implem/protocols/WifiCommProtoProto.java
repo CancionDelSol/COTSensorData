@@ -1,8 +1,11 @@
 package implem.protocols;
 
+import java.util.Date;
+
 import implem.ESPModule;
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
+import telemetry.RoundTripResult;
 import util.ConfigurableBase;
 import util.Globals;
 import util.Logger;
@@ -32,25 +35,40 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
 
     //region Methods
     @Override
-    public boolean RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
+    public RoundTripResult RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
         if (_espModule == null) {
             Logger.Error("No module available");
-            return false;
+            return new RoundTripResult(this, encryptionAlg, "Failure, no active module");
         }
 
-        boolean success = true;
+        long procStartTime = (new Date()).getTime();
 
+        RoundTripResult res = null;
         try {
             String resp = ESPModule.DataRequest(encryptionAlg);
 
-            // TODO : Check for validity of response
+            // Split response and return results
+            String[] vals = resp.split("|");
+
+            if (vals.length < 4)
+                throw new Exception("Invalid response");
+
+            res = new RoundTripResult((new Date()).getTime() - procStartTime,
+                procStartTime,
+                Long.parseLong(vals[0]),
+                Long.parseLong(vals[1]),
+                Long.parseLong(vals[3]),
+                Long.parseLong(vals[4]),
+                this,
+                encryptionAlg,
+                "Success");
             
         } catch (Exception exc) {
             Logger.Error("Error requesting data: " + exc.getMessage());
-            success = false;
+            res = new RoundTripResult(this, encryptionAlg, "Failure, no active module");
         }
 
-        return success;
+        return res;
     }
 
     @Override

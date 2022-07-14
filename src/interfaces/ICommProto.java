@@ -1,4 +1,7 @@
 package interfaces;
+
+import telemetry.RoundTripResult;
+
 /**
  * Communication Protocol interface
  */
@@ -20,7 +23,7 @@ public interface ICommProto {
      *  is incorrect
      * Called server-side
      */
-    boolean RequestAndVerifySensorData(IEncryptionAlg encryptionAlg);
+    RoundTripResult RequestAndVerifySensorData(IEncryptionAlg encryptionAlg);
 
     /**
      * Client-side receive message
