@@ -2,6 +2,7 @@ package implem.protocols;
 
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
+import telemetry.RoundTripResult;
 import util.ConfigurableBase;
 import util.Globals;
 
@@ -31,9 +32,9 @@ public class LoPanCommProto extends ConfigurableBase implements ICommProto {
 
     //region Methods
     @Override
-    public boolean RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
+    public RoundTripResult RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
         // TODO Auto-generated method stub
-        return false;
+        return new RoundTripResult(this, encryptionAlg, "Not Implemented");
     }
 
     @Override

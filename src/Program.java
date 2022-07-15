@@ -318,23 +318,15 @@ public class Program extends ConfigurableBase {
                     Logger.Debug("Creating stopwatch");
                     Stopwatch newWatch = new Stopwatch(param -> proto.RequestAndVerifySensorData(encAlg));
 
-                    Logger.Debug("Time execution");
-                    long duration = newWatch.TimeFunction(null);
-
-                    Logger.Debug("Creating results");
-                    RoundTripResult res = new RoundTripResult(duration,
-                                                              proto,
-                                                              encAlg,
-                                                              "Success");
-
+                    Logger.Debug("Time execution and grab results");
+                    RoundTripResult res = newWatch.TimeFunction(null);
                     
                     Logger.Debug("Adding to list");
                     results.add(res);
 
                 } catch (Exception exc) {
                     Logger.Error("Exception during experiment: " + exc.getMessage());
-                    RoundTripResult res = new RoundTripResult(-1,
-                                                              proto,
+                    RoundTripResult res = new RoundTripResult(proto,
                                                               encAlg,
                                                               "Failure: " + exc.getMessage());
                     results.add(res);

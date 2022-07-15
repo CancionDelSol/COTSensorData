@@ -2,6 +2,7 @@ package implem.protocols;
 
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
+import telemetry.RoundTripResult;
 import util.ConfigurableBase;
 import util.Globals;
 
@@ -41,9 +42,8 @@ public class BlueToothCommProto extends ConfigurableBase implements ICommProto {
 
     //region Methods
     @Override
-    public boolean RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
-        // TODO Auto-generated method stub
-        return false;
+    public RoundTripResult RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
+        return new RoundTripResult(this, encryptionAlg, "Not Implemented");
     }
 
     @Override

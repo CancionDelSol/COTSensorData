@@ -4,6 +4,7 @@ import java.util.Random;
 
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
+import telemetry.RoundTripResult;
 import util.CommonMath;
 import util.ConfigurableBase;
 import util.Logger;
@@ -35,7 +36,7 @@ public class DummyCommProto extends ConfigurableBase implements ICommProto {
      *  a round trip message
      */
     @Override
-    public boolean RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
+    public RoundTripResult RequestAndVerifySensorData(IEncryptionAlg encryptionAlg) {
 
         // Sleep for a random amount of time
         try {
@@ -44,12 +45,12 @@ public class DummyCommProto extends ConfigurableBase implements ICommProto {
             
         } catch (Exception exc) {
             Logger.Error("Can't sleep: " + exc.getMessage());
-            return false;
+            return new RoundTripResult(this, encryptionAlg, "Failed to sleep: " + exc.getMessage());
         }
         
         // Randomly return failure
         //  5% of the time
-        return true;
+        return new RoundTripResult(this, encryptionAlg, "Stubbed response");
     }
 
 

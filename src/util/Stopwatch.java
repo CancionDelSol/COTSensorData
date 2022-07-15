@@ -1,8 +1,8 @@
 package util;
 
 import java.util.*;
-import java.time.Period;
-import java.time.temporal.TemporalAmount;
+
+import telemetry.RoundTripResult;
 
 /**
  * Stopwatch class used for timing
@@ -108,7 +108,7 @@ public class Stopwatch {
      * Return time taken to run. Throw exception
      *  on failure from function
      */
-    public long TimeFunction(Object param) throws Exception {
+    public RoundTripResult TimeFunction(Object param) throws Exception {
 
         // Throw Exception if no function
         //  is provided
@@ -119,26 +119,25 @@ public class Stopwatch {
         Start();
 
         // Run function
-        boolean res = false;
+        RoundTripResult res = null;
         try {
             res = _timedFunction.Run(param);
         } catch (Exception exc) {
-            
+            Logger.Error("Exception thrown during run: " + exc.getMessage());
         }
         
-
         // Throw exception on function failure
-        if (!res)
+        if (res == null)
             throw new Exception(CALL_FAILURE_ERR);
         
         // Call GetTime to return period
-        return GetTime();
+        return res;
     }
     //endregion
 
     //region ITimeable Interface
     public interface ITimeableFunction {
-        boolean Run(Object input);
+        RoundTripResult Run(Object input);
     }
     //endregion
 
