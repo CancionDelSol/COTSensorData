@@ -13,10 +13,6 @@
 
 #include "COTWifiInfo.h"
 
-// Use macros for individual requests
-#define NO_ENC 0
-#define ENC_TYPE_ONE 1
-
 /*
  * WIFI Client
  * Attached via serial COM port to the laptop running
@@ -26,6 +22,8 @@
 
 // Setup
 void setup() {
+  delay(2500);
+  
   // Set Built-In LED as output
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -74,26 +72,28 @@ void loop() {
       hasRequest = true;
     }
 
-    
-    if (!hasRequest)
+    if (!hasRequest) {
       return;
+    }
 
     // Make raw data request
     //  index will be the offset
     //  for encryption type
+    String startTime = String(millis(), DEC);
     String resp = GetDataFromSensorProvider(req);
+    resp.trim();
+    String endTime = String(millis(), DEC);
 
     // Communicate back response
-    Serial.print(resp);
+    Serial.print(startTime + " " + resp + " " + endTime);
   }
 }
 
-// 0 - No encryption
 String GetDataFromSensorProvider(String encryption) {
   String curEndpoint = serverPath + sensorDataEndpoint;
 
   curEndpoint += "encType" + String(encryption) + "/";
-  
+
   return httpGETRequest(curEndpoint.c_str());
 }
 

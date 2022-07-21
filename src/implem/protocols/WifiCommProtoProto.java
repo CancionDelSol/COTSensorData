@@ -42,13 +42,18 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
         }
 
         long procStartTime = (new Date()).getTime();
+        Logger.Debug("Procedure Start Time: " + procStartTime);
 
         RoundTripResult res = null;
         try {
+            Logger.Debug("Sending request to ESP module");
             String resp = ESPModule.DataRequest(encryptionAlg);
 
             // Split response and return results
-            String[] vals = resp.split("|");
+            String[] vals = resp.split(" ");
+            for (int i = 0; i < vals.length; i++) {
+                Logger.Info("Vals[" + i + "] = " + vals[i]);
+            }
 
             if (vals.length < 4)
                 throw new Exception("Invalid response");
@@ -57,8 +62,8 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
                 procStartTime,
                 Long.parseLong(vals[0]),
                 Long.parseLong(vals[1]),
-                Long.parseLong(vals[3]),
-                Long.parseLong(vals[4]),
+                Long.parseLong(vals[vals.length - 2]),
+                Long.parseLong(vals[vals.length - 1]),
                 this,
                 encryptionAlg,
                 "Success");

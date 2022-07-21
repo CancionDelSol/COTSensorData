@@ -11,6 +11,7 @@ import implem.protocols.BlueToothCommProto;
 import implem.protocols.DummyCommProto;
 import implem.protocols.LoPanCommProto;
 import implem.protocols.WifiCommProtoProto;
+import implem.ESPModule;
 import implem.encryptionAlgorithms.DummyEncAlg;
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
@@ -146,10 +147,12 @@ public class Program extends ConfigurableBase {
     
                     break;
                 case TEST:
+                    RunTests();
+
                     // Add any unit tests here
                     //  Then run regular local
                     //  logic
-                    RunLocalLogic();
+                    //RunLocalLogic();
                     break;
                 default:
                     Logger.Error("Unknown program type");
@@ -359,6 +362,26 @@ public class Program extends ConfigurableBase {
         if (logLevel != null && logLevel.length() > 0)
             Logger.setLevel(LogLevel.valueOf(logLevel));
 
+    }
+    //endregion
+
+    //region Tests
+    private static void RunTests() throws Exception {
+        String responseNoneEncReq = ESPModule.CleanMessage("None");
+        Thread.sleep(1000);
+
+        String responseAESEncReq = ESPModule.CleanMessage("ESP");
+        Thread.sleep(1000);
+        
+        String responseDESEncReq = ESPModule.CleanMessage("DES");
+        Thread.sleep(1000);
+        
+        String responseECCEncReq = ESPModule.CleanMessage("ECC");
+        
+        Logger.Info("Response None Type Encryption Request: " + responseNoneEncReq);
+        Logger.Info("Response AES Type Encryption Request: " + responseAESEncReq);
+        Logger.Info("Response DES Type Encryption Request: " + responseDESEncReq);
+        Logger.Info("Response ECC Type Encryption Request: " + responseECCEncReq);
     }
     //endregion
 
