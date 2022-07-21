@@ -89,10 +89,14 @@ void loop() {
   }
 }
 
-String GetDataFromSensorProvider(String encryption) {
+String GetDataFromSensorProvider(String request) {
   String curEndpoint = serverPath + sensorDataEndpoint;
 
-  curEndpoint += "encType" + String(encryption) + "/";
+  if (request.indexOf("CurrentTime") >= 0) {
+    curEndpoint += "CurrentTime";
+  } else {
+    curEndpoint += "encType" + String(request) + "/";
+  }
 
   return httpGETRequest(curEndpoint.c_str());
 }
@@ -100,7 +104,7 @@ String GetDataFromSensorProvider(String encryption) {
 String httpGETRequest(const char* serverName) {
   WiFiClient client;
   HTTPClient http;
-    
+  
   // Your Domain name with URL path or IP address with path
   http.begin(client, serverName);
   

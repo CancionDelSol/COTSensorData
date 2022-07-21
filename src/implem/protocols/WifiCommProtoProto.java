@@ -52,18 +52,30 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
             // Split response and return results
             String[] vals = resp.split(" ");
             for (int i = 0; i < vals.length; i++) {
-                Logger.Info("Vals[" + i + "] = " + vals[i]);
+                Logger.Debug("Vals[" + i + "] = " + vals[i]);
             }
 
             if (vals.length < 4)
                 throw new Exception("Invalid response");
 
+            // Request sent by transmitter (Client)
+            long rsbt = Long.parseLong(vals[0]) - ESPModule.getESPClientOrigTime();
+
+            // Request received by receiver (Server)
+            long rrbrec = Long.parseLong(vals[1]) - ESPModule.getESPServerOrigTime();
+
+            // Response sent by receiver (Server)
+            long rsbr = Long.parseLong(vals[vals.length - 2]) - ESPModule.getESPServerOrigTime();
+
+            // Response received by transmitter (Client)
+            long rrbt = Long.parseLong(vals[vals.length - 1]) - ESPModule.getESPClientOrigTime();
+
             res = new RoundTripResult((new Date()).getTime() - procStartTime,
                 procStartTime,
-                Long.parseLong(vals[0]),
-                Long.parseLong(vals[1]),
-                Long.parseLong(vals[vals.length - 2]),
-                Long.parseLong(vals[vals.length - 1]),
+                rsbt,
+                rrbrec,
+                rsbr,
+                rrbt,
                 this,
                 encryptionAlg,
                 "Success");
@@ -71,6 +83,7 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
         } catch (Exception exc) {
             Logger.Error("Error requesting data: " + exc.getMessage());
             res = new RoundTripResult(this, encryptionAlg, "Failure, no active module");
+
         }
 
         return res;

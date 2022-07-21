@@ -40,11 +40,13 @@ public class ESPModule extends ConfigurableBase {
     private static ESPModule _singleton = new ESPModule();
     private static SerialReader _reader;
     private static SerialWriter _writer;
-    private static boolean _isConnected = false;
+    private static long _espClientOrigTime = 0L;
+    private static long _espServerOrigTime = 0L;
     //endregion
 
     //region Properties
-
+    public static long getESPClientOrigTime() { return _espClientOrigTime; }
+    public static long getESPServerOrigTime() { return _espServerOrigTime; }
     //endregion
 
     //region Constructor
@@ -87,7 +89,6 @@ public class ESPModule extends ConfigurableBase {
                     _reader = new SerialReader(serialPort.getInputStream());
                     _writer = new SerialWriter(serialPort.getOutputStream());
 
-                    _isConnected = true;
                 }
                 else
                 {
@@ -121,7 +122,25 @@ public class ESPModule extends ConfigurableBase {
     //endregion
 
     //region Methods
+    private static void GetModuleTimes() {
+        try {
+            String res = SendMessage("CurrentTime", true);
+
+            if (res != null && !res.equals("")) {
+                String[] splits = res.split(" ");
+                _espClientOrigTime = Long.parseLong(splits[0]);
+                _espServerOrigTime = Long.parseLong(splits[1]); 
+            }
+
+        } catch (Exception exc) {
+            Logger.Error("Exception during time acquisition: " + exc.getMessage());
+        }
+    }
+    
     public static String DataRequest(IEncryptionAlg alg) throws Exception {
+        // Get current times for adjustment later
+        GetModuleTimes();
+
         // Construct the message to send via serial
         StringBuilder bldr = new StringBuilder();
 
@@ -148,10 +167,9 @@ public class ESPModule extends ConfigurableBase {
 
         // Builder for full message
         StringBuilder bldr = new StringBuilder();
-        long curTime = (new Date()).getTime();
         
         // Log
-        Logger.Debug("Sending msg to board: " + curTime + " @ " + curTime);
+        Logger.Debug("Sending msg to board: " + msg);
 
         // Send message to board
         _writer.WriteSerial(msg);

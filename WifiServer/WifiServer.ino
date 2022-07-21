@@ -113,7 +113,11 @@ void loop(){
             client.println();
             
             // Send unencrypted data back
-            if (header.indexOf("GET /sensordata/encTypeNone") >= 0) {
+            if (header.indexOf("GET /sensordata/CurrentTime") >= 0) {
+              Serial.println("Get current server time");
+              response += "Time Request";
+
+            } else if (header.indexOf("GET /sensordata/encTypeNone") >= 0) {
               Serial.println("Get unencrypted data");
               response += "Unencrypted Data";
 
@@ -144,7 +148,7 @@ void loop(){
               SetLEDLow();
               response += "LED Off";
 
-            } else if (header.indexOf("GET /curTime") >= 0) {
+            } else if (header.indexOf("GET /CurrentTime") >= 0) {
               Serial.println("Sending current time");
               response += String(millis(), DEC);
               
