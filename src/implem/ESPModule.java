@@ -14,6 +14,7 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.Date;
 
 import javax.imageio.plugins.tiff.GeoTIFFTagSet;
@@ -39,11 +40,13 @@ public class ESPModule extends ConfigurableBase {
     private static ESPModule _singleton = new ESPModule();
     private static SerialReader _reader;
     private static SerialWriter _writer;
-    private static boolean _isConnected = false;
+    private static long _espClientOrigTime = 0L;
+    private static long _espServerOrigTime = 0L;
     //endregion
 
     //region Properties
-
+    public static long getESPClientOrigTime() { return _espClientOrigTime; }
+    public static long getESPServerOrigTime() { return _espServerOrigTime; }
     //endregion
 
     //region Constructor
@@ -77,7 +80,7 @@ public class ESPModule extends ConfigurableBase {
                 if (commPort instanceof SerialPort)
                 {
                     SerialPort serialPort = (SerialPort) commPort;
-                    serialPort.setSerialPortParams(57600,
+                    serialPort.setSerialPortParams(115200,
                                                     SerialPort.DATABITS_8,
                                                     SerialPort.STOPBITS_1,
                                                     SerialPort.PARITY_NONE);
@@ -86,7 +89,6 @@ public class ESPModule extends ConfigurableBase {
                     _reader = new SerialReader(serialPort.getInputStream());
                     _writer = new SerialWriter(serialPort.getOutputStream());
 
-                    _isConnected = true;
                 }
                 else
                 {
@@ -120,13 +122,34 @@ public class ESPModule extends ConfigurableBase {
     //endregion
 
     //region Methods
+    private static void GetModuleTimes() {
+        try {
+            String res = SendMessage("CurrentTime", true);
+
+            if (res != null && !res.equals("")) {
+                String[] splits = res.split(" ");
+                _espClientOrigTime = Long.parseLong(splits[0]);
+                _espServerOrigTime = Long.parseLong(splits[1]); 
+            }
+
+        } catch (Exception exc) {
+            Logger.Error("Exception during time acquisition: " + exc.getMessage());
+        }
+    }
+    
     public static String DataRequest(IEncryptionAlg alg) throws Exception {
+        // Get current times for adjustment later
+        GetModuleTimes();
+
         // Construct the message to send via serial
         StringBuilder bldr = new StringBuilder();
 
         bldr.append(alg.getName());
 
-        return SendMessage(bldr.toString(), true);
+        String req = bldr.toString();
+
+        Logger.Debug("Request to module: " + req);
+        return SendMessage(req, true);
     }
 
     /**
@@ -144,16 +167,21 @@ public class ESPModule extends ConfigurableBase {
 
         // Builder for full message
         StringBuilder bldr = new StringBuilder();
-        bldr.append(new Date().getTime());
-        bldr.append("|");
+        
+        // Log
+        Logger.Debug("Sending msg to board: " + msg);
+
+        // Send message to board
         _writer.WriteSerial(msg);
 
         if (!requiresResponse)
-            return "NULL";
+            return bldr.toString();
 
+        // Log
+        Logger.Debug("Awaiting response");
         String resp = ReadBuffer();
+
         bldr.append(resp);
-        bldr.append((new Date()).getTime());
 
         return bldr.toString();
     }
@@ -167,19 +195,11 @@ public class ESPModule extends ConfigurableBase {
         if (_writer == null || _reader == null) 
             Logger.Throw("No connection");
 
-        StringBuilder bldr = new StringBuilder();
+        String response = _reader.ReadBuffer();
 
-        long timeout = Long.parseLong(_singleton.GetSetting(TIMEOUT, null)) + (new Date()).getTime();
+        Logger.Debug("Response: " + response);
 
-        do {
-            
-            String response = _reader.ReadBuffer();
-
-            bldr.append(response);
-
-        } while ((new Date()).getTime() < timeout);
-        
-        return bldr.toString();
+        return response;
     }
     //endregion
 
@@ -187,7 +207,7 @@ public class ESPModule extends ConfigurableBase {
     @Override
     protected void _setDefaults() {
         SetSetting(BOARD_NAME, "ESP-WROOM-32");
-        SetSetting(PORT_NAME, "COM4");
+        SetSetting(PORT_NAME, "ttyUSB0");
         SetSetting(TIMEOUT, "2500");
     }
     //endregion
@@ -214,16 +234,36 @@ public class ESPModule extends ConfigurableBase {
             StringBuilder bldr = new StringBuilder();
             int len = -1;
 
+            // Get the timeout
+            long timeout = Long.parseLong(_singleton.GetSetting(TIMEOUT, null));
             try
             {
-                while ((len = _inputStream.read(buffer)) > -1)
-                {
-                    bldr.append(new String(buffer,0,len));
+                // Wait for anvailable input
+                long endTime = (new Date()).getTime() + timeout;
+                Logger.Info("Waiting for serial input");
+                while (_inputStream.available() == 0) {
+                    if ((new Date()).getTime() > endTime) {
+                        Logger.Error("Timeout on ESP read from input stream");
+                        return "";
+                    }
                 }
-            }
-            catch ( IOException e )
-            {
-                e.printStackTrace();
+
+                Logger.Debug("Reading from input stream on blocking thread");
+                while (_inputStream.available() != 0) {
+                    
+
+                    len = _inputStream.read(buffer);
+
+                    Logger.Debug("Length" + len);
+                    String fromStream = new String(buffer, 0, len);
+
+                    Logger.Debug("Read from buffer: " + fromStream);
+                    bldr.append(fromStream);
+                }
+
+                Logger.Debug("Finish reading from input stream");
+            } catch (Exception exc) {
+                exc.printStackTrace();
             }
 
             return bldr.toString();
@@ -244,20 +284,45 @@ public class ESPModule extends ConfigurableBase {
             _outputStream = out;
         }
         
-        public void WriteSerial(String msg)
-        {
+        public void WriteSerial(String msg) throws Exception {
+            if (_outputStream == null)
+                Logger.Throw("No open output stream");
+
             try
             {
-                byte[] buffer = msg.getBytes();
+                byte[] buffer = msg.getBytes(Charset.forName("UTF-8"));
                 for (byte b : buffer) {
                     _outputStream.write(b);
                 }
+
             }
             catch ( IOException e )
             {
                 Logger.Error("Error writing serial: " + e.getMessage());
             }            
         }
+    }
+    //endregion
+    
+    //region Testing
+    public static String CleanMessage(String msg) throws Exception {
+        
+        if (_reader == null)
+            Logger.Throw("Reader is null");
+        
+        if (_writer == null)
+            Logger.Throw("Writer is null");
+
+        try {
+            _writer.WriteSerial(msg);
+
+            return _reader.ReadBuffer();
+            
+        } catch (Exception exc) {
+            Logger.Error("Failed to send and recieve: " + exc.getMessage());
+            exc.printStackTrace();
+        }
+        return "Failed";
     }
     //endregion
 
