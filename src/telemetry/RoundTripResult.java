@@ -109,5 +109,40 @@ public class RoundTripResult {
         return bldr.toString();
 
     }
+
+    public String asRow() {
+        StringBuilder bldr = new StringBuilder();
+        bldr.append(_duration)
+            .append(",")
+            .append(_procStartTimeStamp)
+            .append(",")
+            .append(_reqSentFromTransTimeStamp)
+            .append(",")
+            .append(_reqRecByRecTimeStamp)
+            .append(",")
+            .append(_respSentByRecTimeStamp)
+            .append(",")
+            .append(_respRecByTransTimeStamp);
+        
+        return bldr.toString();
+    }
+
+    public static String getHeader() {
+        StringBuilder bldr = new StringBuilder();
+
+        bldr.append("Duration")
+            .append(",")
+            .append("Proc Start Time")
+            .append(",")
+            .append("Req Sent From Trans")
+            .append(",")
+            .append("Req Rec By Receiv")
+            .append(",")
+            .append("Resp Sent By Rec")
+            .append(",")
+            .append("Resp Rec By Trans");
+
+        return bldr.toString();
+    }
     //endregion
 }

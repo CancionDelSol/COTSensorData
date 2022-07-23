@@ -53,6 +53,9 @@ deconfig:
 config:
 	@cp data/configFileDefaults/*.cfg ./
 
+clearData:
+	@rm ./*.csv
+
 clean:
 	@echo "Cleaning up..."
 	@rm -r src/build/classes

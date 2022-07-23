@@ -1,3 +1,4 @@
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -72,6 +73,7 @@ public class Program extends ConfigurableBase {
     private static final String LOCAL_PRGM_TYPE_FLAG = "-loc";
 
     private static final String LOG_LEVEL = "LogLevel";
+    private static final String RUN_TIME = "RunTimeInMinutes";
     //endregion
 
     //region Fields
@@ -80,12 +82,13 @@ public class Program extends ConfigurableBase {
     private static HashMap<String, IEncryptionAlg> _encryptionAlgs = new HashMap<>();
 
     private static boolean _throwOnWarn = false;
-    private static String _message = "TestMessage";
 
     private static String _configFilePath = Globals.MAIN_CONFIG_FILE;
     private static Program _program = new Program();
 
     private static ProgramType _programType = ProgramType.TEST;
+
+    private static long _runTime = 1;
     //endregion
 
     //region Properties
@@ -306,30 +309,39 @@ public class Program extends ConfigurableBase {
         Collection<ICommProto> commProtos =  _communicationProtocols.values();
         Collection<IEncryptionAlg> encAlgs =  _encryptionAlgs.values();
 
+        // Get the end time
+        //  _runTime is in minutes, so convert to milliseconds
+        //  in order to add it to the current UNIX time
+        long programEndTime = (new Date()).getTime() + (_runTime * 60 * 1000);
+        Logger.Debug("Cur time: " + (new Date()).toString());
+        Logger.Debug("End time: " + (new Date(programEndTime).toString()));
+
         // Loop over protocols
-        for (ICommProto proto : commProtos) {
-            Logger.Debug("Loop iter start for proto: " + proto.getName());
-
-            // Loop over encryptions
-            for (IEncryptionAlg encAlg : encAlgs) {
-                Logger.Debug("Process Encryption Algorithm: " + encAlg.getName());
-
-                try {
-                    Logger.Debug("Creating stopwatch");
-                    Stopwatch newWatch = new Stopwatch(param -> proto.RequestAndVerifySensorData(encAlg));
-
-                    Logger.Debug("Time execution and grab results");
-                    RoundTripResult res = newWatch.TimeFunction(null);
-                    
-                    Logger.Debug("Adding to list");
-                    results.add(res);
-
-                } catch (Exception exc) {
-                    Logger.Error("Exception during experiment: " + exc.getMessage());
-                    RoundTripResult res = new RoundTripResult(proto,
-                                                              encAlg,
-                                                              "Failure: " + exc.getMessage());
-                    results.add(res);
+        while ((new Date()).getTime() < programEndTime) {
+            for (ICommProto proto : commProtos) {
+                Logger.Debug("Loop iter start for proto: " + proto.getName());
+    
+                // Loop over encryptions
+                for (IEncryptionAlg encAlg : encAlgs) {
+                    Logger.Debug("Process Encryption Algorithm: " + encAlg.getName());
+    
+                    try {
+                        Logger.Debug("Creating stopwatch");
+                        Stopwatch newWatch = new Stopwatch(param -> proto.RequestAndVerifySensorData(encAlg));
+    
+                        Logger.Debug("Time execution and grab results");
+                        RoundTripResult res = newWatch.TimeFunction(null);
+                        
+                        Logger.Debug("Adding to list");
+                        results.add(res);
+    
+                    } catch (Exception exc) {
+                        Logger.Error("Exception during experiment: " + exc.getMessage());
+                        RoundTripResult res = new RoundTripResult(proto,
+                                                                  encAlg,
+                                                                  "Failure: " + exc.getMessage());
+                        results.add(res);
+                    }
                 }
             }
         }
@@ -344,6 +356,13 @@ public class Program extends ConfigurableBase {
             repBldr.AddLine("Result from: " + res.getCommProtoName());
             repBldr.AddLine(res.toString());
             repBldr.AddLine("----------------------------------------");
+
+            // Append to appropriate file
+            // [ProtoName:EncAlgName.csv]
+            String fileName = res.getCommProtoName() + ":" + res.getEncAlgName() + ".csv";
+            FileOutputStream outputFile = new FileOutputStream(fileName, true);
+            outputFile.write((res.asRow() + "\r\n").getBytes());
+            outputFile.close();
         }
 
         String report = repBldr.Build();
@@ -359,13 +378,18 @@ public class Program extends ConfigurableBase {
         if (logLevel != null && logLevel.length() > 0)
             Logger.setLevel(LogLevel.valueOf(logLevel));
 
+        String runTime = _program.GetSetting(RUN_TIME, () -> _program.SetSetting(RUN_TIME, "30"));
+        if (runTime != null && runTime.length() > 0)
+            _runTime = Long.parseLong(runTime);
+
     }
     //endregion
 
     //region ConfigurableBase
     @Override
     protected void _setDefaults() {
-        SetSetting("LogLevel", "DEBUG");
+        SetSetting(LOG_LEVEL, "DEBUG");
+        SetSetting(RUN_TIME, "1");
     }
     //endregion
 
