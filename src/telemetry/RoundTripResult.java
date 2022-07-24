@@ -132,15 +132,15 @@ public class RoundTripResult {
 
         bldr.append("Duration")
             .append(",")
-            .append("Proc Start Time")
+            .append("ProcStartTime")
             .append(",")
-            .append("Req Sent From Trans")
+            .append("ReqSentFromTrans")
             .append(",")
-            .append("Req Rec By Receiv")
+            .append("ReqRecByReceiv")
             .append(",")
-            .append("Resp Sent By Rec")
+            .append("RespSentByRec")
             .append(",")
-            .append("Resp Rec By Trans");
+            .append("RespRecByTrans");
 
         return bldr.toString();
     }
