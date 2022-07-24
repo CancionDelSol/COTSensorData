@@ -51,9 +51,6 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
 
             // Split response and return results
             String[] vals = resp.split(" ");
-            for (int i = 0; i < vals.length; i++) {
-                Logger.Debug("Vals[" + i + "] = " + vals[i]);
-            }
 
             if (vals.length < 4)
                 throw new Exception("Invalid response");
@@ -72,10 +69,10 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
 
             res = new RoundTripResult((new Date()).getTime() - procStartTime,
                 procStartTime,
-                rsbt,
-                rrbrec,
-                rsbr,
-                rrbt,
+                rsbt + procStartTime,
+                rrbrec + procStartTime,
+                rsbr + procStartTime,
+                rrbt + procStartTime,
                 this,
                 encryptionAlg,
                 "Success");

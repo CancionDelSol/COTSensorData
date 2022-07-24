@@ -347,6 +347,12 @@ public class Program extends ConfigurableBase {
                     }
                 }
             }
+
+            try {
+                Thread.sleep(1000);
+            } catch (Exception exc) {
+                Logger.Error("Exception thrown trying to sleep");
+            }
         }
 
         Logger.Debug("Creating report");

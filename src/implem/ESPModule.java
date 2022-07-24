@@ -241,16 +241,19 @@ public class ESPModule extends ConfigurableBase {
                 // Wait for anvailable input
                 long endTime = (new Date()).getTime() + timeout;
                 Logger.Info("Waiting for serial input");
-                while (_inputStream.available() == 0) {
+
+                boolean fullMsg = false;
+
+                Logger.Debug("Reading from input stream on blocking thread");
+                while (!fullMsg) {
+                    
                     if ((new Date()).getTime() > endTime) {
                         Logger.Error("Timeout on ESP read from input stream");
                         return "";
                     }
-                }
 
-                Logger.Debug("Reading from input stream on blocking thread");
-                while (_inputStream.available() != 0) {
-                    
+                    if (_inputStream.available() == 0) 
+                        continue;
 
                     len = _inputStream.read(buffer);
 
@@ -259,6 +262,8 @@ public class ESPModule extends ConfigurableBase {
 
                     Logger.Debug("Read from buffer: " + fromStream);
                     bldr.append(fromStream);
+
+                    fullMsg = CheckFullMsg(bldr.toString());
                 }
 
                 Logger.Debug("Finish reading from input stream");
@@ -266,8 +271,23 @@ public class ESPModule extends ConfigurableBase {
                 exc.printStackTrace();
             }
 
-            return bldr.toString();
+            return bldr.toString().replace("<", "").replace(">", "");
         }
+    }
+
+    private static boolean CheckFullMsg(String msg) {
+        char[] charArray = msg.toCharArray();
+
+        if (charArray.length < 2)
+            return false;
+        
+        if (charArray[0] != '<')
+            return false;
+
+        if (charArray[charArray.length - 1] != '>')
+            return false;
+        
+        return true;
     }
     //endregion
 
