@@ -76,6 +76,7 @@ void loop(){
 
     // Log
     Serial.println("New Client.");
+    SetLEDHigh();
 
     // Current line read from client
     String currentLine;
@@ -148,7 +149,7 @@ void loop(){
               SetLEDLow();
               response += "LED Off";
 
-            } else if (header.indexOf("GET /CurrentTime") >= 0) {
+            } else if (header.indexOf("GET /sensordata/encTypeCurrentTime/") >= 0) {
               Serial.println("Sending current time");
               response += String(millis(), DEC);
               
@@ -192,6 +193,7 @@ void loop(){
     // Log
     Serial.println("Client disconnected.");
     Serial.println("");
+    SetLEDLow();
   }
 }
 

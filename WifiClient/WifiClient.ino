@@ -46,6 +46,7 @@ void setup() {
   Serial.println("");
   Serial.print("Connected to server with IP Address: ");
   Serial.println(WiFi.localIP());
+  SetLEDHigh();
 }
 
 // Integer to track LED flip state
@@ -76,6 +77,8 @@ void loop() {
       return;
     }
 
+    SetLEDLow();
+
     // Make raw data request
     //  index will be the offset
     //  for encryption type
@@ -85,7 +88,9 @@ void loop() {
     String endTime = String(millis(), DEC);
 
     // Communicate back response
-    Serial.print(startTime + " " + resp + " " + endTime);
+    SendMsgSerial(startTime + " " + resp + " " + endTime);
+
+    SetLEDHigh();
   }
 }
 
@@ -93,7 +98,7 @@ String GetDataFromSensorProvider(String request) {
   String curEndpoint = serverPath + sensorDataEndpoint;
 
   if (request.indexOf("CurrentTime") >= 0) {
-    curEndpoint += "CurrentTime";
+    curEndpoint += "CurrentTime/";
   } else {
     curEndpoint += "encType" + String(request) + "/";
   }
@@ -121,4 +126,8 @@ String httpGETRequest(const char* serverName) {
   http.end();
 
   return payload;
+}
+
+void SendMsgSerial(String msg) {
+  Serial.print("<" + msg + ">");
 }
