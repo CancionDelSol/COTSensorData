@@ -69,10 +69,10 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
 
             res = new RoundTripResult((new Date()).getTime() - procStartTime,
                 procStartTime,
-                rsbt + procStartTime,
-                rrbrec + procStartTime,
-                rsbr + procStartTime,
-                rrbt + procStartTime,
+                rsbt + procStartTime, // Request sent by transmitter
+                rrbrec + procStartTime, // Request received by the receiver
+                rsbr + procStartTime, // Response sent by receiver
+                rrbt + procStartTime, // Response received by transmitter
                 this,
                 encryptionAlg,
                 "Success");

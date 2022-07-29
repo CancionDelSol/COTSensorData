@@ -4,30 +4,19 @@ import java.util.Date;
 
 import interfaces.IEncryptionAlg;
 
-public class DummyEncAlg implements IEncryptionAlg {
-
-    String _stubName = "DummyEncryptionAlgorithm";
+public class DummyEncAlg extends EncAlgBase {
 
     @Override
-    public String Encrypt(String input) {
-        return input + "|->Encrypted @ " + new Date();
+    public String _encrypt(String input) {
+        return input;
     }
 
     @Override
-    public String Decrypt(String input) {
-        return input + "|->Decrypted @ " + new Date();
-    }
-
-    @Override
-    public String getName() {
-        return _stubName;
+    public String _decrypt(String input) {
+        return input;
     }
     
     public DummyEncAlg(String stubName) {
-        if (stubName != null && !stubName.equals("")) 
-        _stubName = stubName;
-
+        super(stubName);
     }
-
-    public int getIndex() { return 0; }
 }

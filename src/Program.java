@@ -14,6 +14,8 @@ import implem.protocols.LoPanCommProto;
 import implem.protocols.WifiCommProtoProto;
 import implem.ESPModule;
 import implem.encryptionAlgorithms.DummyEncAlg;
+import implem.encryptionAlgorithms.NoEncAlg;
+import implem.encryptionAlgorithms.AESEncryptionAlg;
 import interfaces.ICommProto;
 import interfaces.IEncryptionAlg;
 import reporting.ReportBuilder;
@@ -217,6 +219,7 @@ public class Program extends ConfigurableBase {
 
             // Encryption algorithms
             encAlgs = new IEncryptionAlg[] {
+                new AESEncryptionAlg()
             };
         }
 
@@ -227,7 +230,7 @@ public class Program extends ConfigurableBase {
         for (IEncryptionAlg eA : encAlgs) {
             _encryptionAlgs.put(eA.getName(), eA);
         }
-        IEncryptionAlg nullAlg = new DummyEncAlg("None");
+        IEncryptionAlg nullAlg = new NoEncAlg();
         _encryptionAlgs.put(nullAlg.getName(), nullAlg);
     }
 
