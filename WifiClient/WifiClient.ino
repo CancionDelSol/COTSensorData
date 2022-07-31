@@ -11,7 +11,7 @@
 
 #include <HTTPClient.h>
 
-#include "COTWifiInfo.h"
+#include "COTStd.h"
 
 /*
  * WIFI Client
