@@ -212,9 +212,9 @@ public class Program extends ConfigurableBase {
         } else {
             // Communication protocols
             commProtos = new ICommProto[] {
-                //new BlueToothCommProto(),
+                new BlueToothCommProto()
                 //new LoPanCommProto(),
-                new WifiCommProtoProto()
+                //new WifiCommProtoProto()
             };
 
             // Encryption algorithms

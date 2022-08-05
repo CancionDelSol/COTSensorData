@@ -1,6 +1,10 @@
 #ifndef COT_STD
 #define COT_STD
 
+#define BUAD 115200
+#define BT_SERVER_ID "SensorDataServer"
+#define BT_CLIENT_ID "ESPBluetoothClient"
+
 // Mandatory includes
 #include <Arduino.h>
 #include "AESLib.h"

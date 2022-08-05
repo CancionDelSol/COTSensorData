@@ -22,6 +22,9 @@
 
 // Setup
 void setup() {
+  // This delay helps when
+  //  first setting up the
+  //  entire experiment
   delay(2500);
   
   // Set Built-In LED as output
@@ -48,9 +51,6 @@ void setup() {
   Serial.println(WiFi.localIP());
   SetLEDHigh();
 }
-
-// Integer to track LED flip state
-int flip = 0;
 
 // Endpoints
 String serverPath = "http://192.168.4.1/";

@@ -16,17 +16,17 @@
 
 BluetoothSerial SerialBT;
 
-#define BAUD 115200
-
 // Timeout time
 const long timeoutTime = 2000;
+
+byte* btBuffer = (byte*)malloc(sizeof(byte) * INPUT_BUFFER_LIMIT);
 
 void setup() {
   // Copy text in the readBuffer
   //  into the character array used
   //  for AES encryption
   sprintf((char*)clearText, "%s", readBuffer);
-  
+
   // Allow time for serial moniter to react
   //  to opening serial channel. Some serial
   //  output gets dropped from the windows client
@@ -35,103 +35,100 @@ void setup() {
 
   // Initialize encryption library
   aes_init();
-  
+
   // Begin serial communication
-  Serial.begin(BAUD);
+  Serial.begin(BAUD_RATE);
 
   // Start Bluetooth server
-  Serial.print("Starting Bluetooth Server");
-  SerialBT.begin("SensorDataServer");
+  Serial.print("Starting bluetooth server");
+  SerialBT.begin(BT_SERVER_ID, true);
 
   // Set built in LED as output
   pinMode(LED_BUILTIN, OUTPUT);
+
+  SetLEDHigh();
 }
 
 bool guiDisplayFlip = true;
 void loop(){
-  
+
   // Log
   if (guiDisplayFlip) {
     Serial.println("Checking for client");
     guiDisplayFlip = false;
   }
-  
-  // Check for new client
-  if (SerialBT.available()) {
-    String req = SerialBT.read();
-    
-    // Log
-    Serial.println("New Client.");
-    SetLEDHigh();
 
-    // Add received time to
-    //  response
-    String response = String(millis(), DEC);
-    response += " ";
-          
-    // Send unencrypted data back
-    if (req.indexOf("GET /sensordata/CurrentTime") >= 0) {
-      Serial.println("Get current server time");
-      response += "Time Request";
-  
-    } else if (header.indexOf("GET /sensordata/encTypeNone") >= 0) {
-      Serial.println("Get unencrypted data");
-      response += "Unencrypted Data";
-  
-    // Send aes encrypted data back
-    } else if (header.indexOf("GET /sensordata/encTypeAES") >= 0) { 
-      Serial.println("Get AES encrypted data");
+  // Check for a message
+  int i = 0;
+  while (SerialBT.available()) {
+    if (i > INPUT_BUFFER_LIMIT)
+      break;
 
-      uint16_t len = encryptToCipherText((char*)clearText, 18, aes_iv);
+    byte btSerial = SerialBT.read();
 
-    // Send des data back
-    } else if (header.indexOf("GET /sensordata/encTypeDES") >= 0) { 
-      Serial.println("Get DES encrypted data");
-      response += "DES Encrypted Data";
-
-    // Send des data back
-    } else if (header.indexOf("GET /sensordata/encTypeECC") >= 0) { 
-      Serial.println("Get ECC encrypted data");
-      response += "ECC Encrypted Data";
-
-    // Turn the len on
-    } else if (header.indexOf("GET /led/on") >= 0) {
-      Serial.println("Setting LED on");
-      SetLEDHigh();
-      response += "LED On";
-
-    // Turn the led off
-    } else if (header.indexOf("GET /led/off") >= 0) {
-      Serial.println("Setting LED low");
-      SetLEDLow();
-      response += "LED Off";
-
-    } else if (header.indexOf("GET /sensordata/encTypeCurrentTime/") >= 0) {
-      Serial.println("Sending current time");
-      response += String(millis(), DEC);
-      
-    } else {
-      Serial.println("Not recognized: " + header);
-      response += "Not recognized: " + header;
-    }
-
-    response += " ";
-    response += String(millis(), DEC);
-            
-    client.println(response);
-            
-    // The HTTP response ends with another blank line
-    client.println();
-
-    // Flip to looking for client
-    guiDisplayFlip = true;
-    
-    // Break out of the while loop
-    break;
-    
-    // Log
-    Serial.println("Client disconnected.");
-    Serial.println("");
-    SetLEDLow();
+    btBuffer[i++] = btSerial;
   }
+  btBuffer[i] = 0x00;
+
+  // No message was waiting
+  if (i == 0)
+    return;
+
+  // Flip the gui display back
+  guiDisplayFlip = true;
+  SetLEDLow();
+
+  // Convert to arduino string
+  String req = (const char*)btBuffer;
+
+  // Log
+  Serial.println("New request.");
+  SetLEDHigh();
+
+  // Add received time to
+  //  response
+  String response = String(millis(), DEC);
+  response += " ";
+ 
+  // Send unencrypted data back
+  if (req.indexOf("CurrentTime") >= 0) {
+    Serial.println("Get current server time");
+    response += "Time Request";
+
+  } else if (req.indexOf("None") >= 0) {
+    Serial.println("Get unencrypted data");
+    response += "Unencrypted Data";
+
+  // Send aes encrypted data back
+  } else if (req.indexOf("AES") >= 0) { 
+    Serial.println("Get AES encrypted data");
+
+    uint16_t len = encryptToCipherText((char*)clearText, 18, aes_iv);
+
+  // Send des data back
+  } else if (req.indexOf("DES") >= 0) { 
+    Serial.println("Get DES encrypted data");
+    response += "DES Encrypted Data";
+
+  // Send des data back
+  } else if (req.indexOf("ECC") >= 0) { 
+    Serial.println("Get ECC encrypted data");
+    response += "ECC Encrypted Data";
+ 
+  } else {
+    Serial.println("Not recognized: " + req);
+    response += "Not recognized: " + req;
+  }
+
+  response += " ";
+  response += String(millis(), DEC);
+ 
+  SerialBT.write((const uint8_t *)response.c_str(), sizeof(response));
+  SerialBT.flush();
+  
+  // Log
+  Serial.println("Client disconnected.");
+  Serial.println("");
+  SetLEDHigh();
+
 }

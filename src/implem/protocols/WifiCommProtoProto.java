@@ -88,7 +88,6 @@ public class WifiCommProtoProto extends ConfigurableBase implements ICommProto {
 
     @Override
     public String ProcessIncomingMessage(String message, IEncryptionAlg encryptionAlg) {
-        
         return message;
     }
     //endregion
