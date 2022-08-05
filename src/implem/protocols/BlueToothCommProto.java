@@ -10,7 +10,7 @@ import util.Globals;
  * Bluetooth tranceiver
  * 
  * Server-Side:
- *  - Uses on-board bluetooth transmission
+ *  - Uses ESP model bluetooth transmission
  *     for laptop
  * 
  * Client-Side:
