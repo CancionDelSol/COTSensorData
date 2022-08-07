@@ -25,10 +25,19 @@ void setup() {
   
   Serial.begin(BAUD_RATE);
 
-  SerialBT.begin(BT_CLIENT_ID, false);
+  SerialBT.begin(BT_CLIENT_ID, true);
 
   // Attempt to connect
-  SerialBT.connect(BT_SERVER_ID);
+  bool connected = SerialBT.connect(BT_SERVER_ID);
+
+  if (connected) {
+    Serial.println("Connected Successfully");
+  } else {
+    while (!SerialBT.connected(10000)) {
+      Serial.println("Failed to connect");
+      break;
+    }
+  }
 
   SetLEDHigh();
 }
@@ -64,37 +73,55 @@ void loop() {
   
 }
 
+// Receive each piece individually:
+//  TimeStampOne
+//  Data (Up to Eight packets)
+//  TimeStampTwo
 String GetDataFromSensorProvider(String request) {
-  SerialBT.write((const uint8_t *)request.c_str(), sizeof(request));
+  SendPacket(request);
 
-  while (!SerialBT.available()) { }
+  String resp = GetPacket();
 
-  // Read into buffer
-  int i = 0;
-  while (SerialBT.available()) {
-    if (i > INPUT_BUFFER_LIMIT)
-      break;
-
-    byte btSerial = SerialBT.read();
-
-    btBuffer[i++] = btSerial;
-  }
-  btBuffer[i] = 0x00;
-
-  return (const char*)btBuffer;
-}
-
-void ConnectToBTServer() {
-  if (SerialBT.isReady())
-    return;
-    
-  isConnected = false;
-
-  SerialBT.connect(BT_SERVER_ID);
-  
-  isConnected = SerialBT.connected(5000);
+  return resp;
 }
 
 void SendMsgSerial(String msg) {
   Serial.print("<" + msg + ">");
+}
+
+String GetPacket() {
+  while (!SerialBT.available()) {
+    
+  }
+  
+  // Read into buffer
+  int i = 0;
+  bool endFeed = false;
+  while (!endFeed) {
+    if (i > INPUT_BUFFER_LIMIT - 2)
+      break;
+
+    if (!SerialBT.available())
+      continue;
+      
+    char btSerial = SerialBT.read();
+
+    if ((const uint8_t)btSerial == (const uint8_t)0)
+      endFeed = true;
+      
+    btBuffer[i++] = btSerial;
+  }
+  btBuffer[i] = 0x0;
+
+  return (const char*)btBuffer;
+}
+
+void SendPacket(String msg) {
+  msg.trim();
+  
+  const uint8_t* src = (const uint8_t *)msg.c_str();
+  for (int i = 0; i < msg.length(); i++) {
+    SerialBT.write(src[i]);
+  }
+  SerialBT.write((uint8_t)0);
 }
