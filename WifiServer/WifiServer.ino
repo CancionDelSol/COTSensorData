@@ -19,6 +19,7 @@
 // Includes
 #include "COTStd.h"
 #include "AESLib.h"
+#include "tinyECC.h"
 
 #define BAUD 115200
 
@@ -142,24 +143,19 @@ void loop(){
             // Send des data back
             } else if (header.indexOf("GET /sensordata/encTypeDES") >= 0) { 
               Serial.println("Get DES encrypted data");
-              response += "DES Encrypted Data";
+              des.encrypt(_desOut, _desIn, _desKey);
+              response += "DES Enc Data";
 
             // Send des data back
-            } else if (header.indexOf("GET /sensordata/encTypeECC") >= 0) { 
+            } else if (header.indexOf("GET /sensordata/encTypeECC") >= 0) {
               Serial.println("Get ECC encrypted data");
-              response += "ECC Encrypted Data";
 
-            // Turn the len on
-            } else if (header.indexOf("GET /led/on") >= 0) {
-              Serial.println("Setting LED on");
-              SetLEDHigh();
-              response += "LED On";
-
-            // Turn the led off
-            } else if (header.indexOf("GET /led/off") >= 0) {
-              Serial.println("Setting LED low");
-              SetLEDLow();
-              response += "LED Off";
+              // Encrypt using elliptic curve cryptography
+              tinyECC tE;
+              tE.clearText = "ECC encrypted text";
+              tE.encrypt();
+              
+              response += tE.cipher;
 
             } else if (header.indexOf("GET /sensordata/encTypeCurrentTime/") >= 0) {
               Serial.println("Sending current time");

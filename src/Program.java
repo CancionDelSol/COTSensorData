@@ -14,6 +14,8 @@ import implem.protocols.LoPanCommProto;
 import implem.protocols.WifiCommProtoProto;
 import implem.ESPModule;
 import implem.encryptionAlgorithms.DummyEncAlg;
+import implem.encryptionAlgorithms.DESEncryptionAlg;
+import implem.encryptionAlgorithms.ECCEncryptionAlg;
 import implem.encryptionAlgorithms.NoEncAlg;
 import implem.encryptionAlgorithms.AESEncryptionAlg;
 import interfaces.ICommProto;
@@ -45,14 +47,10 @@ import util.Logger.LogLevel;
  *    - Program Type
  *       Test
  *       Local (Server)
- *       Remote (Client)
- *    
  *
  *  - Perform necessary initialization
- *    - Remote (Client):
- *       Read sensor data from file
  *    - Local (Server):
- *       Confirm all protocols can connect 
+ *       Confirm all protocols can connect
  * 
  *  - Test each protocol's round trip communication
  *    time with each encryption algorithm
@@ -72,11 +70,11 @@ import util.Logger.LogLevel;
 public class Program extends ConfigurableBase {
     //region Constants
     private static final String TEST_PRGM_TYPE_FLAG = "-test";
-    private static final String REMOTE_PRGM_TYPE_FLAG = "-rem";
-    private static final String LOCAL_PRGM_TYPE_FLAG = "-loc";
 
     private static final String LOG_LEVEL = "LogLevel";
-    private static final String RUN_TIME = "RunTimeInMinutes";
+    private static final String RUNS_TO_DO = "RunsToDo";
+    private static final String PROTOCOL = "Protocol";
+    private static final String ENCRYPTION = "Encryption";
     //endregion
 
     //region Fields
@@ -89,9 +87,10 @@ public class Program extends ConfigurableBase {
     private static String _configFilePath = Globals.MAIN_CONFIG_FILE;
     private static Program _program = new Program();
 
-    private static ProgramType _programType = ProgramType.TEST;
-
-    private static long _runTime = 1;
+    private static ProgramType _programType = ProgramType.MAIN;
+    private static String _protocol = "";
+    private static String _encryption = "";
+    private static long _totalRunsToDo = 1500;
     //endregion
 
     //region Properties
@@ -145,19 +144,11 @@ public class Program extends ConfigurableBase {
 
         try {
             switch (_programType) {
-                case LOCAL:
+                case MAIN:
                     RunLocalLogic();
-                    break;
-                case REMOTE:
-    
                     break;
                 case TEST:
                     RunTests();
-
-                    // Add any unit tests here
-                    //  Then run regular local
-                    //  logic
-                    //RunLocalLogic();
                     break;
                 default:
                     Logger.Error("Unknown program type");
@@ -193,45 +184,54 @@ public class Program extends ConfigurableBase {
         ICommProto[] commProtos;
         IEncryptionAlg[] encAlgs;
 
-        // Unit Tests
-        if (_programType == ProgramType.TEST) {
-
-            // Communication protocols
-            commProtos = new ICommProto[] {
-                new DummyCommProto("CommProtoOne"),
-                new DummyCommProto("CommProtoTwo"),
-            };
-
-            // Encryption algorithms
-            encAlgs = new IEncryptionAlg[] {
-                new DummyEncAlg("AlgStubOne"),
-                new DummyEncAlg("AlgStubTwo")
-            };
-
-        // Production
-        } else {
-            // Communication protocols
-            commProtos = new ICommProto[] {
-                new BlueToothCommProto()
-                //new LoPanCommProto(),
-                //new WifiCommProtoProto()
-            };
-
-            // Encryption algorithms
-            encAlgs = new IEncryptionAlg[] {
-                new AESEncryptionAlg()
-            };
+        // Only put the encryption
+        //  algorithm and protocol
+        //  into the list
+        IEncryptionAlg encAlg = null;
+        ICommProto commProto = null;
+        switch (_protocol) {
+            case "WiFi":
+                commProto = new WifiCommProtoProto();
+                Logger.Gui("Using WiFi protocol");
+                break;
+            case "Bluetooth":
+                commProto = new BlueToothCommProto();
+                Logger.Gui("Using Bluetooth protocol");
+                break;
+            case "6LowPAN":
+                commProto = new LoPanCommProto();
+                Logger.Gui("Using 6LowPAN protocol");
+                break;
+            case "Dummy":
+                commProto = new DummyCommProto("DummyProto");
+                Logger.Gui("Using dummy protocol");
+                break;
+            default:
+                Logger.Error("Communication protocol: " + _protocol + " not recognized");
         }
+        _communicationProtocols.put(commProto.getName(), commProto);
 
-        for (ICommProto cP : commProtos) {
-            _communicationProtocols.put(cP.getName(), cP);
+        switch(_encryption) {
+            case "None":
+                encAlg = new NoEncAlg();
+                Logger.Gui("Using no encryption");
+                break;
+            case "AES":
+                encAlg = new AESEncryptionAlg();
+                Logger.Gui("Using AES encryption");
+                break;
+            case "DES":
+                encAlg = new DESEncryptionAlg();
+                Logger.Gui("Using DES encryption");
+                break;
+            case "ECC":
+                encAlg = new ECCEncryptionAlg();
+                Logger.Gui("Using ECC encryption");
+                break;
+            default:
+                Logger.Error("Encryption algorithm " + _encryption + " not recognized");
         }
-
-        for (IEncryptionAlg eA : encAlgs) {
-            _encryptionAlgs.put(eA.getName(), eA);
-        }
-        IEncryptionAlg nullAlg = new NoEncAlg();
-        _encryptionAlgs.put(nullAlg.getName(), nullAlg);
+        _encryptionAlgs.put(encAlg.getName(), encAlg);
     }
 
     /**
@@ -240,20 +240,15 @@ public class Program extends ConfigurableBase {
      *  types
      */
     private static void ProcessCLIArgs() throws Exception {
+        // Main until proven otherwise
+        _programType = ProgramType.MAIN;
+
         try {
 
             // Loop through arguments
             for (int i = 0; i < _args.length;) {
                 String curArg = _args[i];
                 switch (curArg) {
-                    case (REMOTE_PRGM_TYPE_FLAG):
-                        _programType = ProgramType.REMOTE;
-                        i++;
-                        break;
-                    case (LOCAL_PRGM_TYPE_FLAG):
-                        _programType = ProgramType.LOCAL;
-                        i++;
-                        break;
                     case (TEST_PRGM_TYPE_FLAG):
                         _programType = ProgramType.TEST;
                         i++;
@@ -300,9 +295,7 @@ public class Program extends ConfigurableBase {
                     _communicationProtocols.remove(proto.getName());
                 
             }
-
         }
-
     }
     
     /**
@@ -315,41 +308,41 @@ public class Program extends ConfigurableBase {
         Collection<ICommProto> commProtos =  _communicationProtocols.values();
         Collection<IEncryptionAlg> encAlgs =  _encryptionAlgs.values();
 
-        // Get the end time
-        //  _runTime is in minutes, so convert to milliseconds
-        //  in order to add it to the current UNIX time
-        long programEndTime = (new Date()).getTime() + (_runTime * 60 * 1000);
-        Logger.Debug("Cur time: " + (new Date()).toString());
-        Logger.Debug("End time: " + (new Date(programEndTime).toString()));
-
         // Loop over protocols
-        while ((new Date()).getTime() < programEndTime) {
+        int curSession = 0;
+        while (curSession < _totalRunsToDo) {
+            Logger.Gui("Session started: " + curSession);
+            curSession += 1;
+            
             for (ICommProto proto : commProtos) {
-                Logger.Debug("Loop iter start for proto: " + proto.getName());
+                Logger.Gui(" Proto - " + proto.getName());
     
                 // Loop over encryptions
                 for (IEncryptionAlg encAlg : encAlgs) {
-                    Logger.Debug("Process Encryption Algorithm: " + encAlg.getName());
+                    Logger.Gui("  Algo - " + encAlg.getName());
     
                     try {
-                        Logger.Debug("Creating stopwatch");
+                        Logger.Debug("   Creating stopwatch");
                         Stopwatch newWatch = new Stopwatch(param -> proto.RequestAndVerifySensorData(encAlg));
     
-                        Logger.Debug("Time execution and grab results");
+                        Logger.Debug("   Time execution and grab results");
                         RoundTripResult res = newWatch.TimeFunction(null);
                         
-                        Logger.Debug("Adding to list");
+                        Logger.Debug("   Adding to list");
                         results.add(res);
     
                     } catch (Exception exc) {
-                        Logger.Error("Exception during experiment: " + exc.getMessage());
+                        Logger.Error("   Exception during experiment: " + exc.getMessage());
                         RoundTripResult res = new RoundTripResult(proto,
                                                                   encAlg,
                                                                   "Failure: " + exc.getMessage());
-                        results.add(res);
+                        // Don't add to results list for now
+                        //results.add(res);
                     }
                 }
             }
+
+            Logger.Gui("Session Complete");
 
             try {
                 Thread.sleep(1000);
@@ -358,7 +351,7 @@ public class Program extends ConfigurableBase {
             }
         }
 
-        Logger.Debug("Creating report");
+        Logger.Gui("Experiment complete, creating report");
         ReportBuilder repBldr = new ReportBuilder();
         repBldr.AddLine("Roger Johnson: " + (new Date()));
 
@@ -371,7 +364,7 @@ public class Program extends ConfigurableBase {
 
             // Append to appropriate file
             // [ProtoName:EncAlgName.csv]
-            String fileName = res.getCommProtoName() + ":" + res.getEncAlgName() + ".csv";
+            String fileName = "reports/" + res.getCommProtoName() + ":" + res.getEncAlgName() + ".csv";
             FileOutputStream outputFile = new FileOutputStream(fileName, true);
             outputFile.write((res.asRow() + "\r\n").getBytes());
             outputFile.close();
@@ -390,10 +383,17 @@ public class Program extends ConfigurableBase {
         if (logLevel != null && logLevel.length() > 0)
             Logger.setLevel(LogLevel.valueOf(logLevel));
 
-        String runTime = _program.GetSetting(RUN_TIME, () -> _program.SetSetting(RUN_TIME, "30"));
-        if (runTime != null && runTime.length() > 0)
-            _runTime = Long.parseLong(runTime);
+        String runsToDo = _program.GetSetting(RUNS_TO_DO, () -> _program.SetSetting(RUNS_TO_DO, "1500"));
+        if (runsToDo != null && runsToDo.length() > 0)
+            _totalRunsToDo = Long.parseLong(runsToDo);
 
+        String proto = _program.GetSetting(PROTOCOL, () -> _program.SetSetting(PROTOCOL, "WiFi"));
+        if (proto != null && proto.length() > 0)
+            _protocol = proto;
+        
+        String encryption = _program.GetSetting(ENCRYPTION, () -> _program.SetSetting(ENCRYPTION, "None"));
+        if (encryption != null && encryption.length() > 0)
+            _encryption = encryption;
     }
     //endregion
 
@@ -421,7 +421,9 @@ public class Program extends ConfigurableBase {
     @Override
     protected void _setDefaults() {
         SetSetting(LOG_LEVEL, "DEBUG");
-        SetSetting(RUN_TIME, "1");
+        SetSetting(RUNS_TO_DO, "1250");
+        SetSetting(PROTOCOL, "WiFi");
+        SetSetting(ENCRYPTION, "None");
     }
     //endregion
 

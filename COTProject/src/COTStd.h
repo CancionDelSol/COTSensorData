@@ -94,5 +94,13 @@ void aes_init() {
   _aesLib.set_paddingmode((paddingMode)0);
 }
 
+/*
+ * DES Encryption support
+ */
+DES _desLib;
+byte _desOut[8];
+byte _desIn[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+byte _desKey[] = { 0x3b, 0x38, 0x98, 0x37, 0x15, 0x20, 0xf7, 0x5e };
+
 #endif
 

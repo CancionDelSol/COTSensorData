@@ -39,11 +39,7 @@ tests: generate
 	@clear
 	@java -jar Telem.jar -test
 
-startRemote: generate
-	@clear
-	@java -jar Telem.jar -rem
-
-startLocal: generate
+start: generate
 	@clear
 	@java -jar Telem.jar -loc
 
@@ -54,7 +50,7 @@ config:
 	@cp data/configFileDefaults/*.cfg ./
 
 clearData:
-	@rm ./*.csv
+	@rm .reports/*.csv
 
 clean:
 	@echo "Cleaning up..."

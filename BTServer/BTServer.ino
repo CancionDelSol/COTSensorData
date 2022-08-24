@@ -7,6 +7,10 @@
 #include "COTStd.h"
 #include "AESLib.h"
 
+#include <DES.h>
+
+DES des;
+
 /*
  * From online resource: https://randomnerdtutorials.com/esp32-bluetooth-classic-arduino-ide/ 
  */
@@ -64,20 +68,6 @@ void loop(){
 
   // Check for a message
   String req = GetPacket();
-//  int i = 0;
-//  while (SerialBT.available()) {
-//    if (i > INPUT_BUFFER_LIMIT)
-//      break;
-//
-//    byte btSerial = SerialBT.read();
-//
-//    btBuffer[i++] = btSerial;
-//  }
-//  btBuffer[i] = 0x00;
-
-  // No message was waiting
-//  if (i == 0)
-//    return;
 
   // Flip the gui display back
   guiDisplayFlip = true;
@@ -112,12 +102,19 @@ void loop(){
   // Send des data back
   } else if (req.indexOf("DES") >= 0) { 
     Serial.println("Get DES encrypted data");
+    des.encrypt(_desOut, _desIn, _desKey);
     response += "DES Enc Data";
 
   // Send des data back
   } else if (req.indexOf("ECC") >= 0) { 
     Serial.println("Get ECC encrypted data");
-    response += "ECC Enc Data";
+
+    // Encrypt using elliptic curve cryptography
+    tinyECC tE;
+    tE.clearText = "ECC encrypted data";
+    tE.encrypt();
+    
+    response += tE.cipher;
  
   } else {
     Serial.println("Not recognized: " + req);
