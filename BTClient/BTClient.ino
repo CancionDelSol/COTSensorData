@@ -69,6 +69,7 @@ void loop() {
   // Communicate back response
   SendMsgSerial(startTime + " " + resp + " " + endTime);
 
+  // Set LED high for OK status
   SetLEDHigh();
   
 }
@@ -85,13 +86,9 @@ String GetDataFromSensorProvider(String request) {
   return resp;
 }
 
-void SendMsgSerial(String msg) {
-  Serial.print("<" + msg + ">");
-}
-
 String GetPacket() {
   while (!SerialBT.available()) {
-    
+    // Intentionally left empty
   }
   
   // Read into buffer

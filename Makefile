@@ -52,6 +52,9 @@ config:
 clearData:
 	@rm .reports/*.csv
 
+prepEnv:
+	@cp -r COTProject/* ~/Arduino/libraries/COTProject/
+
 clean:
 	@echo "Cleaning up..."
 	@rm -r src/build/classes

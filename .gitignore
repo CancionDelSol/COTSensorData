@@ -39,3 +39,4 @@ hs_err_pid*
 .vscode/c_cpp_properties.json
 scratch.txt
 .vscode/settings.json
+BLEProtoConfig .cfg

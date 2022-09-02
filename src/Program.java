@@ -11,6 +11,7 @@ import enums.ProgramType;
 import implem.protocols.BlueToothCommProto;
 import implem.protocols.DummyCommProto;
 import implem.protocols.LoPanCommProto;
+import implem.protocols.BLECommProto;
 import implem.protocols.WifiCommProtoProto;
 import implem.ESPModule;
 import implem.encryptionAlgorithms.DummyEncAlg;
@@ -202,6 +203,10 @@ public class Program extends ConfigurableBase {
                 commProto = new LoPanCommProto();
                 Logger.Gui("Using 6LowPAN protocol");
                 break;
+            case "BLE":
+                commProto = new BLECommProto();
+                Logger.Gui("Using BLE protocol");
+                break;
             case "Dummy":
                 commProto = new DummyCommProto("DummyProto");
                 Logger.Gui("Using dummy protocol");
@@ -322,27 +327,28 @@ public class Program extends ConfigurableBase {
                     Logger.Gui("  Algo - " + encAlg.getName());
     
                     try {
-                        Logger.Debug("   Creating stopwatch");
+                        Logger.Info("   Creating stopwatch");
                         Stopwatch newWatch = new Stopwatch(param -> proto.RequestAndVerifySensorData(encAlg));
     
-                        Logger.Debug("   Time execution and grab results");
+                        Logger.Info("   Time execution and grab results");
                         RoundTripResult res = newWatch.TimeFunction(null);
                         
-                        Logger.Debug("   Adding to list");
+                        Logger.Info("   Adding to list");
                         results.add(res);
+
+                        Logger.Gui("   " + res.getStatus() + " | " + res.getDuration());
     
                     } catch (Exception exc) {
                         Logger.Error("   Exception during experiment: " + exc.getMessage());
                         RoundTripResult res = new RoundTripResult(proto,
                                                                   encAlg,
                                                                   "Failure: " + exc.getMessage());
-                        // Don't add to results list for now
-                        //results.add(res);
+                        
+                        // Decrement session count
+                        curSession -= 1;
                     }
                 }
             }
-
-            Logger.Gui("Session Complete");
 
             try {
                 Thread.sleep(1000);

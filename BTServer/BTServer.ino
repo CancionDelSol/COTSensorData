@@ -9,8 +9,6 @@
 
 #include <DES.h>
 
-DES des;
-
 /*
  * From online resource: https://randomnerdtutorials.com/esp32-bluetooth-classic-arduino-ide/ 
  */
@@ -23,19 +21,13 @@ BluetoothSerial SerialBT;
 // Timeout time
 const long timeoutTime = 2000;
 
+// Buffer for AES encryption
 byte* btBuffer = (byte*)malloc(sizeof(byte) * INPUT_BUFFER_LIMIT);
 
 void setup() {
-  // Copy text in the readBuffer
-  //  into the character array used
+  // Place the read buffer into clear text
   //  for AES encryption
-  sprintf((char*)clearText, "%s", readBuffer);
-
-  // Allow time for serial moniter to react
-  //  to opening serial channel. Some serial
-  //  output gets dropped from the windows client
-  //  otherwise
-  delay(250);
+  placeIntoClearText()
 
   // Initialize encryption library
   aes_init();
@@ -46,7 +38,7 @@ void setup() {
   // Start Bluetooth server
   Serial.println("Starting bluetooth server");
   
-  if (! SerialBT.begin(BT_SERVER_ID) ) {
+  if (!SerialBT.begin(BT_SERVER_ID) ) {
     Serial.println("Failed to start bluetooth server");
     abort();
   }
@@ -54,6 +46,7 @@ void setup() {
   // Set built in LED as output
   pinMode(LED_BUILTIN, OUTPUT);
 
+  // Notify OK state
   SetLEDHigh();
 }
 
@@ -73,12 +66,8 @@ void loop(){
   guiDisplayFlip = true;
   SetLEDLow();
 
-  // Convert to arduino string
-  //String req = (const char*)btBuffer;
-
   // Log
   Serial.println("New request: " + req);
-  SetLEDHigh();
 
   // Add received time to
   //  response
@@ -102,7 +91,7 @@ void loop(){
   // Send des data back
   } else if (req.indexOf("DES") >= 0) { 
     Serial.println("Get DES encrypted data");
-    des.encrypt(_desOut, _desIn, _desKey);
+    _desLib.encrypt(_desOut, _desIn, _desKey);
     response += "DES Enc Data";
 
   // Send des data back
@@ -111,10 +100,10 @@ void loop(){
 
     // Encrypt using elliptic curve cryptography
     tinyECC tE;
-    tE.clearText = "ECC encrypted data";
+    tE.plaintext = "ECC encrypted data";
     tE.encrypt();
     
-    response += tE.cipher;
+    response += tE.ciphertext;
  
   } else {
     Serial.println("Not recognized: " + req);
@@ -160,9 +149,8 @@ String GetPacket() {
 void SendPacket(String msg) {
   msg.trim();
   
-Serial.println("Sending via bt: " + msg);
   const uint8_t* src = (const uint8_t *)msg.c_str();
-Serial.println("SIZEOF(src) = " + String(msg.length()));
+  
   for (int i = 0; i < msg.length(); i++) {
     SerialBT.write(src[i]);
   }

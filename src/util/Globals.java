@@ -12,6 +12,7 @@ public class Globals {
     public static final String SIX_LOWPAN_PROTO_CONFIG_FILE = "6LoWPANProtoConfig.cfg";
     public static final String WIFI_PROTO_CONFIG_FILE = "WifiProtoConfig.cfg";
     public static final String BLUETOOTH_PROTO_CONFIG_FILE = "BluetoothProtoConfig.cfg";
+    public static final String BLE_PROTO_CONFIG_FILE = "BLEProtoConfig.cfg";
     //endregion
 
     //region Arrays

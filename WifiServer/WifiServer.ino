@@ -143,7 +143,7 @@ void loop(){
             // Send des data back
             } else if (header.indexOf("GET /sensordata/encTypeDES") >= 0) { 
               Serial.println("Get DES encrypted data");
-              des.encrypt(_desOut, _desIn, _desKey);
+              _desLib.encrypt(_desOut, _desIn, _desKey);
               response += "DES Enc Data";
 
             // Send des data back
@@ -152,10 +152,10 @@ void loop(){
 
               // Encrypt using elliptic curve cryptography
               tinyECC tE;
-              tE.clearText = "ECC encrypted text";
+              tE.plaintext = "ECC encrypted text";
               tE.encrypt();
               
-              response += tE.cipher;
+              response += tE.ciphertext;
 
             } else if (header.indexOf("GET /sensordata/encTypeCurrentTime/") >= 0) {
               Serial.println("Sending current time");

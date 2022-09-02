@@ -21,8 +21,12 @@ const int LED_BUILTIN = 2;
 // Set baud rate for Serial Communication
 const int BAUD_RATE = 115200;
 
-// Helper functions for setting
-//  built in LED high and low
+/* Serial output */
+void SendMsgSerial(String msg) {
+  Serial.print("<" + msg + ">");
+}
+
+/* LED Controls */
 void SetLEDHigh() {
   digitalWrite(LED_BUILTIN, HIGH);
 }
@@ -88,6 +92,13 @@ uint16_t decryptToClearText(byte msg[], uint16_t msgLen, byte iv[]) {
   return dec_bytes;
 }
 
+void placeIntoClearText() {
+  // Copy text in the readBuffer
+  //  into the character array used
+  //  for AES encryption
+  sprintf((char*)clearText, "%s", readBuffer);
+}
+
 // Generate IV (once)
 void aes_init() {
   _aesLib.gen_iv(aes_iv);
@@ -101,6 +112,26 @@ DES _desLib;
 byte _desOut[8];
 byte _desIn[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 byte _desKey[] = { 0x3b, 0x38, 0x98, 0x37, 0x15, 0x20, 0xf7, 0x5e };
+
+/*
+ * BLE Support
+ */
+
+// UUIDs 
+#define BLE_SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
+#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+
+// Server callbacks
+bool deviceConnected = false;
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      deviceConnected = true;
+    };
+
+    void onDisconnect(BLEServer* pServer) {
+      deviceConnected = false;
+    }
+};
 
 #endif
 
