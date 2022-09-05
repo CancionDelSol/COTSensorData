@@ -244,7 +244,6 @@ public class ESPModule extends ConfigurableBase {
 
                 boolean fullMsg = false;
 
-                Logger.Debug("Reading from input stream on blocking thread");
                 while (!fullMsg) {
                     
                     if ((new Date()).getTime() > endTime) {
@@ -254,6 +253,8 @@ public class ESPModule extends ConfigurableBase {
 
                     if (_inputStream.available() == 0) 
                         continue;
+                    
+                    Logger.Debug("Reading from input stream on blocking thread");
 
                     len = _inputStream.read(buffer);
 

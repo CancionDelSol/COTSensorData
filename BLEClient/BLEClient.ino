@@ -43,6 +43,7 @@ static void notifyCallback(
   uint8_t* pData,
   size_t length,
   bool isNotify) {
+    SetLEDLow();
     
     // Get the characteristic text
     //  and feedback through serial
@@ -65,9 +66,18 @@ static void notifyCallback(
 
 class MyClientCallback : public BLEClientCallbacks {
   void onConnect(BLEClient* pclient) {
+    SetLEDHigh();
+    delay(1000);
+    SetLEDLow();
   }
 
   void onDisconnect(BLEClient* pclient) {
+    for (int i = 0; i < 10; i++) {
+      SetLEDHigh();
+      delay(100);
+      SetLEDLow();
+    }
+
     connected = false;
     Serial.println("onDisconnect");
   }
@@ -81,7 +91,6 @@ BLEClient*  pClient;
 
 // Connect to the BLE server
 bool connectToServer() {
-    SetLEDHigh();
     Serial.print("Forming a connection to ");
     Serial.println(myDevice->getAddress().toString().c_str());
     
@@ -105,7 +114,6 @@ bool connectToServer() {
     }
     Serial.println(" - Found our service");
 
-
     // Obtain a reference to the characteristic in the service of the remote BLE server.
     pRemChar = pRemoteService->getCharacteristic(CHARACTERISTIC_UUID);
     if (pRemChar == nullptr) {
@@ -126,7 +134,6 @@ bool connectToServer() {
     if(pRemChar->canNotify())
       pRemChar->registerForNotify(notifyCallback);
 
-    SetLEDHigh();
     connected = true;
     return true;
 }
@@ -191,12 +198,6 @@ void loop() {
   // If we are connected to a peer BLE Server, update the characteristic each time we are reached
   if (connected) {
 
-    // Always have LED High
-    //  when connected, unless
-    //  in the process of a
-    //  serial request
-    SetLEDHigh();
-
     // Read serial and make
     //  appropriate request
     String req = "";
@@ -211,9 +212,9 @@ void loop() {
       return;
     }
 
-    // Set low for process
+    // Set high for process
     //  serial request
-    SetLEDLow();
+    SetLEDHigh();
 
     // Initialize the response
     String startTime = String(millis(), DEC);

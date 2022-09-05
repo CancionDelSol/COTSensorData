@@ -7,7 +7,13 @@
 
 // Mandatory includes
 #include <Arduino.h>
+#include <DES.h>
 #include "AESLib.h"
+
+// BLE headers
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
 
 // Wifi Credentials
 const char* SSID = "ESP_9D048D";
