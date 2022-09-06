@@ -21,8 +21,6 @@
 #include "AESLib.h"
 #include "tinyECC.h"
 
-#define BAUD 115200
-
 // Create Wifi server
 WiFiServer server(80);
 
@@ -53,7 +51,6 @@ void setup() {
   // Set built in LED as output
   pinMode(LED_BUILTIN, OUTPUT);
 
-  // Connect to Wi-Fi network with SSID and password
   Serial.print("Starting Access Point");
   
   // Remove the password parameter, if you want the AP (Access Point) to be open

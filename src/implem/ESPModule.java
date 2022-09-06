@@ -240,7 +240,7 @@ public class ESPModule extends ConfigurableBase {
             {
                 // Wait for anvailable input
                 long endTime = (new Date()).getTime() + timeout;
-                Logger.Info("Waiting for serial input");
+                Logger.Info("Waiting for serial response");
 
                 boolean fullMsg = false;
 

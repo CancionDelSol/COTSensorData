@@ -6,6 +6,7 @@
 #include "BluetoothSerial.h"
 #include "COTStd.h"
 #include "AESLib.h"
+#include "tinyECC.h"
 
 #include <DES.h>
 
@@ -27,7 +28,7 @@ byte* btBuffer = (byte*)malloc(sizeof(byte) * INPUT_BUFFER_LIMIT);
 void setup() {
   // Place the read buffer into clear text
   //  for AES encryption
-  placeIntoClearText()
+  placeIntoClearText();
 
   // Initialize encryption library
   aes_init();

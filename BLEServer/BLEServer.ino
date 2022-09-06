@@ -17,6 +17,18 @@
 // Save a characteristic
 BLECharacteristic *pCharacteristic;
 
+// Server callbacks
+bool deviceConnected = false;
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      deviceConnected = true;
+    };
+
+    void onDisconnect(BLEServer* pServer) {
+      deviceConnected = false;
+    }
+};
+
 void setup() {
   // Place read buffer into clear text
   placeIntoClearText();

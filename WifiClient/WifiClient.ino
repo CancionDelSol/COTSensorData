@@ -31,7 +31,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 
   // Begin serial com
-  Serial.begin(BAUD_RATE);
+  Serial.begin(BAUD);
 
   // Notify connecting
   Serial.println("Connecting");
@@ -126,8 +126,4 @@ String httpGETRequest(const char* serverName) {
   http.end();
 
   return payload;
-}
-
-void SendMsgSerial(String msg) {
-  Serial.print("<" + msg + ">");
 }

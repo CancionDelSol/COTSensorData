@@ -1,7 +1,7 @@
 #ifndef COT_STD
 #define COT_STD
 
-#define BUAD 115200
+#define BAUD 115200
 #define BT_SERVER_ID "SensorDataServer"
 #define BT_CLIENT_ID "ESPBluetoothClient"
 
@@ -9,11 +9,6 @@
 #include <Arduino.h>
 #include <DES.h>
 #include "AESLib.h"
-
-// BLE headers
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
 
 // Wifi Credentials
 const char* SSID = "ESP_9D048D";
@@ -126,18 +121,6 @@ byte _desKey[] = { 0x3b, 0x38, 0x98, 0x37, 0x15, 0x20, 0xf7, 0x5e };
 // UUIDs 
 #define BLE_SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
-
-// Server callbacks
-bool deviceConnected = false;
-class MyServerCallbacks: public BLEServerCallbacks {
-    void onConnect(BLEServer* pServer) {
-      deviceConnected = true;
-    };
-
-    void onDisconnect(BLEServer* pServer) {
-      deviceConnected = false;
-    }
-};
 
 #endif
 
