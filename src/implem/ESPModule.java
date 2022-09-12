@@ -248,7 +248,7 @@ public class ESPModule extends ConfigurableBase {
                     
                     if ((new Date()).getTime() > endTime) {
                         Logger.Error("Timeout on ESP read from input stream");
-                        return "";
+                        return bldr.toString();
                     }
 
                     if (_inputStream.available() == 0) 

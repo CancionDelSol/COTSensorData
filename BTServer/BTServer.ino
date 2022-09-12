@@ -8,8 +8,6 @@
 #include "AESLib.h"
 #include "tinyECC.h"
 
-#include <DES.h>
-
 /*
  * From online resource: https://randomnerdtutorials.com/esp32-bluetooth-classic-arduino-ide/ 
  */
@@ -19,16 +17,19 @@
 
 BluetoothSerial SerialBT;
 
-// Timeout time
-const long timeoutTime = 2000;
-
-// Buffer for AES encryption
 byte* btBuffer = (byte*)malloc(sizeof(byte) * INPUT_BUFFER_LIMIT);
 
 void setup() {
-  // Place the read buffer into clear text
+  // Copy text in the readBuffer
+  //  into the character array used
   //  for AES encryption
-  placeIntoClearText();
+  sprintf((char*)clearText, "%s", readBuffer);
+
+  // Allow time for serial moniter to react
+  //  to opening serial channel. Some serial
+  //  output gets dropped from the windows client
+  //  otherwise
+  delay(1500);
 
   // Initialize encryption library
   aes_init();
@@ -38,17 +39,10 @@ void setup() {
 
   // Start Bluetooth server
   Serial.println("Starting bluetooth server");
-  
-  if (!SerialBT.begin(BT_SERVER_ID) ) {
-    Serial.println("Failed to start bluetooth server");
-    abort();
-  }
+  SerialBT.begin(BT_SERVER_ID, false);
 
   // Set built in LED as output
   pinMode(LED_BUILTIN, OUTPUT);
-
-  // Notify OK state
-  SetLEDHigh();
 }
 
 bool guiDisplayFlip = true;
@@ -61,99 +55,119 @@ void loop(){
   }
 
   // Check for a message
-  String req = GetPacket();
+  int i = 0;
+  bool endRead = false;
+  int timeout = INT_MAX;
+  while (!endRead) {
+    if (!SerialBT.available()) {
+      if (millis() > timeout)
+        break;
+      else
+        continue;
+    }
 
+    timeout = millis() + 3000;
+     
+    Serial.println("Reading");
+    
+    if (i > INPUT_BUFFER_LIMIT)
+      break;
+
+    byte btSerial = SerialBT.read();
+
+    btBuffer[i] = btSerial;
+    btBuffer[i + 1] = 0x00;
+    
+    if (btBuffer[i++] == '\0') 
+      break;
+  }
+  Serial.println("Out of read");
+  
+  btBuffer[i] = 0x00;
+
+  // No message was waiting
+  if (i == 0)
+    return;
+
+  Serial.println("We got a message");
   // Flip the gui display back
   guiDisplayFlip = true;
-  SetLEDLow();
+
+  // Convert to arduino string
+  String req = (const char*)btBuffer;
+  req.trim();
 
   // Log
-  Serial.println("New request: " + req);
+  Serial.println("New request.");
 
   // Add received time to
   //  response
-  String response = String(millis(), DEC) + " ";
-  
+  String response = String(millis(), DEC);
+  response += " ";
+ 
   // Send unencrypted data back
   if (req.indexOf("CurrentTime") >= 0) {
     Serial.println("Get current server time");
-    response += "TimeRequest";
+    response += "Time-Request";
 
   } else if (req.indexOf("None") >= 0) {
-    Serial.println("Get Unencrypted data");
-    response += "Unencrypted Data";
+    Serial.println("Get unencrypted data");
+    response += "Unencrypted-Data";
 
   // Send aes encrypted data back
   } else if (req.indexOf("AES") >= 0) { 
     Serial.println("Get AES encrypted data");
+
     uint16_t len = encryptToCipherText((char*)clearText, 18, aes_iv);
-    response += (const char*)cipherText;
-    
+
   // Send des data back
   } else if (req.indexOf("DES") >= 0) { 
-    Serial.println("Get DES encrypted data");
+    
     _desLib.encrypt(_desOut, _desIn, _desKey);
-    response += "DES Enc Data";
+    char chars[9];
+
+    std::memcpy(chars, _desOut, 8);
+    chars[8] = '\0';
+    String part = String(chars, HEX);
+    Serial.println("Get-DES-encrypted-data: " + part);
+    response += part;
 
   // Send des data back
   } else if (req.indexOf("ECC") >= 0) { 
     Serial.println("Get ECC encrypted data");
-
     // Encrypt using elliptic curve cryptography
     tinyECC tE;
-    tE.plaintext = "ECC encrypted data";
+    tE.plaintext = "ECC-encrypted-text";
     tE.encrypt();
     
     response += tE.ciphertext;
  
   } else {
     Serial.println("Not recognized: " + req);
-    response += "NR: " + req;
+    response += "Not-recognized:" + req;
   }
 
-  response += " " + String(millis(), DEC);
+  response += " ";
+  response += String(millis(), DEC);
+
+  Serial.println("Sending back: " + response);
   SendPacket(response);
   
   // Log
   Serial.println("Client disconnected.");
-  SetLEDHigh();
 
-}
-
-String GetPacket() {
-  while (!SerialBT.available()) {
-    
-  }
-  
-  // Read into buffer
-  int i = 0;
-  bool endFeed = false;
-  while (!endFeed) {
-    if (i > INPUT_BUFFER_LIMIT - 2)
-      break;
-
-    if (!SerialBT.available())
-      continue;
-      
-    char btSerial = SerialBT.read();
-
-    if ((const uint8_t)btSerial == (const uint8_t)0)
-      endFeed = true;
-      
-    btBuffer[i++] = btSerial;
-  }
-  btBuffer[i] = 0x0;
-
-  return (const char*)btBuffer;
 }
 
 void SendPacket(String msg) {
   msg.trim();
   
   const uint8_t* src = (const uint8_t *)msg.c_str();
-  
   for (int i = 0; i < msg.length(); i++) {
+    if (src[i] == 0x00) 
+      continue;
+      
     SerialBT.write(src[i]);
   }
   SerialBT.write((uint8_t)0);
+  SerialBT.flush();
 }

@@ -9,6 +9,12 @@
 #include <Arduino.h>
 #include <DES.h>
 #include "AESLib.h"
+#include <stdlib.h>
+
+#include <iostream>
+#include <cstddef>
+#include <cstring>
+#include <vector>
 
 // Wifi Credentials
 const char* SSID = "ESP_9D048D";
@@ -27,6 +33,23 @@ void SendMsgSerial(String msg) {
   Serial.print("<" + msg + ">");
 }
 
+/* String splitting */
+char *sPtr[3];
+char s[128];
+int seperate(String str, char **p, int size) {
+  int n;
+
+  std::strcpy(s, str.c_str());
+
+  *p++ = std::strtok(s, " ");
+  for (n = 1; NULL != (*p++ = std::strtok(NULL, " ")); n++) {
+    if (size == n)
+      break;
+  }
+
+  return n;
+}
+
 /* LED Controls */
 void SetLEDHigh() {
   digitalWrite(LED_BUILTIN, HIGH);
@@ -40,7 +63,7 @@ void SetLEDLow() {
 // * Pulled from example under
 // *  the github repo -> https://github.com/suculent/thinx-aes-lib.git
 // */
-#define INPUT_BUFFER_LIMIT (128 + 1)
+#define INPUT_BUFFER_LIMIT (64 + 1)
 #define BT_TIMEOUT 5000
 
 unsigned char clearText[INPUT_BUFFER_LIMIT] = {0}; // THIS IS INPUT BUFFER (FOR TEXT)
@@ -111,8 +134,14 @@ void aes_init() {
  */
 DES _desLib;
 byte _desOut[8];
-byte _desIn[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+//byte _desOut[] = { 0x44, 0x45, 0x41, 0x44, 0x42, 0x45, 0x45, 0x46 };
+byte _desIn[] = { 0x44, 0x45, 0x41, 0x44, 0x42, 0x45, 0x45, 0x46 };
 byte _desKey[] = { 0x3b, 0x38, 0x98, 0x37, 0x15, 0x20, 0xf7, 0x5e };
+
+void CopyToDESIn(std::string input) {
+  std::memcpy(_desIn, input.c_str(), input.length());
+  //std::strcpy((char*)_desIn, input.c_str());
+}
 
 /*
  * BLE Support

@@ -32,6 +32,7 @@ void setup() {
 
   if (connected) {
     Serial.println("Connected Successfully");
+    SetLEDHigh();
   } else {
     while (!SerialBT.connected(10000)) {
       Serial.println("Failed to connect");
@@ -39,7 +40,6 @@ void setup() {
     }
   }
 
-  SetLEDHigh();
 }
 
 void loop() {
@@ -48,7 +48,9 @@ void loop() {
   String req = "";
   bool hasRequest = false;
   if (Serial.available() > 0) {
+    //Serial.println("Reading from Serial");
     req = Serial.readString();
+    //Serial.println("Read: " + req);
     hasRequest = true;
   }
 
@@ -81,34 +83,61 @@ void loop() {
 String GetDataFromSensorProvider(String request) {
   SendPacket(request);
 
+  //Serial.println("Waiting for a response");
   String resp = GetPacket();
 
-  return resp;
+  //Serial.println("Packet recieved: " + resp);
+  int partSize = seperate(resp, sPtr, 3);
+
+  if (partSize < 3) {
+    return resp;//String("WrongSize-Failed");
+  }
+
+  if (request.indexOf("DES") >= 0) {
+    CopyToDESIn(sPtr[1]);
+    _desLib.decrypt(_desOut, _desIn, _desKey);
+    char out[9];
+    std::memcpy(out, _desOut, 8);
+    out[8] = '\0';
+    String part = String(out, DEC);
+    std::strcpy(sPtr[1], part.c_str());
+  }
+
+  String rVal = "";
+  for (int i = 0; i < 3; i++) {
+    rVal += sPtr[i];
+    rVal += " ";
+  }
+
+  return rVal;
 }
 
 String GetPacket() {
-  while (!SerialBT.available()) {
-    // Intentionally left empty
-  }
-  
   // Read into buffer
   int i = 0;
   bool endFeed = false;
+  int timeout = millis() + 15000;
   while (!endFeed) {
-    if (i > INPUT_BUFFER_LIMIT - 2)
+    if (!SerialBT.available()) {
+      if (millis() > timeout)
+        break;
+      else 
+        continue;
+    }
+
+    timeout = millis() + 3000;
+
+    if (i > INPUT_BUFFER_LIMIT)
       break;
-
-    if (!SerialBT.available())
-      continue;
       
-    char btSerial = SerialBT.read();
+    byte btSerial = SerialBT.read();
 
-    if ((const uint8_t)btSerial == (const uint8_t)0)
-      endFeed = true;
-      
-    btBuffer[i++] = btSerial;
+    btBuffer[i] = btSerial;
+    btBuffer[i + 1] = 0x00;
+    
+    if (btBuffer[i++] == '\0') 
+      break;
   }
-  btBuffer[i] = 0x0;
 
   return (const char*)btBuffer;
 }
@@ -121,4 +150,5 @@ void SendPacket(String msg) {
     SerialBT.write(src[i]);
   }
   SerialBT.write((uint8_t)0);
+  SerialBT.flush();
 }

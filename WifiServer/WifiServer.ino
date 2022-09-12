@@ -123,15 +123,15 @@ void loop(){
             // Send unencrypted data back
             if (header.indexOf("GET /sensordata/CurrentTime") >= 0) {
               Serial.println("Get current server time");
-              response += "Time Request";
+              response += "Time-Request";
 
             } else if (header.indexOf("GET /sensordata/encTypeNone") >= 0) {
               Serial.println("Get unencrypted data");
-              response += "Unencrypted Data";
+              response += "Unencrypted-Data";
 
             // Send aes encrypted data back
             } else if (header.indexOf("GET /sensordata/encTypeAES") >= 0) { 
-              Serial.println("Get AES encrypted data");
+              Serial.println("Get-AES-encrypted-data");
 
               uint16_t len = encryptToCipherText((char*)clearText, 18, aes_iv);
               String suffix = (const char*)cipherText;
@@ -139,17 +139,23 @@ void loop(){
 
             // Send des data back
             } else if (header.indexOf("GET /sensordata/encTypeDES") >= 0) { 
-              Serial.println("Get DES encrypted data");
+              
               _desLib.encrypt(_desOut, _desIn, _desKey);
-              response += "DES Enc Data";
+              char chars[9];
 
-            // Send des data back
+              std::memcpy(chars, _desOut, 8);
+              chars[8] = '\0';
+              String part = String(chars, HEX);
+              Serial.println("Get-DES-encrypted-data: " + part);
+              response += part;
+
+            // Send ecc data back
             } else if (header.indexOf("GET /sensordata/encTypeECC") >= 0) {
-              Serial.println("Get ECC encrypted data");
+              Serial.println("Get-ECC-encrypted-data");
 
               // Encrypt using elliptic curve cryptography
               tinyECC tE;
-              tE.plaintext = "ECC encrypted text";
+              tE.plaintext = "ECC-encrypted-text";
               tE.encrypt();
               
               response += tE.ciphertext;
@@ -160,12 +166,13 @@ void loop(){
               
             } else {
               Serial.println("Not recognized: " + header);
-              response += "Not recognized: " + header;
+              response += "Not-recognized:" + header;
             }
 
             response += " ";
             response += String(millis(), DEC);
-            
+
+            Serial.println(response);
             client.println(response);
             
             // The HTTP response ends with another blank line

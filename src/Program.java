@@ -110,7 +110,7 @@ public class Program extends ConfigurableBase {
      * Main entry point
      */
     public static void main(String[] args) {
-        Logger.Debug("Start of program");
+        Logger.Gui("Start of program");
 
         // Load settings from configuration
         try {
