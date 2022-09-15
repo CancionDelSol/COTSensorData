@@ -87,33 +87,26 @@ byte aes_iv[N_BLOCK] = { 0x0A, 0x0B, 0x0C, 0x0D,
                          0x15, 0x16, 0x17, 0x18 };
 
 /*
- * Method to encrypt character pointer (text)
- *  to cipher text
+ * Encrypt message into cipher text
  */
 uint16_t encryptToCipherText(char* msg, uint16_t msgLen, byte iv[]) {
-  // Log to serial client
-  Serial.println("Calling encrypt (string)...");
-
   // Encrypt the text in the pointer's
   //  location and place into byt array
   int cipherlength =_aesLib.encrypt((byte*)msg, msgLen, (char*)cipherText, aes_key, sizeof(aes_key), iv);
   
   // Return the cipher length
   return cipherlength;
+
 }
 
 /*
- * Decrypt byte array into 
+ * Decrypt byte array into clear text
  */
 uint16_t decryptToClearText(byte msg[], uint16_t msgLen, byte iv[]) {
-  // Log to serial client
-  Serial.print("Calling decrypt... ");
-
-  // Do the decryption and place output into
-  //  
   uint16_t dec_bytes =_aesLib.decrypt(msg, msgLen, (char*)clearText, aes_key, sizeof(aes_key), iv);
   Serial.print("Decrypted bytes: "); Serial.println(dec_bytes);
   return dec_bytes;
+
 }
 
 void placeIntoClearText() {

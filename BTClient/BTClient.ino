@@ -84,14 +84,12 @@ void loop() {
 String GetDataFromSensorProvider(String request) {
   SendPacket(request);
 
-  //Serial.println("Waiting for a response");
   String resp = GetPacket();
 
-  //Serial.println("Packet recieved: " + resp);
   int partSize = seperate(resp, sPtr, 3);
 
   if (partSize < 3) {
-    return resp;//String("WrongSize-Failed");
+    return resp;
   }
 
   if (request.indexOf("DES") >= 0) {
@@ -104,6 +102,11 @@ String GetDataFromSensorProvider(String request) {
     std::strcpy(sPtr[1], part.c_str());
 
   } else if (request.indexOf("AES") >= 0) {
+    // Copy into byte array
+    std::memcpy(cipherText, sPtr[1].c_str(), input.length());
+
+    // Decrypt
+    uint16_t decLen = decryptToClearText(cipherText, 2*INPUT_BUFFER_LIMIT, aes_iv);
     
   } else if (request.indexOf("ECC") >= 0) {
     tinyECC tE;
