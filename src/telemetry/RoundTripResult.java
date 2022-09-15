@@ -16,7 +16,8 @@ import interfaces.IEncryptionAlg;
  *  - ProcedureStartTimeStamp
  *  - RequestSentFromTransTimeStamp
  *  - RequestRecByRecTimeStamp
- *  - RespSentByRecTimeStamp
+ *  - RespSentFrom
+ RecTimeStamp
  *  - RespRecByTransTimeStamp
  */
 public class RoundTripResult {
@@ -26,7 +27,7 @@ public class RoundTripResult {
     private long _procStartTimeStamp;
     private long _reqSentFromTransTimeStamp;
     private long _reqRecByRecTimeStamp;
-    private long _respSentByRecTimeStamp;
+    private long _respSentFromRecTimeStamp;
     private long _respRecByTransTimeStamp;
     private String _commProtoName;
     private String _encAlgName;
@@ -60,7 +61,7 @@ public class RoundTripResult {
                             long procStartTimeStamp,
                             long reqSentFromTransTimeStamp,
                             long reqRecByRecTimeStamp,
-                            long respSentByRecTimeStamp,
+                            long respSentFromRecTimeStamp,
                             long respRecByTransTimeStamp,
                             ICommProto protocolUsed,
                             IEncryptionAlg encryptionAlgUsed,
@@ -70,7 +71,7 @@ public class RoundTripResult {
         _procStartTimeStamp = procStartTimeStamp;
         _reqSentFromTransTimeStamp = reqSentFromTransTimeStamp;
         _reqRecByRecTimeStamp = reqRecByRecTimeStamp;
-        _respSentByRecTimeStamp = respSentByRecTimeStamp;
+        _respSentFromRecTimeStamp = respSentFromRecTimeStamp;
         _respRecByTransTimeStamp = respRecByTransTimeStamp;
         _commProtoName = protocolUsed.getName();
         _encAlgName = encryptionAlgUsed.getName();
@@ -98,7 +99,7 @@ public class RoundTripResult {
             .append(_reqRecByRecTimeStamp)
             .append('\n')
             .append(" RespSentByReceiver: ")
-            .append(_respSentByRecTimeStamp)
+            .append(_respSentFromRecTimeStamp)
             .append('\n')
             .append(" RespRecByTransmitter: ")
             .append(_respRecByTransTimeStamp)
@@ -120,7 +121,7 @@ public class RoundTripResult {
             .append(",")
             .append(_reqRecByRecTimeStamp)
             .append(",")
-            .append(_respSentByRecTimeStamp)
+            .append(_respSentFromRecTimeStamp)
             .append(",")
             .append(_respRecByTransTimeStamp);
         

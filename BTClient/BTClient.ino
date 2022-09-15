@@ -103,10 +103,13 @@ String GetDataFromSensorProvider(String request) {
 
   } else if (request.indexOf("AES") >= 0) {
     // Copy into byte array
-    std::memcpy(cipherText, sPtr[1].c_str(), input.length());
+    std::string input = sPtr[1];
+    std::memcpy(cipherText, input.c_str(), input.length());
 
     // Decrypt
     uint16_t decLen = decryptToClearText(cipherText, 2*INPUT_BUFFER_LIMIT, aes_iv);
+
+    std::strcpy(sPtr[1], (const char*) clearText);
     
   } else if (request.indexOf("ECC") >= 0) {
     tinyECC tE;
