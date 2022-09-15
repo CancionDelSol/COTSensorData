@@ -5,6 +5,7 @@
 #include "BluetoothSerial.h"
 #include "COTStd.h"
 #include "AESLib.h"
+#include "tinyECC.h"
 
 /*
  * From online resource: https://randomnerdtutorials.com/esp32-bluetooth-classic-arduino-ide/ 
@@ -101,7 +102,26 @@ String GetDataFromSensorProvider(String request) {
     out[8] = '\0';
     String part = String(out, DEC);
     std::strcpy(sPtr[1], part.c_str());
+
+  } else if (request.indexOf("AES") >= 0) {
+    
+  } else if (request.indexOf("ECC") >= 0) {
+    tinyECC tE;
+    char buff[128];
+    buff[0] = '\0';
+    int buffIndex = 0;
+    for (int i = 0; i < 32; i++) {
+      String suff = String((uint8_t)sPtr[1][i]);
+      snprintf(buff, 128, "%s%s%s", buff, suff, ",");
+    }
+    
+    tE.ciphertext = String(buff);
+    tE.decrypt();
+
+    std::strcpy(sPtr[1], tE.plaintext.c_str());
   }
+
+
 
   String rVal = "";
   for (int i = 0; i < 3; i++) {

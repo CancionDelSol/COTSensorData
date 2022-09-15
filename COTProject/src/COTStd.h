@@ -63,7 +63,7 @@ void SetLEDLow() {
 // * Pulled from example under
 // *  the github repo -> https://github.com/suculent/thinx-aes-lib.git
 // */
-#define INPUT_BUFFER_LIMIT (64 + 1)
+#define INPUT_BUFFER_LIMIT (256 + 1)
 #define BT_TIMEOUT 5000
 
 unsigned char clearText[INPUT_BUFFER_LIMIT] = {0}; // THIS IS INPUT BUFFER (FOR TEXT)

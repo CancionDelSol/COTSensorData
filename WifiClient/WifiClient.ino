@@ -12,6 +12,7 @@
 #include <HTTPClient.h>
 
 #include "COTStd.h"
+#include "tinyECC.h"
 
 /*
  * WIFI Client
@@ -119,7 +120,15 @@ String GetDataFromSensorProvider(String request) {
     out[8] = '\0';
     String part = String(out, DEC);
     std::strcpy(sPtr[1], part.c_str());
+
+  } else if (request.indexOf("AES") >= 0) {
+
+  } else if (request.indexOf("ECC") >= 0) {
+    tinyECC tE;
+    tE.ciphertext = sPtr[1];
+    tE.encrypt();
   }
+
 
   String rVal = "";
   for (int i = 0; i < 3; i++) {

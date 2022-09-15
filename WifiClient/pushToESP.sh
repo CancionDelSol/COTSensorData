@@ -6,4 +6,4 @@ echo "Compiling..."
 arduino-cli compile -b ${BOARD} ${SKETCH}
 
 echo "Uploading..."
-arduino-cli upload -b ${BOARD} -p ${PORT} ${SKETCH}
+#arduino-cli upload -b ${BOARD} -p ${PORT} ${SKETCH}

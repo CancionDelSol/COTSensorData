@@ -197,7 +197,7 @@ public class ESPModule extends ConfigurableBase {
 
         String response = _reader.ReadBuffer();
 
-        Logger.Debug("Response: " + response);
+        Logger.Info("Response: " + response);
 
         return response;
     }
