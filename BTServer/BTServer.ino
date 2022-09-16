@@ -119,6 +119,9 @@ void loop(){
     Serial.println("Get AES encrypted data");
 
     uint16_t len = encryptToCipherText((char*)clearText, 18, aes_iv);
+    cipherText[INPUT_BUFFER_LIMIT * 2 + 1] = 0x0;
+    
+    response += String((const char*)cipherText, DEC);
 
   // Send des data back
   } else if (req.indexOf("DES") >= 0) { 

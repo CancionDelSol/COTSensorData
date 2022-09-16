@@ -21,18 +21,15 @@
  * port to this ESP module. 
  */
 
+ // AES Decryption support
+byte dec_iv[N_BLOCK] = { 0, 0, 0, 0,
+                         0, 0, 0, 0,
+                         0, 0, 0, 0,
+                         0, 0, 0, 0 };
+
 // Setup
 void setup() {
-  // This delay helps when
-  //  first setting up the
-  //  entire experiment
-  delay(2500);
-  
-  // Set Built-In LED as output
-  pinMode(LED_BUILTIN, OUTPUT);
-
-  // Begin serial com
-  Serial.begin(BAUD);
+  GenInit();
 
   // Notify connecting
   Serial.println("Connecting");
@@ -50,7 +47,7 @@ void setup() {
   Serial.println("");
   Serial.print("Connected to server with IP Address: ");
   Serial.println(WiFi.localIP());
-  //SetLEDHigh();
+  SetLEDHigh();
 }
 
 // Endpoints
@@ -78,7 +75,7 @@ void loop() {
       return;
     }
 
-    //SetLEDLow();
+    SetLEDLow();
 
     // Make raw data request
     //  index will be the offset
@@ -89,9 +86,9 @@ void loop() {
     String endTime = String(millis(), DEC);
 
     // Communicate back response
-    SendMsgSerial(startTime + " " + resp + " " + endTime);
+    SendMsgSerial(startTime + COMM_DELIM + resp + COMM_DELIM + endTime);
 
-    //SetLEDHigh();
+    SetLEDHigh();
   }
 }
 
@@ -104,12 +101,12 @@ String GetDataFromSensorProvider(String request) {
     curEndpoint += "encType" + String(request) + "/";
   }
 
-  String res = httpGETRequest(curEndpoint.c_str());
+  String resp = httpGETRequest(curEndpoint.c_str());
 
-  int partSize = seperate(res, sPtr, 3);
+  int partSize = seperate(resp, sPtr, 3, COMM_DELIM);
 
   if (partSize < 3) {
-    return String("WrongSize-Failed");
+    return resp;
   }
 
   if (request.indexOf("DES") >= 0) {
@@ -122,18 +119,42 @@ String GetDataFromSensorProvider(String request) {
     std::strcpy(sPtr[1], part.c_str());
 
   } else if (request.indexOf("AES") >= 0) {
+    // Get the input
+    String input = sPtr[1];
 
+    char buffer[512];
+    sprintf(buffer, "%s", input.c_str()); 
+    uint16_t clen = input.length();
+    
+    String output = decryptToClearText(buffer, input.length(), aes_iv);
+
+    for (int i = 0; i < 16; i++) {
+      dec_iv[i] = 0;
+    }
+    std::strcpy(sPtr[1], output.c_str());
+    
   } else if (request.indexOf("ECC") >= 0) {
-    tinyECC tE;
-    tE.ciphertext = sPtr[1];
-    tE.encrypt();
+// Do nothing
+//    String input = sPtr[1];
+//    char *subparts[3];
+//    int subPartSize = seperate(input, subparts, 3, "!");
+//
+//    if (subPartSize < 3) {
+//      return "ECC ERROR";
+//    }
+//
+//    tE.Sig[0] = std::atoi(subparts[0]);
+//    tE.Sig[1] = std::atoi(subparts[1]);
+//    tE.ciphertext = String(subparts[2]);
+//    tE.decrypt();
+//
+//    std::strcpy(sPtr[1], tE.plaintext.c_str());
   }
-
 
   String rVal = "";
   for (int i = 0; i < 3; i++) {
     rVal += sPtr[i];
-    rVal += " ";
+    rVal += COMM_DELIM;
   }
 
   return rVal;

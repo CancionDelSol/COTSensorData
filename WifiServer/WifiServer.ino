@@ -21,6 +21,12 @@
 #include "AESLib.h"
 #include "tinyECC.h"
 
+// AES Encryption support
+byte enc_iv[N_BLOCK] = { 0, 0, 0, 0,
+                         0, 0, 0, 0,
+                         0, 0, 0, 0,
+                         0, 0, 0, 0 };
+
 // Create Wifi server
 WiFiServer server(80);
 
@@ -31,26 +37,10 @@ String header;
 const long timeoutTime = 2000;
 
 void setup() {
-  // Copy text in the readBuffer
-  //  into the character array used
-  //  for AES encryption
-  sprintf((char*)clearText, "%s", readBuffer);
+  // General Initialization
+  GenInit();
   
-  // Allow time for serial moniter to react
-  //  top opening serial channel. Some serial
-  //  output gets dropped from the windows client
-  //  otherwise
-  delay(250);
-
-  // Initialize encryption library
-  aes_init();
-  
-  // Begin serial communication
-  Serial.begin(BAUD);
-
-  // Set built in LED as output
-  pinMode(LED_BUILTIN, OUTPUT);
-
+  // Serial logging
   Serial.print("Starting Access Point");
   
   // Remove the password parameter, if you want the AP (Access Point) to be open
@@ -83,7 +73,6 @@ void loop(){
 
     // Log
     Serial.println("New Client.");
-    SetLEDHigh();
 
     // Current line read from client
     String currentLine;
@@ -101,7 +90,7 @@ void loop(){
         // Add received time to
         //  response
         String response = String(millis(), DEC);
-        response += " ";
+        response += COMM_DELIM;
         
         // Append to header
         header += c;
@@ -131,11 +120,22 @@ void loop(){
 
             // Send aes encrypted data back
             } else if (header.indexOf("GET /sensordata/encTypeAES") >= 0) { 
-              Serial.println("Get-AES-encrypted-data");
+              Serial.println("Get AES encrypted data");
 
-              uint16_t len = encryptToCipherText((char*)clearText, 18, aes_iv);
-              String suffix = (const char*)cipherText;
-              response += suffix;
+              String input = "DEADBEEF";
+              char buffer[512];
+              sprintf(buffer, "%s", input);
+              
+              String output = encryptToCipherText(buffer, String(buffer).length(), enc_iv);
+          
+              // Clear the encryption
+              //  initialization vector
+              for (int i = 0; i < 16; i++) {
+                enc_iv[i] = 0;
+              }
+          
+              // Append response
+              response += output;
 
             // Send des data back
             } else if (header.indexOf("GET /sensordata/encTypeDES") >= 0) { 
@@ -145,7 +145,7 @@ void loop(){
 
               std::memcpy(chars, _desOut, 8);
               chars[8] = '\0';
-              String part = String(chars, HEX);
+              String part = String(chars);
               Serial.println("Get-DES-encrypted-data: " + part);
               response += part;
 
@@ -155,10 +155,16 @@ void loop(){
 
               // Encrypt using elliptic curve cryptography
               tinyECC tE;
-              tE.plaintext = "ECC-encrypted-text";
+              tE.plaintext = "DEADBEEF";
               tE.encrypt();
+
+              tE.genSig();
+
+              tE.verifySig();
+              tE.decrypt();
               
-              response += tE.ciphertext;
+              //response += String(tE.Sig[0])+"!"+String(tE.Sig[1])+"!";
+              response += tE.plaintext;
 
             } else if (header.indexOf("GET /sensordata/encTypeCurrentTime/") >= 0) {
               Serial.println("Sending current time");
@@ -169,7 +175,7 @@ void loop(){
               response += "Not-recognized:" + header;
             }
 
-            response += " ";
+            response += COMM_DELIM;
             response += String(millis(), DEC);
 
             Serial.println(response);
@@ -205,6 +211,6 @@ void loop(){
     // Log
     Serial.println("Client disconnected.");
     Serial.println("");
-    SetLEDLow();
+    //SetLEDLow();
   }
 }

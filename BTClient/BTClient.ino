@@ -7,6 +7,12 @@
 #include "AESLib.h"
 #include "tinyECC.h"
 
+// AES Decryption support
+byte dec_iv[N_BLOCK] = { 0, 0, 0, 0,
+                         0, 0, 0, 0,
+                         0, 0, 0, 0,
+                         0, 0, 0, 0 };
+
 /*
  * From online resource: https://randomnerdtutorials.com/esp32-bluetooth-classic-arduino-ide/ 
  */
@@ -18,14 +24,11 @@ BluetoothSerial SerialBT;
 
 bool isConnected = false;
 
-byte* btBuffer = (byte*)malloc(sizeof(byte) * INPUT_BUFFER_LIMIT);
-
 void setup() {
-  // Set Built-In LED as output
-  pinMode(LED_BUILTIN, OUTPUT);
+  // General initialization
+  GenInit();
   
-  Serial.begin(BAUD_RATE);
-
+  // Initialize SerialBT
   SerialBT.begin(BT_CLIENT_ID, true);
 
   // Attempt to connect
@@ -70,7 +73,7 @@ void loop() {
   String endTime = String(millis(), DEC);
 
   // Communicate back response
-  SendMsgSerial(startTime + " " + resp + " " + endTime);
+  SendMsgSerial(startTime + COMM_DELIM + resp + COMM_DELIM + endTime);
 
   // Set LED high for OK status
   SetLEDHigh();
@@ -82,11 +85,11 @@ void loop() {
 //  Data (Up to Eight packets)
 //  TimeStampTwo
 String GetDataFromSensorProvider(String request) {
-  SendPacket(request);
+  SendBluetoothPacket(request);
 
-  String resp = GetPacket();
+  String resp = GetBluetoothPacket();
 
-  int partSize = seperate(resp, sPtr, 3);
+  int partSize = seperate(resp, sPtr, 3, COMM_DELIM);
 
   if (partSize < 3) {
     return resp;
@@ -102,43 +105,35 @@ String GetDataFromSensorProvider(String request) {
     std::strcpy(sPtr[1], part.c_str());
 
   } else if (request.indexOf("AES") >= 0) {
-    // Copy into byte array
-    std::string input = sPtr[1];
-    std::memcpy(cipherText, input.c_str(), input.length());
+    // Get the input
+    String input = sPtr[1];
 
-    // Decrypt
-    uint16_t decLen = decryptToClearText(cipherText, 2*INPUT_BUFFER_LIMIT, aes_iv);
+    char buffer[512];
+    sprintf(buffer, "%s", input.c_str()); 
+    uint16_t clen = input.length();
+    
+    String output = decryptToClearText(buffer, input.length(), aes_iv);
 
-    std::strcpy(sPtr[1], (const char*) clearText);
+    for (int i = 0; i < 16; i++) {
+      dec_iv[i] = 0;
+    }
+    std::strcpy(sPtr[1], output.c_str());
     
   } else if (request.indexOf("ECC") >= 0) {
-    tinyECC tE;
-    char buff[128];
-    buff[0] = '\0';
-    int buffIndex = 0;
-    for (int i = 0; i < 32; i++) {
-      String suff = String((uint8_t)sPtr[1][i]);
-      snprintf(buff, 128, "%s%s%s", buff, suff, ",");
-    }
-    
-    tE.ciphertext = String(buff);
-    tE.decrypt();
-
-    std::strcpy(sPtr[1], tE.plaintext.c_str());
+    // Do nothing
   }
-
-
 
   String rVal = "";
   for (int i = 0; i < 3; i++) {
     rVal += sPtr[i];
-    rVal += " ";
+    rVal += COMM_DELIM;
   }
 
   return rVal;
 }
 
-String GetPacket() {
+// Recieve bluetooth packet
+String GetBluetoothPacket() {
   // Read into buffer
   int i = 0;
   bool endFeed = false;
@@ -153,7 +148,7 @@ String GetPacket() {
 
     timeout = millis() + 3000;
 
-    if (i > INPUT_BUFFER_LIMIT)
+    if (i > BLUE_INPUT_BUFFER_SIZE)
       break;
       
     byte btSerial = SerialBT.read();
@@ -168,7 +163,8 @@ String GetPacket() {
   return (const char*)btBuffer;
 }
 
-void SendPacket(String msg) {
+// Send bluetooth packet
+void SendBluetoothPacket(String msg) {
   msg.trim();
   
   const uint8_t* src = (const uint8_t *)msg.c_str();

@@ -34,21 +34,26 @@ void SendMsgSerial(String msg) {
 }
 
 /* String splitting */
+#define COMM_DELIM " "
 char *sPtr[3];
 char s[128];
-int seperate(String str, char **p, int size) {
+int seperate(String str, char **p, int size, const char* delim) {
   int n;
 
   std::strcpy(s, str.c_str());
 
-  *p++ = std::strtok(s, " ");
-  for (n = 1; NULL != (*p++ = std::strtok(NULL, " ")); n++) {
+  *p++ = std::strtok(s, delim);
+  for (n = 1; NULL != (*p++ = std::strtok(NULL, delim)); n++) {
     if (size == n)
       break;
   }
 
   return n;
 }
+int seperate(String str, char **p, int size) {
+  return seperate(str, p, size, " ");
+}
+
 
 /* LED Controls */
 void SetLEDHigh() {
@@ -58,68 +63,48 @@ void SetLEDLow() {
   digitalWrite(LED_BUILTIN, LOW);
 }
 
-///*
-// * AES encryption support
-// * Pulled from example under
-// *  the github repo -> https://github.com/suculent/thinx-aes-lib.git
-// */
-#define INPUT_BUFFER_LIMIT (256 + 1)
-#define BT_TIMEOUT 5000
-
-unsigned char clearText[INPUT_BUFFER_LIMIT] = {0}; // THIS IS INPUT BUFFER (FOR TEXT)
-unsigned char cipherText[2*INPUT_BUFFER_LIMIT] = {0}; // THIS IS OUTPUT BUFFER (FOR BASE64-ENCODED ENCRYPTED DATA)
-unsigned char readBuffer[18] = "AES Enc Data";
-
 /*
  * AES encryption support
  * Pulled from example under
  *  the github repo -> https://github.com/suculent/thinx-aes-lib.git
  */
 AESLib _aesLib;
-byte aes_key[]       = { 0x6D, 0x12, 0xF7, 0x09,
-                         0x3C, 0xAB, 0x88, 0xCF,
-                         0xAB, 0xF7, 0x15, 0xBC,
-                         0x09, 0x1F, 0x00, 0xAA };
 
-byte aes_iv[N_BLOCK] = { 0x0A, 0x0B, 0x0C, 0x0D,
-                         0x0C, 0x0D, 0x0E, 0x10,
-                         0x11, 0x12, 0x13, 0x14,
-                         0x15, 0x16, 0x17, 0x18 };
+#define DES_BUFFER_LIMIT 16
+unsigned char readBuffer[DES_BUFFER_LIMIT] = "DEADBEEF";
 
-/*
- * Encrypt message into cipher text
- */
-uint16_t encryptToCipherText(char* msg, uint16_t msgLen, byte iv[]) {
-  // Encrypt the text in the pointer's
-  //  location and place into byt array
-  int cipherlength =_aesLib.encrypt((byte*)msg, msgLen, (char*)cipherText, aes_key, sizeof(aes_key), iv);
+byte aes_key[] =   { 0x53, 0x43, 0x60, 0xBE,
+                     0x1A, 0xAA, 0x72, 0xB1,
+                     0x97, 0x23, 0xC1, 0xD2,
+                     0x7A, 0x01, 0x23, 0xC4 };
+
+byte aes_iv[N_BLOCK] = { 0xA1, 0xB0, 0x0B, 0x1A, 
+                         0xC1, 0xA2, 0x2A, 0x1C,
+                         0xC9, 0xA3, 0x3A, 0x9C,
+                         0xA4, 0xC4, 0x4C, 0x4A };
+
+// Encrypt message
+String encryptToCipherText(char* msg, uint16_t msgLen, byte iv[]) {
+  int cipherlength = _aesLib.get_cipher64_length(msgLen);
+
+  char encrypted[cipherlength];
+  _aesLib.encrypt64(msg, msgLen, encrypted, aes_key, sizeof(aes_key), iv);
   
   // Return the cipher length
-  return cipherlength;
-
+  return String(encrypted);
 }
 
-/*
- * Decrypt byte array into clear text
- */
-uint16_t decryptToClearText(byte msg[], uint16_t msgLen, byte iv[]) {
-  uint16_t dec_bytes =_aesLib.decrypt(msg, msgLen, (char*)clearText, aes_key, sizeof(aes_key), iv);
-  Serial.print("Decrypted bytes: "); Serial.println(dec_bytes);
-  return dec_bytes;
-
+// Decrypt message
+String decryptToClearText(char* msg, uint16_t msgLen, byte iv[]) {
+  char decrypted[msgLen];
+  _aesLib.decrypt64(msg, msgLen, decrypted, aes_key, sizeof(aes_key), iv);
+  return decrypted;
 }
 
-void placeIntoClearText() {
-  // Copy text in the readBuffer
-  //  into the character array used
-  //  for AES encryption
-  sprintf((char*)clearText, "%s", readBuffer);
-}
-
-// Generate IV (once)
+// Initialize AES
 void aes_init() {
   _aesLib.gen_iv(aes_iv);
-  _aesLib.set_paddingmode((paddingMode)0);
+  _aesLib.set_paddingmode(paddingMode::CMS);
 }
 
 /*
@@ -127,7 +112,6 @@ void aes_init() {
  */
 DES _desLib;
 byte _desOut[8];
-//byte _desOut[] = { 0x44, 0x45, 0x41, 0x44, 0x42, 0x45, 0x45, 0x46 };
 byte _desIn[] = { 0x44, 0x45, 0x41, 0x44, 0x42, 0x45, 0x45, 0x46 };
 byte _desKey[] = { 0x3b, 0x38, 0x98, 0x37, 0x15, 0x20, 0xf7, 0x5e };
 
@@ -144,5 +128,31 @@ void CopyToDESIn(std::string input) {
 #define BLE_SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 
-#endif
+/*
+ * Bluetooth Support
+ */
+#define BT_TIMEOUT 5000
+#define BLUE_INPUT_BUFFER_SIZE 512
 
+// Buffer used for communication
+byte* btBuffer = (byte*)malloc(sizeof(byte) * BLUE_INPUT_BUFFER_SIZE);
+
+/*
+ * All boards
+ */
+void GenInit() {
+  // Initialize AES Library
+  aes_init();
+
+  std::srand(0);
+
+  // Set Built-In LED as output
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  // Serial
+  Serial.begin(BAUD_RATE);
+  while(!Serial);
+}
+
+#endif
+  
