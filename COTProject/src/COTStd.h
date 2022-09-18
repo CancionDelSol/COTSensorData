@@ -125,8 +125,8 @@ void CopyToDESIn(std::string input) {
  */
 
 // UUIDs 
-#define BLE_SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+#define BLE_SERVICE_UUID        "47ce247c-3629-11ed-ab5b-c3fc2c331568"
+#define CHARACTERISTIC_UUID     "689ba74c-3629-11ed-a19d-abf4c6944073"
 
 /*
  * Bluetooth Support

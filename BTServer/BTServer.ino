@@ -8,6 +8,12 @@
 #include "AESLib.h"
 #include "tinyECC.h"
 
+// AES Encryption support
+byte enc_iv[N_BLOCK] = { 0, 0, 0, 0,
+                         0, 0, 0, 0,
+                         0, 0, 0, 0,
+                         0, 0, 0, 0 };
+
 /*
  * From online resource: https://randomnerdtutorials.com/esp32-bluetooth-classic-arduino-ide/ 
  */
@@ -17,26 +23,10 @@
 
 BluetoothSerial SerialBT;
 
-byte* btBuffer = (byte*)malloc(sizeof(byte) * INPUT_BUFFER_LIMIT);
-
 void setup() {
-  // Copy text in the readBuffer
-  //  into the character array used
-  //  for AES encryption
-  sprintf((char*)clearText, "%s", readBuffer);
-
-  // Allow time for serial moniter to react
-  //  to opening serial channel. Some serial
-  //  output gets dropped from the windows client
-  //  otherwise
-  delay(1500);
-
-  // Initialize encryption library
-  aes_init();
-
-  // Begin serial communication
-  Serial.begin(BAUD_RATE);
-
+  // General initialization
+  GenInit();
+  
   // Start Bluetooth server
   Serial.println("Starting bluetooth server");
   SerialBT.begin(BT_SERVER_ID, false);
@@ -70,7 +60,7 @@ void loop(){
      
     Serial.println("Reading");
     
-    if (i > INPUT_BUFFER_LIMIT)
+    if (i > BLUE_INPUT_BUFFER_SIZE)
       break;
 
     byte btSerial = SerialBT.read();
@@ -89,7 +79,9 @@ void loop(){
   if (i == 0)
     return;
 
+  // Serial logging
   Serial.println("We got a message");
+  
   // Flip the gui display back
   guiDisplayFlip = true;
 
@@ -103,7 +95,7 @@ void loop(){
   // Add received time to
   //  response
   String response = String(millis(), DEC);
-  response += " ";
+  response += COMM_DELIM;
  
   // Send unencrypted data back
   if (req.indexOf("CurrentTime") >= 0) {
@@ -118,13 +110,23 @@ void loop(){
   } else if (req.indexOf("AES") >= 0) { 
     Serial.println("Get AES encrypted data");
 
-    uint16_t len = encryptToCipherText((char*)clearText, 18, aes_iv);
-    cipherText[INPUT_BUFFER_LIMIT * 2 + 1] = 0x0;
+    String input = "DEADBEEF";
+    char buffer[512];
+    sprintf(buffer, "%s", input);
     
-    response += String((const char*)cipherText, DEC);
+    String output = encryptToCipherText(buffer, String(buffer).length(), enc_iv);
+
+    // Clear the encryption
+    //  initialization vector
+    for (int i = 0; i < 16; i++) {
+      enc_iv[i] = 0;
+    }
+
+    // Append response
+    response += output;
 
   // Send des data back
-  } else if (req.indexOf("DES") >= 0) { 
+  } else if (req.indexOf("DES") >= 0) {
     
     _desLib.encrypt(_desOut, _desIn, _desKey);
     char chars[9];
@@ -137,20 +139,27 @@ void loop(){
 
   // Send des data back
   } else if (req.indexOf("ECC") >= 0) { 
-    Serial.println("Get ECC encrypted data");
+    Serial.println("Get-ECC-encrypted-data");
+
     // Encrypt using elliptic curve cryptography
     tinyECC tE;
-    tE.plaintext = "ECC-encrypted-text";
+    tE.plaintext = "DEADBEEF";
     tE.encrypt();
+
+    tE.genSig();
+
+    tE.verifySig();
+    tE.decrypt();
     
-    response += tE.ciphertext;
- 
+    //response += String(tE.Sig[0])+"!"+String(tE.Sig[1])+"!";
+    response += tE.plaintext;
+    
   } else {
     Serial.println("Not recognized: " + req);
     response += "Not-recognized:" + req;
   }
 
-  response += " ";
+  response += COMM_DELIM;
   response += String(millis(), DEC);
 
   Serial.println("Sending back: " + response);

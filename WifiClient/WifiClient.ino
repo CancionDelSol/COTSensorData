@@ -21,7 +21,7 @@
  * port to this ESP module. 
  */
 
- // AES Decryption support
+// AES Decryption support
 byte dec_iv[N_BLOCK] = { 0, 0, 0, 0,
                          0, 0, 0, 0,
                          0, 0, 0, 0,
@@ -134,21 +134,7 @@ String GetDataFromSensorProvider(String request) {
     std::strcpy(sPtr[1], output.c_str());
     
   } else if (request.indexOf("ECC") >= 0) {
-// Do nothing
-//    String input = sPtr[1];
-//    char *subparts[3];
-//    int subPartSize = seperate(input, subparts, 3, "!");
-//
-//    if (subPartSize < 3) {
-//      return "ECC ERROR";
-//    }
-//
-//    tE.Sig[0] = std::atoi(subparts[0]);
-//    tE.Sig[1] = std::atoi(subparts[1]);
-//    tE.ciphertext = String(subparts[2]);
-//    tE.decrypt();
-//
-//    std::strcpy(sPtr[1], tE.plaintext.c_str());
+    // Do nothing
   }
 
   String rVal = "";
