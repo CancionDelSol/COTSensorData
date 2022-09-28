@@ -34,6 +34,7 @@ public class ESPModule extends ConfigurableBase {
     private static final String PORT_NAME = "PortName";
     private static final String BOARD_NAME = "BoardName";
     private static final String TIMEOUT = "Timeout";
+    private static final String MSG_TYPE = "MessageType";
     //endregion
 
     //region Fields
@@ -42,11 +43,13 @@ public class ESPModule extends ConfigurableBase {
     private static SerialWriter _writer;
     private static long _espClientOrigTime = 0L;
     private static long _espServerOrigTime = 0L;
+    private static String _msgType = "Default";
     //endregion
 
     //region Properties
     public static long getESPClientOrigTime() { return _espClientOrigTime; }
     public static long getESPServerOrigTime() { return _espServerOrigTime; }
+    public static String getMsgType() { return _msgType; }
     //endregion
 
     //region Constructor
@@ -62,6 +65,11 @@ public class ESPModule extends ConfigurableBase {
             // Get serial port name from settings
             portName = GetSetting(PORT_NAME, null);
             Logger.Debug("Attempting to connect to port: " + portName);
+
+            // Get message type
+            String messageType = GetSetting(MSG_TYPE, null);
+            _msgType = messageType;
+            Logger.Debug("Message type: " + messageType);
 
             // Connect to serial port
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
@@ -282,11 +290,18 @@ public class ESPModule extends ConfigurableBase {
         if (charArray.length < 2)
             return false;
         
-        if (charArray[0] != '<')
-            return false;
+        if (ESPModule.getMsgType() == "Default") {
+            if (charArray[0] != '<')
+                return false;
 
-        if (charArray[charArray.length - 1] != '>')
-            return false;
+            if (charArray[charArray.length - 1] != '>')
+                return false;
+                
+        } else {
+            if (msg.indexOf("\n") < 0) 
+                return false;
+
+        }
         
         return true;
     }
