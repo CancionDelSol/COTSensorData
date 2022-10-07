@@ -370,7 +370,7 @@ public class Program extends ConfigurableBase {
 
             // Append to appropriate file
             // [ProtoName:EncAlgName.csv]
-            String fileName = "reports/" + res.getCommProtoName() + ":" + res.getEncAlgName() + ".csv";
+            String fileName = "reports/" + res.getCommProtoName() + "-" + res.getEncAlgName() + ".csv";
             FileOutputStream outputFile = new FileOutputStream(fileName, true);
             outputFile.write((res.asRow() + "\r\n").getBytes());
             outputFile.close();
