@@ -1,0 +1,12 @@
+{
+    "breakpoints": [
+        {
+            "enabled": true,
+            "line": 110,
+            "snippet": "&dst_addr.IEEEAddress[i] = lladdr_dst;",
+            "url": "file:///C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ma_ca821x.c"
+        }
+    ],
+    "expressions": [
+    ]
+}
