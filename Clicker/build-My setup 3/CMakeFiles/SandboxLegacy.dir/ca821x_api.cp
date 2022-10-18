@@ -1,5 +1,5 @@
-#line 1 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
-#line 51 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 1 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
+#line 51 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdint.h"
 
 
@@ -48,7 +48,7 @@ typedef unsigned long int uintptr_t;
 
 typedef signed long long intmax_t;
 typedef unsigned long long uintmax_t;
-#line 52 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 52 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/string.h"
 #line 32 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/string.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdint.h"
@@ -103,10 +103,10 @@ void str_cut_right( char * str, int num );
 void str_split( char * str1, char * str2, int num );
 #line 347 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/string.h"
 void str_insert_chr( char * str, char chr, int num );
-#line 53 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 53 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdio.h"
-#line 54 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
-#line 55 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 54 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
+#line 55 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 #line 1 "mac_messages.h"
 #line 25 "mac_messages.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdint.h"
@@ -659,7 +659,7 @@ struct MAC_Message {
 		uint8_t                                     Payload[254];
 	} PData;
 };
-#line 56 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 56 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 #line 1 "ca821x_api.h"
 #line 45 "ca821x_api.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stddef.h"
@@ -936,21 +936,21 @@ extern int (*ca821x_api_downstream)(
 
 extern uint8_t MAC_Workarounds;
 extern uint8_t MAC_MPW;
-#line 57 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 57 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 
 uint8_t MAC_Workarounds = 0;
 uint8_t MAC_MPW         = 0;
 
 
 static struct ca821x_api_callbacks callbacks;
-#line 82 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 82 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 int (*ca821x_api_downstream)(
         const uint8_t *buf,
         size_t len,
         uint8_t *response,
         void *pDeviceRef
 );
-#line 107 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 107 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MCPS_DATA_request(
         uint8_t          SrcAddrMode,
         uint8_t          DstAddrMode,
@@ -1000,7 +1000,7 @@ uint8_t MCPS_DATA_request(
         return  (0x00) ;
 
 }
-#line 167 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 167 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MCPS_PURGE_request_sync(
         uint8_t     *MsduHandle,
         void        *pDeviceRef
@@ -1021,7 +1021,7 @@ uint8_t MCPS_PURGE_request_sync(
 
         return Response.PData.PurgeCnf.Status;
 }
-#line 203 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 203 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_ASSOCIATE_request(
         uint8_t          LogicalChannel,
         uint8_t          DstAddrMode,
@@ -1071,7 +1071,7 @@ uint8_t MLME_ASSOCIATE_request(
         return  (0x00) ;
 
 }
-#line 266 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 266 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_ASSOCIATE_response(
         uint8_t         *pDeviceAddress,
         uint16_t         AssocShortAddress,
@@ -1101,7 +1101,7 @@ uint8_t MLME_ASSOCIATE_response(
         return  (0x00) ;
 
 }
-#line 309 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 309 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_DISASSOCIATE_request(
         struct FullAddr    DevAddr,
         uint8_t            DisassociateReason,
@@ -1130,7 +1130,7 @@ uint8_t MLME_DISASSOCIATE_request(
 
         return  (0x00) ;
 }
-#line 351 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 351 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_GET_request_sync(
         uint8_t      PIBAttribute,
         uint8_t      PIBAttributeIndex,
@@ -1167,7 +1167,7 @@ uint8_t MLME_GET_request_sync(
 
 
 }
-#line 401 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 401 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_ORPHAN_response(
         uint8_t          *pOrphanAddress,
         uint16_t          ShortAddress,
@@ -1197,7 +1197,7 @@ uint8_t MLME_ORPHAN_response(
         return  (0x00) ;
 
 }
-#line 441 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 441 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_RESET_request_sync(uint8_t SetDefaultPIB, void *pDeviceRef)
 {
         uint8_t status;
@@ -1224,7 +1224,7 @@ uint8_t MLME_RESET_request_sync(uint8_t SetDefaultPIB, void *pDeviceRef)
 
 
 }
-#line 480 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 480 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_RX_ENABLE_request_sync(
         uint8_t      DeferPermit,
         uint32_t     RxOnTime,
@@ -1254,7 +1254,7 @@ uint8_t MLME_RX_ENABLE_request_sync(
 
         return Response.PData.Status;
 }
-#line 523 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 523 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_SCAN_request(
         uint8_t          ScanType,
         uint32_t         ScanChannels,
@@ -1286,7 +1286,7 @@ uint8_t MLME_SCAN_request(
         return  (0x00) ;
 
 }
-#line 568 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 568 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_SET_request_sync(
         uint8_t       PIBAttribute,
         uint8_t       PIBAttributeIndex,
@@ -1330,7 +1330,7 @@ uint8_t MLME_SET_request_sync(
 
 
 }
-#line 632 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 632 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_START_request_sync(
         uint16_t          PANId,
         uint8_t           LogicalChannel,
@@ -1386,7 +1386,7 @@ uint8_t MLME_START_request_sync(
         return Response.PData.Status;
 
 }
-#line 700 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 700 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t MLME_POLL_request_sync(
         struct FullAddr   CoordAddress,
         uint8_t           Interval[2],
@@ -1419,7 +1419,7 @@ uint8_t MLME_POLL_request_sync(
         return Response.PData.Status;
 
 }
-#line 745 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 745 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t HWME_SET_request_sync(
         uint8_t      HWAttribute,
         uint8_t      HWAttributeLength,
@@ -1442,7 +1442,7 @@ uint8_t HWME_SET_request_sync(
 
         return Response.PData.HWMESetCnf.Status;
 }
-#line 780 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 780 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t HWME_GET_request_sync(
         uint8_t      HWAttribute,
         uint8_t     *HWAttributeLength,
@@ -1468,7 +1468,7 @@ uint8_t HWME_GET_request_sync(
 
         return Response.PData.HWMEGetCnf.Status;
 }
-#line 817 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 817 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t HWME_HAES_request_sync(
         uint8_t      HAESMode,
         uint8_t     *pHAESData,
@@ -1492,7 +1492,7 @@ uint8_t HWME_HAES_request_sync(
 
         return Response.PData.HWMEHAESCnf.Status;
 }
-#line 853 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 853 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_SETSFR_request_sync(
         uint8_t      SFRPage,
         uint8_t      SFRAddress,
@@ -1515,7 +1515,7 @@ uint8_t TDME_SETSFR_request_sync(
 
         return Response.PData.TDMESetSFRCnf.Status;
 }
-#line 888 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 888 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_GETSFR_request_sync(
         uint8_t      SFRPage,
         uint8_t      SFRAddress,
@@ -1539,7 +1539,7 @@ uint8_t TDME_GETSFR_request_sync(
 
         return Response.PData.TDMEGetSFRCnf.Status;
 }
-#line 922 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 922 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_TESTMODE_request_sync(
         uint8_t      TestMode,
         void        *pDeviceRef
@@ -1558,7 +1558,7 @@ uint8_t TDME_TESTMODE_request_sync(
 
         return Response.PData.TDMETestModeCnf.Status;
 }
-#line 953 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 953 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_SET_request_sync(
         uint8_t      TestAttribute,
         uint8_t      TestAttributeLength,
@@ -1588,7 +1588,7 @@ uint8_t TDME_SET_request_sync(
 
         return Response.PData.TDMESetCnf.Status;
 }
-#line 996 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 996 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_TXPKT_request_sync(
         uint8_t      TestPacketDataType,
         uint8_t     *TestPacketSequenceNumber,
@@ -1626,7 +1626,7 @@ uint8_t TDME_TXPKT_request_sync(
 
         return Response.PData.TDMETxPktCnf.Status;
 }
-#line 1048 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 1048 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_LOTLK_request_sync(
         uint8_t     *TestChannel,
         uint8_t     *TestRxTxb,
@@ -1658,7 +1658,7 @@ uint8_t TDME_LOTLK_request_sync(
 
         return Response.PData.TDMELOTlkCnf.Status;
 }
-#line 1089 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 1089 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_ChipInit(void *pDeviceRef)
 {
         uint8_t status;
@@ -1688,7 +1688,7 @@ uint8_t TDME_ChipInit(void *pDeviceRef)
 
         return  (0x00) ;
 }
-#line 1129 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 1129 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_ChannelInit(uint8_t channel, void *pDeviceRef)
 {
         uint8_t txcalval;
@@ -1715,7 +1715,7 @@ uint8_t TDME_ChannelInit(uint8_t channel, void *pDeviceRef)
 
         return TDME_SETSFR_request_sync(1, 0xBF, txcalval, pDeviceRef);
 }
-#line 1167 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 1167 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_CheckPIBAttribute(
         uint8_t      PIBAttribute,
         uint8_t      PIBAttributeLength,
@@ -1805,7 +1805,7 @@ uint8_t TDME_CheckPIBAttribute(
 
         return status;
 }
-#line 1271 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 1271 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_SetTxPower(uint8_t txp, void *pDeviceRef)
 {
         uint8_t status;
@@ -1858,7 +1858,7 @@ uint8_t TDME_SetTxPower(uint8_t txp, void *pDeviceRef)
 
         return status;
 }
-#line 1339 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 1339 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 uint8_t TDME_GetTxPower(
         uint8_t *txp,
         void    *pDeviceRef
@@ -1904,12 +1904,12 @@ uint8_t TDME_GetTxPower(
 
         return status;
 }
-#line 1392 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 1392 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 void ca821x_register_callbacks(struct ca821x_api_callbacks *in_callbacks)
 {
         memcpy(&callbacks, in_callbacks, sizeof(struct ca821x_api_callbacks));
 }
-#line 1408 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 1408 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
 int ca821x_downstream_dispatch(const uint8_t *buf, size_t len)
 {
         int ret;
@@ -2038,7 +2038,7 @@ int ca821x_downstream_dispatch(const uint8_t *buf, size_t len)
 
                 break;
         }
-#line 1539 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_api.c"
+#line 1539 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_api.c"
         if (callbacks.generic_dispatch) {
                 ret = callbacks.generic_dispatch(buf, len);
                 if (ret) {

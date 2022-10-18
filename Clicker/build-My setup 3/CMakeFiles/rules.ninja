@@ -17,7 +17,7 @@
 rule MikroC_COMPILER__SandboxLegacy_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = C:\PROGRA~1\NECTOS~1\NECTOS~1\COMPIL~1\PIC32\mikroC\MIKROC~1.EXE -pPIC32MX470F512H -jcom -DL -NRL  -b"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/build-My setup 3" -fo80 $FLAGS $DEFINES -SP"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/build-My setup 3" -SP"C:/Program Files/NECTOStudio/NECTOStudio/compilers/PIC32/mikroC/core/def" -SP"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/.meproject/setup/Debug/PIC32MX470F512H.jcfg"  $INCLUDES -out $out $in "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/.meproject/setup/Debug/lib/lib_core.a"
+  command = C:\PROGRA~1\NECTOS~1\NECTOS~1\COMPIL~1\PIC32\mikroC\MIKROC~1.EXE -pPIC32MX470F512H -jcom -DL -NRL  -b"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/build-My setup 3" -fo80 $FLAGS $DEFINES -SP"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/build-My setup 3" -SP"C:/Program Files/NECTOStudio/NECTOStudio/compilers/PIC32/mikroC/core/def" -SP"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/PIC32MX470F512H.jcfg"  $INCLUDES -out $out $in "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/lib/lib_core.a"
   description = Building MikroC object $out
 
 
@@ -25,7 +25,7 @@ rule MikroC_COMPILER__SandboxLegacy_Debug
 # Rule for linking MikroC executable.
 
 rule MikroC_EXECUTABLE_LINKER__SandboxLegacy_Debug
-  command = cmd.exe /C "$PRE_LINK && C:\PROGRA~1\NECTOS~1\NECTOS~1\COMPIL~1\PIC32\mikroC\MIKROC~1.EXE  -pPIC32MX470F512H -NRL -b"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/build-My setup 3" -fo80 $LINK_FLAGS -SP"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/build-My setup 3" -SP"C:/Program Files/NECTOStudio/NECTOStudio/compilers/PIC32/mikroC/core/def" -SP"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/.meproject/setup/Debug/PIC32MX470F512H.jcfg" -out $TARGET_FILE  $in $LINK_PATH $LINK_LIBRARIES "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/.meproject/setup/Debug/lib/lib_core.a" && $POST_BUILD"
+  command = cmd.exe /C "$PRE_LINK && C:\PROGRA~1\NECTOS~1\NECTOS~1\COMPIL~1\PIC32\mikroC\MIKROC~1.EXE  -pPIC32MX470F512H -NRL -b"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/build-My setup 3" -fo80 $LINK_FLAGS -SP"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/build-My setup 3" -SP"C:/Program Files/NECTOStudio/NECTOStudio/compilers/PIC32/mikroC/core/def" -SP"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/PIC32MX470F512H.jcfg" -out $TARGET_FILE  $in $LINK_PATH $LINK_LIBRARIES "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/lib/lib_core.a" && $POST_BUILD"
   description = Linking MikroC executable $TARGET_FILE
   restat = $RESTAT
 
@@ -42,7 +42,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = "C:\Program Files\NECTOStudio\NECTOStudio\CMake\bin\cmake.exe" --regenerate-during-build -S"C:\Users\roger\Documents\MIKROE\Projects\SandboxLegacy Backup" -B"C:\Users\roger\Documents\MIKROE\Projects\SandboxLegacy Backup\build-My setup 3"
+  command = "C:\Program Files\NECTOStudio\NECTOStudio\CMake\bin\cmake.exe" --regenerate-during-build -SC:\Users\roger\Documents\MIKROE\Projects\SandboxLegacy -B"C:\Users\roger\Documents\MIKROE\Projects\SandboxLegacy\build-My setup 3"
   description = Re-running CMake...
   generator = 1
 

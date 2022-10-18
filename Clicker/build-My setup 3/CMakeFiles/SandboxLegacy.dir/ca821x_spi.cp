@@ -1,4 +1,4 @@
-#line 1 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 1 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 #line 1 "ca821x_spi.h"
 #line 5 "ca821x_spi.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdint.h"
@@ -66,11 +66,11 @@ typedef union MacAddr MacAddr_t;
 void ca821x_spi_init(spi_transfer_t spi_transfer);
 #line 39 "ca821x_spi.h"
 uint8_t ca821x_spi_receive(uint8_t *buf);
-#line 2 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
-#line 3 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 2 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
+#line 3 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdint.h"
-#line 4 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
-#line 5 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 4 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
+#line 5 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 #line 1 "ca821x_api.h"
 #line 45 "ca821x_api.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stddef.h"
@@ -898,7 +898,7 @@ extern int (*ca821x_api_downstream)(
 
 extern uint8_t MAC_Workarounds;
 extern uint8_t MAC_MPW;
-#line 6 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 6 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 #line 1 "ca821x_irq.h"
 #line 6 "ca821x_irq.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdbool.h"
@@ -921,7 +921,7 @@ uint8_t ca821x_irq_wait(uint16_t timeout_ms);
 void ca821x_irq_enable();
 #line 55 "ca821x_irq.h"
 void ca821x_irq_disable();
-#line 7 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 7 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 #line 1 "ca821x_bsp.h"
 #line 4 "ca821x_bsp.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdbool.h"
@@ -936,12 +936,12 @@ void ca821x_bsp_cs_low();
 void ca821x_bsp_cs_high();
 #line 48 "ca821x_bsp.h"
 _Bool  ca821x_bsp_irq_sense();
-#line 8 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 8 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 
 
 
 spi_transfer_t _spi_transfer;
-#line 18 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 18 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 static int _downstream(
     const uint8_t *out_buffer,
     size_t length,
@@ -961,13 +961,13 @@ static uint8_t _downstream_async(
     uint8_t *tx_buffer,
     size_t length
 );
-#line 44 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 44 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 void ca821x_spi_init(spi_transfer_t spi_transfer)
 {
     _spi_transfer = spi_transfer;
     ca821x_api_downstream = _downstream;
 }
-#line 52 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 52 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 uint8_t ca821x_spi_receive(uint8_t *buffer)
 {
     uint8_t i;
@@ -1001,7 +1001,7 @@ uint8_t ca821x_spi_receive(uint8_t *buffer)
     ca821x_bsp_cs_high();
     return  (0x00) ;
 }
-#line 93 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 93 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 static uint8_t _downstream_sync(
     uint8_t *tx_buffer,
     size_t length,
@@ -1037,7 +1037,7 @@ static uint8_t _downstream_sync(
     ca821x_irq_enable();
     return  (0x00) ;
 }
-#line 131 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 131 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 static uint8_t _downstream_async(
     uint8_t *tx_buffer,
     size_t length
@@ -1051,7 +1051,7 @@ static uint8_t _downstream_async(
 
     return status;
 }
-#line 147 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 147 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 static int _downstream(
     uint8_t *tx_buffer,
     size_t length,
@@ -1076,7 +1076,7 @@ static int _downstream(
     ca821x_irq_enable();
     return status;
 }
-#line 174 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_spi.c"
+#line 174 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_spi.c"
 static uint8_t _send(uint8_t *buffer, size_t length)
 {
     uint8_t rx_byte;

@@ -3,7 +3,7 @@ set(CMAKE_HOST_SYSTEM_NAME "Windows")
 set(CMAKE_HOST_SYSTEM_VERSION "10.0.22000")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "AMD64")
 
-include("C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/build-My setup 3/toolchain.cmake")
+include("C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/build-My setup 3/toolchain.cmake")
 
 set(CMAKE_SYSTEM "Generic-1")
 set(CMAKE_SYSTEM_NAME "Generic")

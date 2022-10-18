@@ -1,4 +1,4 @@
-#line 1 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_irq.c"
+#line 1 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_irq.c"
 #line 1 "ca821x_irq.h"
 #line 6 "ca821x_irq.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdbool.h"
@@ -68,8 +68,8 @@ uint8_t ca821x_irq_wait(uint16_t timeout_ms);
 void ca821x_irq_enable();
 #line 55 "ca821x_irq.h"
 void ca821x_irq_disable();
-#line 2 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_irq.c"
-#line 3 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_irq.c"
+#line 2 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_irq.c"
+#line 3 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_irq.c"
 #line 1 "ca821x_bsp.h"
 #line 4 "ca821x_bsp.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdbool.h"
@@ -84,15 +84,15 @@ void ca821x_bsp_cs_low();
 void ca821x_bsp_cs_high();
 #line 48 "ca821x_bsp.h"
 _Bool  ca821x_bsp_irq_sense();
-#line 4 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_irq.c"
+#line 4 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_irq.c"
 
 static  _Bool  _irq_pending;
-#line 14 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_irq.c"
+#line 14 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_irq.c"
 void ca821x_irq_init()
 {
     _irq_pending =  0 ;
 }
-#line 21 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_irq.c"
+#line 21 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_irq.c"
 _Bool  ca821x_irq_is_pending()
 {
     if (_irq_pending)
@@ -103,12 +103,12 @@ _Bool  ca821x_irq_is_pending()
 
     return  0 ;
 }
-#line 34 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_irq.c"
+#line 34 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_irq.c"
 void ca821x_irq_signal()
 {
     _irq_pending =  1 ;
 }
-#line 41 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_irq.c"
+#line 41 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_irq.c"
 uint8_t ca821x_irq_wait(uint16_t timeout_ms)
 {
     uint32_t cnt;
@@ -126,13 +126,13 @@ uint8_t ca821x_irq_wait(uint16_t timeout_ms)
 
     return  1 ;
 }
-#line 61 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_irq.c"
+#line 61 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_irq.c"
 void ca821x_irq_enable()
 {
     INT1IF_bit = 0;
     INT1IE_bit = 1;
 }
-#line 69 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/ca821x_irq.c"
+#line 69 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ca821x_irq.c"
 void ca821x_irq_disable()
 {
     INT1IE_bit = 0;

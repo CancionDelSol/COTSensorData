@@ -1,4 +1,4 @@
-#line 1 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 1 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 #line 1 "mac_ca821x.h"
 #line 6 "mac_ca821x.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdint.h"
@@ -939,10 +939,10 @@ uint8_t mac_send(
 uint8_t mac_get_addr(uint8_t *addr);
 #line 80 "mac_ca821x.h"
 uint8_t mac_set_addr(uint8_t *addr);
-#line 2 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
-#line 3 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 2 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
+#line 3 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 #line 1 "ca821x_spi.h"
-#line 4 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 4 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 #line 1 "ca821x_bsp.h"
 #line 4 "ca821x_bsp.h"
 #line 1 "C:/PROGRA~1/NECTOS~1/NECTOS~1/COMPIL~1/PIC32/mikroC/include/stdbool.h"
@@ -957,20 +957,20 @@ void ca821x_bsp_cs_low();
 void ca821x_bsp_cs_high();
 #line 48 "ca821x_bsp.h"
 _Bool  ca821x_bsp_irq_sense();
-#line 5 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
-#line 6 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 5 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
+#line 6 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 #line 1 "log.h"
 #line 37 "log.h"
 static char sep[] =
     "-------------------------------------------------------";
-#line 7 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 7 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 
 static uint8_t _msdu_handle;
 
 void blink(int i);
 
 extern sfr sbit MAC_CA821X_RST;
-#line 20 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 20 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 uint8_t mac_init()
 {
     _msdu_handle = 0;
@@ -983,7 +983,7 @@ uint8_t mac_init()
 
     return mac_reset();
 }
-#line 36 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 36 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 uint8_t mac_reset()
 {
     _Bool  is_timeout;
@@ -1045,7 +1045,7 @@ uint8_t mac_reset()
 
     return status;
 }
-#line 101 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 101 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 uint8_t mac_send(
     uint8_t *lladdr_dst,
     uint8_t *msdu,
@@ -1072,7 +1072,7 @@ uint8_t mac_send(
 
     return status;
 }
-#line 130 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 130 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 uint8_t mac_process()
 {
     MAC_Message_t mac_message;
@@ -1091,7 +1091,7 @@ uint8_t mac_process()
 
     return 0;
 }
-#line 152 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 152 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 uint8_t mac_set_addr(uint8_t *addr)
 {
     uint8_t status;
@@ -1106,7 +1106,7 @@ uint8_t mac_set_addr(uint8_t *addr)
 
     return status;
 }
-#line 170 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy Backup/mac_ca821x.c"
+#line 170 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/mac_ca821x.c"
 uint8_t mac_get_addr(uint8_t *addr)
 {
     uint8_t status;
