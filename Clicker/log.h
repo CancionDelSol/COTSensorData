@@ -64,7 +64,14 @@ static char sep[] =
 #define LOG_INFO( x )\
         UART_WRITE_TEXT( "INFO: " ); LOG_TAB;\
         UART_WRITE_TEXT( x );\
-        LOG_NEW_LINE;      
+        LOG_NEW_LINE;
+
+// Only used to send UART response
+#define LOG_SERIAL_RESPONSE( x )\
+        UART_WRITE_TEXT( "<" );\
+        UART_WRITE_TEXT( x );\
+        UART_WRITE_TEXT( ">");\
+        LOG_NEW_LINE;
         
 #define LOG_ERROR( x )\
         UART_WRITE_TEXT( "ERROR: " ); LOG_TAB;\

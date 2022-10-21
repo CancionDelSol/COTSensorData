@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.imageio.plugins.tiff.GeoTIFFTagSet;
 
@@ -48,6 +49,7 @@ import util.Logger.LogLevel;
  *    - Program Type
  *       Test
  *       Local (Server)
+ *       Serial (Serial monitor)
  *
  *  - Perform necessary initialization
  *    - Local (Server):
@@ -71,6 +73,8 @@ import util.Logger.LogLevel;
 public class Program extends ConfigurableBase {
     //region Constants
     private static final String TEST_PRGM_TYPE_FLAG = "-test";
+    private static final String SERIAL_MON_PRGM_TYPE_FLAG = "-serialMonitor";
+    private static final String SERIAL_SEND_PRGM_TYPE_FLAG = "-serialMessenger";
 
     private static final String LOG_LEVEL = "LogLevel";
     private static final String RUNS_TO_DO = "RunsToDo";
@@ -137,7 +141,8 @@ public class Program extends ConfigurableBase {
         //  encryption algs and
         //  communication protos
         try {
-            Discover();
+            if (_programType == ProgramType.MAIN || _programType == ProgramType.TEST)
+                Discover();
         } catch (Exception exc) {
             Logger.Error("Exception during discovery: " + exc.getMessage());
             return;
@@ -150,6 +155,12 @@ public class Program extends ConfigurableBase {
                     break;
                 case TEST:
                     RunTests();
+                    break;
+                case SERIALMONITOR:
+                    RunSerialMonitor();
+                    break;
+                case SERIALMESSENGER:
+                    RunSerialMessenger();
                     break;
                 default:
                     Logger.Error("Unknown program type");
@@ -256,6 +267,14 @@ public class Program extends ConfigurableBase {
                 switch (curArg) {
                     case (TEST_PRGM_TYPE_FLAG):
                         _programType = ProgramType.TEST;
+                        i++;
+                        break;
+                    case (SERIAL_MON_PRGM_TYPE_FLAG):
+                        _programType = ProgramType.SERIALMONITOR;
+                        i++;
+                        break;
+                    case (SERIAL_SEND_PRGM_TYPE_FLAG):
+                        _programType = ProgramType.SERIALMESSENGER;
                         i++;
                         break;
                     default:
@@ -423,6 +442,38 @@ public class Program extends ConfigurableBase {
     }
     //endregion
 
+    //region Serial
+    private static void RunSerialMonitor() throws Exception {
+
+        ESPModule module = ESPModule.getModule();
+
+        while (true) {
+            try {
+                Logger.Info("Reading buffer");
+                String message = module.ReadBuffer();
+                Logger.Gui(message);
+            } catch (Exception exc) {
+                Logger.Error("Exception while monitoring: " + exc.getMessage());
+            }
+        }
+
+    }
+
+    private static void RunSerialMessenger() throws Exception {
+        ESPModule module = ESPModule.getModule();
+
+        while (true) {
+            Scanner scanner = new Scanner(System.in);
+            Logger.Gui("Message: ");
+            try {String message = scanner.nextLine();
+                module.SendMessage(message, false);
+            } catch (Exception exc) {
+                Logger.Error("Exception while messaging: " + exc.getMessage());
+            }
+        }
+    }
+    //endregion
+    
     //region ConfigurableBase
     @Override
     protected void _setDefaults() {

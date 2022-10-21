@@ -43,7 +43,7 @@ public class ESPModule extends ConfigurableBase {
     private static SerialWriter _writer;
     private static long _espClientOrigTime = 0L;
     private static long _espServerOrigTime = 0L;
-    private static String _msgType = "Default";
+    private static String _msgType = "Default"; // Or Abridged
     //endregion
 
     //region Properties
@@ -205,7 +205,7 @@ public class ESPModule extends ConfigurableBase {
 
         String response = _reader.ReadBuffer();
 
-        Logger.Info("Response: " + response);
+        Logger.Debug("Response: " + response);
 
         return response;
     }
@@ -217,6 +217,7 @@ public class ESPModule extends ConfigurableBase {
         SetSetting(BOARD_NAME, "ESP-WROOM-32");
         SetSetting(PORT_NAME, "ttyUSB0");
         SetSetting(TIMEOUT, "2500");
+        SetSetting(MSG_TYPE, "Default");
     }
     //endregion
 
@@ -266,7 +267,7 @@ public class ESPModule extends ConfigurableBase {
 
                     len = _inputStream.read(buffer);
 
-                    Logger.Debug("Length" + len);
+                    Logger.Debug("Length " + len);
                     String fromStream = new String(buffer, 0, len);
 
                     Logger.Debug("Read from buffer: " + fromStream);

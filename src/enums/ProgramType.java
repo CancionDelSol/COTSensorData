@@ -2,5 +2,7 @@ package enums;
 
 public enum ProgramType {
     MAIN,
-    TEST
+    TEST,
+    SERIALMESSENGER,
+    SERIALMONITOR
 }
