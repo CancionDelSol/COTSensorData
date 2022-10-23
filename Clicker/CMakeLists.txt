@@ -25,6 +25,10 @@ ca821x_bsp.c
 ca821x_api.c
 mac_ca821x.c
 DES.c
+aes.c
+aes.h
+ecc.c
+ecdh.h
 )
 
 ############################ SandboxLegacy GENERATED CODE START ###########################

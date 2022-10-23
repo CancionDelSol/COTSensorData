@@ -956,6 +956,12 @@ static char sep[] =
 
 
 
+
+
+
+
+
+
 void blink(int i);
 void fastBlink(int i);
 
@@ -970,11 +976,11 @@ sbit CA821X_RF_CS_DIR at TRISE3_bit;
 sbit CA821X_RF_IRQ_DIR at TRISD1_bit;
 
 sbit T1_DIR at TRISE7_bit;
-#line 55 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 61 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
 static uint8_t ieee_address[8] = {
     0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0x00, 0x00, 0x01
 };
-#line 63 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 69 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
 int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
 {
 
@@ -991,7 +997,7 @@ int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
 
     return 0;
 }
-#line 92 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 98 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
 static void irq_init( void )
 {
     INT1IP0_bit = 1;
@@ -1003,7 +1009,7 @@ static void irq_init( void )
 
     EnableInterrupts();
 }
-#line 106 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 112 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
 static void gpio_init( void )
 {
 
@@ -1032,7 +1038,7 @@ static void gpio_init( void )
 
     T1_DIR =  (1) ;
 }
-#line 137 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 143 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
 void system_init( void )
 {
     struct ca821x_api_callbacks api_cb;
@@ -1064,12 +1070,12 @@ void system_init( void )
 
 
     api_cb.MCPS_DATA_indication = handle_mcps_data_indication;
-#line 175 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 181 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
     ca821x_register_callbacks(&api_cb);
 
     UART3_Write_Text( "INFO: " ) ; UART3_Write_Text( "\x09" ) ; ; UART3_Write_Text( "System initialized." ) ; UART3_Write_Text( "\r\n" ) ; ; ;
 }
-#line 204 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 210 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
 static void mac_rx_on( void )
 {
     uint8_t value;
@@ -1083,7 +1089,7 @@ static void mac_rx_on( void )
         ((void *)0)
     );
 }
-#line 220 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 226 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
 static void mac_set_pan_id( void )
 {
     uint8_t pan_id[2];
@@ -1099,7 +1105,7 @@ static void mac_set_pan_id( void )
         ((void *)0)
     );
 }
-#line 238 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 244 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
 void LEDOneHigh() {
     LATB |= 0x3F;
     LATC = 0xFF;
@@ -1168,14 +1174,14 @@ void main()
 
     mac_rx_on();
     UART3_Write_Text( "INFO: " ) ; UART3_Write_Text( "\x09" ) ; ; UART3_Write_Text( "Waiting message..." ) ; UART3_Write_Text( "\r\n" ) ; ; ;
-#line 314 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 320 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
     while (1)
     {
-#line 329 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 335 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
        mac_process();
     }
 }
-#line 335 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
+#line 341 "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/main.c"
 void RF_ISR() iv IVT_EXTERNAL_1 ilevel 7 ics ICS_SRS
 {
     INT1IF_bit = 0;

@@ -8,6 +8,12 @@
 #define PIN_DIR_IN (1)
 #define PIN_DIR_OUT (0)
 
+// Encryption algorithm used
+#define ENC_NONE 1
+//#define ENC_AES 1
+//#define ENC_DES 1
+//#define ENC_ECC 1
+
 void blink(int i);
 void fastBlink(int i);
 

@@ -64,6 +64,10 @@ CORE_LIB:STRING=C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meprojec
 
 CORE_NAME:STRING=MIPS32
 
+FIND_PACKAGE_MESSAGE_DETAILS_MikroC.MemManager:STRING=[;C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_MemManager/__Lib_MemManager.emcl;][v()]
+
+FIND_PACKAGE_MESSAGE_DETAILS_MikroC.Mmc:STRING=[;C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_Mmc/__Lib_Mmc.emcl;][v()]
+
 JCFG_FILE:STRING=C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/PIC32MX470F512H.jcfg
 
 LEGACY_LIBRARIES:STRING="C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_UART_1234/__Lib_UART_1234.emcl" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_System_001/MikroC.System.a" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_SPI_12/__Lib_SPI_12.emcl" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_PPS_P32MX_4xx_64USB/__Lib_PPS_P32MX_4xx_64USB.emcl" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_CType/__Lib_CType.emcl" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_CString/__Lib_CString.emcl" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_CStdlib/__Lib_CStdlib.emcl" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_Conversions/__Lib_Conversions.emcl" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_CMath/__Lib_CMath.emcl" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_Button/__Lib_Button.emcl" "C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_System_001/MikroC.System.a"

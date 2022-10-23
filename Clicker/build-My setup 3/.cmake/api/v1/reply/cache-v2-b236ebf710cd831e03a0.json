@@ -506,6 +506,30 @@
 			"value" : "[\"C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_Conversions/__Lib_Conversions.emcl\"][v()]"
 		},
 		{
+			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_MikroC.MemManager",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "STRING",
+			"value" : "[;C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_MemManager/__Lib_MemManager.emcl;][v()]"
+		},
+		{
+			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_MikroC.Mmc",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "STRING",
+			"value" : "[;C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/.meproject/setup/Debug/cmake/../bin/MIPS32/__Lib_Mmc/__Lib_Mmc.emcl;][v()]"
+		},
+		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_MikroC.Peripheral_Pin_Select",
 			"properties" : 
 			[
