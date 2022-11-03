@@ -1,3 +1,0 @@
-C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/build-My setup 3/CMakeFiles/SandboxLegacy.dir
-C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/build-My setup 3/CMakeFiles/edit_cache.dir
-C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/build-My setup 3/CMakeFiles/rebuild_cache.dir

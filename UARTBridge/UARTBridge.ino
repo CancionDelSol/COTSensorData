@@ -7,18 +7,17 @@
 
 SoftwareSerial softSerial(RX_PIN, TX_PIN);
 
-volatile bool isReading = false;
 void setup() {
   GenInit();
-
+  Serial.println("Starting up");
   softSerial.begin(38400);
 
   softSerial.enableRx(true);
 }
 
 void loop() {
-  if (!isReading)
-    CheckMsgFromUART();
+
+  CheckMsgFromUART();
 
   CheckMsgFromUSB();
 
@@ -26,16 +25,14 @@ void loop() {
 }
 
 void CheckMsgFromUART() {
-  isReading = true;
-
-  char buff[16] = { 0 };
-  int readCount = softSerial.read(buff, 16);
+  char buff[512] = { 0 };
+  int readCount = softSerial.read(buff, 512);
 
   if (readCount > 0) {
+    SetLEDHigh();
     Serial.print(buff);
+    SetLEDLow();
   }
-  
-  isReading = false;
 }
 
 void CheckMsgFromUSB() {
@@ -52,6 +49,8 @@ void CheckMsgFromUSB() {
 
   if (!hasRequest)
     return;
-
+    
+  SetLEDHigh();
   softSerial.write(req.c_str(), req.length());
+  SetLEDLow();
 }
