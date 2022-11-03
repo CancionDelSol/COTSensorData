@@ -29,6 +29,10 @@ aes.c
 aes.h
 ecc.c
 ecdh.h
+des.h
+des.h
+enc_supp.h
+utils.h
 )
 
 ############################ SandboxLegacy GENERATED CODE START ###########################

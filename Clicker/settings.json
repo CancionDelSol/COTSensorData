@@ -5,12 +5,6 @@
             "line": 110,
             "snippet": "&dst_addr.IEEEAddress[i] = lladdr_dst;",
             "url": "file:///C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/ma_ca821x.c"
-        },
-        {
-            "enabled": true,
-            "line": 367,
-            "snippet": "RIGHT[0][i – 32] = IPtext[i];",
-            "url": "file:///C:/Users/roger/Documents/MIKROE/Projects/SandboxLegacy/DES.h"
         }
     ],
     "expressions": [
