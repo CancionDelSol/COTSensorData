@@ -9,7 +9,7 @@
 #include "ca821x_api.h"
 
 /************** Transmitter and Receiver Flags ****************************************/
-#define APP_TRANSMITTER 1
+//#define APP_TRANSMITTER 1
 #ifndef APP_TRANSMITTER // This represents the server module (Power monitered)
 #define APP_RECIEVER 1  // This represents the client module (Connected to ESP)
 #endif
@@ -21,10 +21,6 @@
 // Encryption algorithm used
 // Uncomment to switch, only
 // one should be used at a time
-#define ENC_NONE 1
-//#define ENC_AES 1
-//#define ENC_DES 1
-//#define ENC_ECC 1
 #include "enc_supp.h"
 #include "log.h"
 
@@ -125,16 +121,18 @@ static void mac_set_pan_id( void )
 /* Messaging */
 static char message[] = "DEADBEEF";
 
+// MAC addresses
 #define RECEIVER_MAC_ADDR 0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0x00, 0x00, 0x01
+#define TRANSMITTER_MAC_ADDR 0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0xA0, 0xB0, 0xC0
 
 #if defined(APP_TRANSMITTER)
 #define START_MSG "Transmitter is on."
 
-#define TRANSMITTER_MAC_ADDR 0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0xA0, 0xB0, 0xC0
-
 int handle_mcps_data_confirm(struct MCPS_DATA_confirm_pset *params)
 {   
     LOG_INFO("Message sent.");
+    
+    return 0;
 }
 
 static uint8_t ieee_address[8] = {
@@ -185,24 +183,26 @@ int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
     return 0;
 #else
     
-    // TODO : Handle incoming message
+    // Handle incoming message
     unsigned char output[OA_BUFFER_SIZE];
     
 #if defined(APP_TRANSMITTER)
-    // TODO : Send incoming message back via UART to the ESP32 Module
+    // Send incoming message back via UART to the ESP32 Module
     Encrypt(params->Msdu, output);
     mac_send(dst_address, output, strlen(output) + 1);
     
 #elif defined(APP_RECIEVER)
-    // TODO : Encrypt message and transmit to the Receiver board
+    // Encrypt message and transmit to the Receiver board
     Decrypt(params->Msdu, output);
+    LOG_SERIAL_RESPONSE(output);
     
 #endif
 
 #endif
+    return 0;
 }
 
-void system_init( void )
+int system_init( void )
 {
     struct ca821x_api_callbacks api_cb;
     uint8_t status;
@@ -225,7 +225,7 @@ void system_init( void )
     if (status)
     {
         LOG_INFO("MAC initialization failed.");
-        return;
+        return status;
     }
 
     irq_init();
@@ -239,8 +239,8 @@ void system_init( void )
 #endif
 
     ca821x_register_callbacks(&api_cb);
-
-    LOG_INFO("System initialized.");
+    
+    return 0;
 }
 
 /* UART Communication with ESP32 */

@@ -46,8 +46,8 @@ static char sep[] =
 
 #define LOG_INIT( baud_rate )\
         UART_INIT( baud_rate );\
-        Delay_ms( 10 );\
-        UART_WRITE_TEXT( "\x0C" );\
+        Delay_ms( 10 );
+        //UART_WRITE_TEXT( "\x0C" );\
         UART_WRITE_TEXT(\
             "=#===================================================#="\
         );\

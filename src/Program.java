@@ -466,7 +466,8 @@ public class Program extends ConfigurableBase {
             Scanner scanner = new Scanner(System.in);
             Logger.Gui("Message: ");
             try {String message = scanner.nextLine();
-                module.SendMessage(message, false);
+                String response = module.SendMessage(message, true);
+                System.out.println(response);
             } catch (Exception exc) {
                 Logger.Error("Exception while messaging: " + exc.getMessage());
             }
