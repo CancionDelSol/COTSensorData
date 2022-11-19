@@ -7,6 +7,7 @@
 #include "mac_ca821x.h"
 #include "mac_messages.h"
 #include "ca821x_api.h"
+#include "led.h"
 
 /************** Transmitter and Receiver Flags ****************************************/
 //#define APP_TRANSMITTER 1
@@ -38,6 +39,11 @@ sbit CA821X_RF_CS_DIR at TRISE3_bit;
 sbit CA821X_RF_IRQ_DIR at TRISD1_bit;
 
 sbit T1_DIR at TRISE7_bit;
+
+
+// Sending a message back to the ESP32 module
+//  with proper formatting
+void SendMessageOverUART(char* buffer, int len);
 
 /*
  * Initialize interrupts
@@ -125,15 +131,18 @@ static char message[] = "DEADBEEF";
 #define RECEIVER_MAC_ADDR 0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0x00, 0x00, 0x01
 #define TRANSMITTER_MAC_ADDR 0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0xA0, 0xB0, 0xC0
 
-#if defined(APP_TRANSMITTER)
-#define START_MSG "Transmitter is on."
-
 int handle_mcps_data_confirm(struct MCPS_DATA_confirm_pset *params)
 {   
-    LOG_INFO("Message sent.");
+    char msg[] = "Message sent.";
+    SendMessageOverUART(msg, strlen(msg));
+    
+    fastBlinkLEDTwo(3);
     
     return 0;
 }
+
+#if defined(APP_TRANSMITTER)
+#define START_MSG "Transmitter is on."
 
 static uint8_t ieee_address[8] = {
     TRANSMITTER_MAC_ADDR
@@ -166,7 +175,6 @@ static uint8_t ieee_address[8] = {
 
 
 #endif
-
 int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
 {
     
@@ -187,18 +195,20 @@ int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
     unsigned char output[OA_BUFFER_SIZE];
     
 #if defined(APP_TRANSMITTER)
-    // Send incoming message back via UART to the ESP32 Module
+    // Encrypt message and transmit to the Receiver board
     Encrypt(params->Msdu, output);
     mac_send(dst_address, output, strlen(output) + 1);
     
 #elif defined(APP_RECIEVER)
-    // Encrypt message and transmit to the Receiver board
-    Decrypt(params->Msdu, output);
-    LOG_SERIAL_RESPONSE(output);
+    // Send incoming message back via UART to the ESP32 Module
+    fastBlinkLEDOne(5);
+    //Decrypt(params->Msdu, output);
+    //SendMessageOverUART(output, strlen(output));
     
 #endif
 
 #endif
+    //Delay_ms(250);
     return 0;
 }
 
@@ -225,6 +235,9 @@ int system_init( void )
     if (status)
     {
         LOG_INFO("MAC initialization failed.");
+        while (1) {
+            fastBlinkLEDOne(1);
+        }
         return status;
     }
 
@@ -234,9 +247,9 @@ int system_init( void )
     api_cb.MCPS_DATA_indication = handle_mcps_data_indication;
 #endif
 
-#if APP_TRANSMITTER
+//#if APP_TRANSMITTER
     api_cb.MCPS_DATA_confirm = handle_mcps_data_confirm;
-#endif
+//#endif
 
     ca821x_register_callbacks(&api_cb);
     

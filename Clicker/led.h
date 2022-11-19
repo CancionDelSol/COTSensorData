@@ -1,17 +1,27 @@
 #ifndef LED_H
 #define LED_H
 
+#define ENABLE_LEDS true
+
 void setLEDOneHigh() {
-    RB1_bit = 1;
+    if (ENABLE_LEDS) {
+        RB1_bit = 1;
+    }
 }
 void setLEDTwoHigh() {
-    RB2_bit = 1;
+    if (ENABLE_LEDS) {
+        RB2_bit = 1;
+    }
 }
 void setLEDOneLow() {
-    RB1_bit = 0;
+    if (ENABLE_LEDS) {
+        RB1_bit = 0;
+    }
 }
 void setLEDTwoLow() {
-    RB2_bit = 0;
+    if (ENABLE_LEDS) {
+        RB2_bit = 0;
+    }
 }
 
 void blinkLEDOne(int count) {
@@ -51,9 +61,11 @@ void fastBlinkLEDTwo(int count) {
 }
 
 void InitLEDs() {
-    LATB = 0;
+    if (ENABLE_LEDS) {
+        LATB = 0;
     
-    TRISB = 0;
+        TRISB = 0;
+    }
 }
 
 #endif

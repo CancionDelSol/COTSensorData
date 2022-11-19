@@ -53,54 +53,47 @@ void main()
     
     // Initialize MAC_821 system
     if (system_init() > 0) {
-        setLEDTwoHigh();
-        Delay_ms(250);
-        setLEDTwoLow();
+        fastBlinkLEDTwo(10);
     }
     
-    // Flash LED to indicate
-    //  successful system init
-    if (IS_DEBUG ) {
-        setLEDOneHigh();
-        Delay_ms(250);
-        setLEDOneLow();
-    }
+    fastBlinkLEDOne(3);
     
     // Set mac address
     mac_set_addr(ieee_address);
+    
+    #ifdef APP_TRANSMITTER
     mac_set_pan_id();
+    #endif
     
     // Receiver address
     uint8_t rec_add[8] = { RECEIVER_MAC_ADDR };
     
     // Transmitter address
     uint8_t trans_add[8] = { TRANSMITTER_MAC_ADDR };
-    unsigned char buffer[8];
+    unsigned char buffer[] = "HELLO";
 
 #if defined(APP_RECIEVER)
     mac_rx_on();
     LOG_INFO("Waiting message...");
 #endif
     
-#if defined(APP_TRANSMITTER)
-    //mac_send(dst_address, START_MSG, sizeof(START_MSG) + 1);
-#endif
-
     while (1)
     {
-
         // Seperate debug-only logic
         if (IS_DEBUG) {
             // Grab any input from UART
             unsigned char buffer[64] = { 0 };
             unsigned char output[64] = { 0 };
+            unsigned char final[64] = { 0 };
             
             int len = ReadUARTIntoBuffer(buffer, 64);
             
             Encrypt(buffer, output);
             
+            Decrypt(output, final);
+            
             if (len > 0) {
-                SendMessageOverUART(output, len);
+                SendMessageOverUART(final, len);
             }
             
             // Don't do the normal loop'
@@ -109,45 +102,33 @@ void main()
 #if defined(APP_TRANSMITTER)
         if(Button(&PORTE, 7, 100, 0))
         {
-            int res = mac_send(rec_add, buffer, strlen(buffer) + 1);
-            switch(res) {
-                case MAC_SUCCESS:
-                    LOG_INFO("Message Sent");
-                    break;
-                case MAC_ERROR:
-                    LOG_INFO("Message Send failure");
-                    break;
-                case MAC_CANCELLED:
-                    LOG_INFO("Message cancelled");
-                    break;
-                default:
-                    LOG_INFO("Mac status other");
-                    break;
-            }
+            int resp = mac_send(rec_add, buffer, strlen(buffer) + 1);
         }
 #else
         // Read input from ESP32 module
-        
-        if (UART3_Data_Ready()) {
-            UART3_Read_Text(buffer, "/r/n", 1);
-            
-            mac_send(rec_add, buffer, strlen(buffer) + 1);
-        }
-        
+//         if (UART3_Data_Ready()) {
+//             UART3_Read_Text(buffer, "/r/n", 1);
+//             
+//             mac_send(rec_add, buffer, strlen(buffer) + 1);
+//         }
         
 #endif
 
-       mac_process();
+        //mac_process();
+
     }
 }
 
 /*
  ******************************************************************************/
+bool ca821x_bsp_irq_sense();
 void RF_ISR() iv IVT_EXTERNAL_1 ilevel 7 ics ICS_SRS
 {
     INT1IF_bit = 0;
     
-    blinkLEDOne(2);
-
     ca821x_irq_signal();
+    
+    blinkLEDOne(1);
+    
+    mac_process();
 }
