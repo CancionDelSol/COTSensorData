@@ -204,6 +204,7 @@ int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
     fastBlinkLEDOne(5);
     //Decrypt(params->Msdu, output);
     //SendMessageOverUART(output, strlen(output));
+    SendMessageOverUART(params->Msdu, strlen(params->Msdu));
     
 #endif
 
@@ -212,6 +213,13 @@ int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
     return 0;
 }
 
+int handle_mcps_error_indication(struct TDME_ERROR_indication_pset *params) {
+    fastBlinkLEDTwo(10);
+}
+
+int handle_mlme_comm_status_indication(struct MLME_COMM_STATUS_indication_pset *params) {
+    fastBlinkLEDTwo(7);
+} 
 int system_init( void )
 {
     struct ca821x_api_callbacks api_cb;
@@ -250,6 +258,10 @@ int system_init( void )
 //#if APP_TRANSMITTER
     api_cb.MCPS_DATA_confirm = handle_mcps_data_confirm;
 //#endif
+    
+    api_cb.TDME_ERROR_indication = handle_mcps_error_indication;
+    
+    api_cb.MLME_COMM_STATUS_indication = handle_mlme_comm_status_indication;
 
     ca821x_register_callbacks(&api_cb);
     

@@ -7,7 +7,7 @@
 
 static uint8_t _msdu_handle;
 
-void blink(int i);
+void fastBlinkLEDTwo(int times);
 
 extern sfr sbit MAC_CA821X_RST;
 
@@ -133,14 +133,21 @@ uint8_t mac_process()
 
     if (ca821x_irq_is_pending())
     {
-        ca821x_spi_receive((uint8_t*)&mac_message);
-
+        int rec = ca821x_spi_receive((uint8_t*)&mac_message);
+        
+        fastBlinkLEDTwo(rec);
+        
         ca821x_downstream_dispatch(
             (uint8_t*)&mac_message, 
             mac_message.Length + 2
         );
         
-        mac_reset();
+        // Do not call mac_reset
+        //  This is a kludgy work-around
+        //  but seems to solve the issue
+        //  related to only being able to
+        //  receive one message
+        // mac_reset();
     }
     
     return 0;
