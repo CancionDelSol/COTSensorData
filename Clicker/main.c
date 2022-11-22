@@ -56,26 +56,23 @@ void main()
         fastBlinkLEDTwo(10);
     }
     
-    fastBlinkLEDOne(3);
-    
     // Set mac address
-    mac_set_addr(ieee_address);
-    
-    #ifdef APP_TRANSMITTER
-    mac_set_pan_id();
-    #endif
-    
-    // Receiver address
-    uint8_t rec_add[8] = { RECEIVER_MAC_ADDR };
-    
-    // Transmitter address
-    uint8_t trans_add[8] = { TRANSMITTER_MAC_ADDR };
-    unsigned char buffer[] = "HELLO";
-
-#if defined(APP_RECIEVER)
-    mac_rx_on();
-    LOG_INFO("Waiting message...");
+#ifdef APP_TRANSMITTER
+    mac_set_addr(mac_trans);
+#else
+    mac_set_addr(mac_rec);
 #endif
+    
+//#ifdef APP_TRANSMITTER
+    mac_set_pan_id();
+//#endif
+    
+//#if defined(APP_RECIEVER)
+    mac_rx_on();
+//#endif
+    
+    // Notify ready
+    fastBlinkLEDOne(3);
     
     while (1)
     {
@@ -99,36 +96,41 @@ void main()
             // Don't do the normal loop'
             continue;
         }
-#if defined(APP_TRANSMITTER)
+        
+        // If the button is pressed,
+        //  send a message to the other board
+        // This is only for testing
         if(Button(&PORTE, 7, 100, 0))
         {
-            int resp = mac_send(rec_add, buffer, strlen(buffer) + 1);
-        }
+#if defined(APP_TRANSMITTER)
+            int resp = mac_send(mac_rec, gen_msg, strlen(gen_msg) + 1);
 #else
-        // Read input from ESP32 module
-//         if (UART3_Data_Ready()) {
-//             UART3_Read_Text(buffer, "/r/n", 1);
-//             
-//             mac_send(rec_add, buffer, strlen(buffer) + 1);
-//         }
-        
+            int resp = mac_send(mac_trans, gen_msg, strlen(gen_msg) + 1);
 #endif
-
-        //mac_process();
-
+        }
+        
+        // Read input from ESP32 module
+        if (UART3_Data_Ready()) {
+            char buffer[OA_BUFFER_SIZE];
+            UART3_Read_Text(buffer, "/r/n", 1);
+            
+            mac_send(mac_trans, buffer, strlen(buffer) + 1);
+        }
     }
 }
 
-/*
- ******************************************************************************/
-bool ca821x_bsp_irq_sense();
+/*******************************************************************************/
 void RF_ISR() iv IVT_EXTERNAL_1 ilevel 7 ics ICS_SRS
 {
+    // Reset the interrupt bit
     INT1IF_bit = 0;
     
+    // Set is interrupted flag
     ca821x_irq_signal();
     
+    // Notify interrupt fired
     blinkLEDOne(1);
     
+    // Process MAC
     mac_process();
 }

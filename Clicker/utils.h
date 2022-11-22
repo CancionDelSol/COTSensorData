@@ -7,6 +7,7 @@
 #include "mac_ca821x.h"
 #include "mac_messages.h"
 #include "ca821x_api.h"
+#include "enc_supp.h"
 #include "led.h"
 
 /************** Transmitter and Receiver Flags ****************************************/
@@ -25,8 +26,12 @@
 #include "enc_supp.h"
 #include "log.h"
 
+// MAC addresses
+#define RECEIVER_MAC_ADDR 0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0x00, 0x00, 0x01
+#define TRANSMITTER_MAC_ADDR 0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0xA0, 0xB0, 0xC0
+
 /*
- * CA821 API
+ * CA821 SPI and interrupts
  */
 sbit CA821X_RF_RST at LATE2_bit;
 sbit CA821X_RF_CS at LATE3_bit;
@@ -39,7 +44,6 @@ sbit CA821X_RF_CS_DIR at TRISE3_bit;
 sbit CA821X_RF_IRQ_DIR at TRISD1_bit;
 
 sbit T1_DIR at TRISE7_bit;
-
 
 // Sending a message back to the ESP32 module
 //  with proper formatting
@@ -95,6 +99,10 @@ static void gpio_init( void )
     T1_DIR = PIN_DIR_IN;
 }
 
+/*
+ * Set the PIB attribute for
+ *  for message receive enabled
+ */
 static void mac_rx_on( void )
 {
     uint8_t value;
@@ -108,6 +116,10 @@ static void mac_rx_on( void )
         NULL                    // pDeviceRef
     );
 }
+
+/*
+ * Set the PIB attribute for pan id
+ */
 static void mac_set_pan_id( void )
 {
     uint8_t pan_id[2];
@@ -124,13 +136,17 @@ static void mac_set_pan_id( void )
     );
 }
 
-/* Messaging */
-static char message[] = "DEADBEEF";
+/*
+ * Use these addresses for the transmitter
+ *  and receiver
+ */
+uint8_t mac_trans[] = { TRANSMITTER_MAC_ADDR };
+uint8_t mac_rec[] = { RECEIVER_MAC_ADDR };
 
-// MAC addresses
-#define RECEIVER_MAC_ADDR 0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0x00, 0x00, 0x01
-#define TRANSMITTER_MAC_ADDR 0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0xA0, 0xB0, 0xC0
-
+/*
+ * Callback to handle message outgoing
+ *  confirmation
+ */
 int handle_mcps_data_confirm(struct MCPS_DATA_confirm_pset *params)
 {   
     char msg[] = "Message sent.";
@@ -141,90 +157,55 @@ int handle_mcps_data_confirm(struct MCPS_DATA_confirm_pset *params)
     return 0;
 }
 
-#if defined(APP_TRANSMITTER)
-#define START_MSG "Transmitter is on."
-
-static uint8_t ieee_address[8] = {
-    TRANSMITTER_MAC_ADDR
-};
-
-static uint8_t dst_address[8] = {
-    RECEIVER_MAC_ADDR
-};
-
-static uint8_t send_message( void )
-{
-    uint8_t status;
-    char str_buffer[16 + sizeof(message)];
-
-    strcpy(str_buffer, message);
-    strcat(str_buffer, " Hello");
-    strcat(str_buffer, ")");
-
-
-    status = mac_send(dst_address, str_buffer, strlen(str_buffer) + 1);
-
-    return status;
-}
-#endif
-
-#if defined(APP_RECIEVER)
-static uint8_t ieee_address[8] = {
-    RECEIVER_MAC_ADDR
-};
-
-
-#endif
+/*
+ * Callback for data incoming event
+ *  Transmitter - Encrypt the from-memory message and send back
+ *                 to the receiver
+ *  Receiver - Decrypt the incoming message and send to the ESP32 module
+ *              over UART
+ */
 int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
 {
-    
-#if defined(ORIG_CODE)
-    // MAX_DATA_SIZE size maximum
-    int messageLength = params->MsduLength;
-    
-    LOG_RULE();
-    LOG_INFO("Message received.");
-    LOG_INFO(params->Msdu);
-
-    LOG_RULE();
-    
-    return 0;
-#else
-    
     // Handle incoming message
     unsigned char output[OA_BUFFER_SIZE];
     
 #if defined(APP_TRANSMITTER)
+    
     // Encrypt message and transmit to the Receiver board
     Encrypt(params->Msdu, output);
-    mac_send(dst_address, output, strlen(output) + 1);
+    mac_send(mac_rec, output, strlen(output) + 1);
     
 #elif defined(APP_RECIEVER)
+    
     // Send incoming message back via UART to the ESP32 Module
-    fastBlinkLEDOne(5);
-    //Decrypt(params->Msdu, output);
-    //SendMessageOverUART(output, strlen(output));
-    SendMessageOverUART(params->Msdu, strlen(params->Msdu));
+    Decrypt(params->Msdu, output);
+    SendMessageOverUART(output, strlen(output));
+    fastBlinkLEDTwo(2);
     
 #endif
 
-#endif
-    //Delay_ms(250);
     return 0;
 }
 
 int handle_mcps_error_indication(struct TDME_ERROR_indication_pset *params) {
-    fastBlinkLEDTwo(10);
+    fastBlinkLEDTwo(25);
+    return -1;
 }
 
 int handle_mlme_comm_status_indication(struct MLME_COMM_STATUS_indication_pset *params) {
-    fastBlinkLEDTwo(7);
+    fastBlinkLEDTwo(5);
+    return -1;
 } 
+
+/*
+ * General system initialization
+ */
 int system_init( void )
 {
     struct ca821x_api_callbacks api_cb;
     uint8_t status;
 
+    // Initialize GPIO
     gpio_init();
 
     LOG_INIT(38400);
@@ -239,6 +220,7 @@ int system_init( void )
         _SPI_IDLE_2_ACTIVE
     );
 
+    // Mac status initialization
     status = mac_init();
     if (status)
     {
@@ -249,28 +231,28 @@ int system_init( void )
         return status;
     }
 
+    // Initialize interrupts
     irq_init();
 
-#if APP_RECIEVER
+//#if APP_RECIEVER
+    // Set the data incoming callback
     api_cb.MCPS_DATA_indication = handle_mcps_data_indication;
-#endif
+//#endif
 
 //#if APP_TRANSMITTER
+    // Set the data confirmed callback
     api_cb.MCPS_DATA_confirm = handle_mcps_data_confirm;
 //#endif
     
+    // Set the error handling callback
     api_cb.TDME_ERROR_indication = handle_mcps_error_indication;
     
+    // Set the mlme comm status indication callback
     api_cb.MLME_COMM_STATUS_indication = handle_mlme_comm_status_indication;
 
+    // Register callbacks with Cascoda api
     ca821x_register_callbacks(&api_cb);
     
     return 0;
 }
-
-/* UART Communication with ESP32 */
-void SendMsgToESP(unsigned char* msg) {
-    LOG_SERIAL_RESPONSE(msg);
-}
-
 #endif
