@@ -9,6 +9,8 @@
 #include "ca821x_api.h"
 #include "enc_supp.h"
 #include "led.h"
+#include "__time.h"
+#include "stdio.h"
 
 /************** Transmitter and Receiver Flags ****************************************/
 //#define APP_TRANSMITTER 1
@@ -25,6 +27,30 @@
 // one should be used at a time
 #include "enc_supp.h"
 #include "log.h"
+
+// Sending a message back to the ESP32 module
+//  with proper formatting
+void SendMessageOverUART(char* buffer, int len);
+
+// Time utilities
+
+/*
+ * Append the current "unix" time to the end of the buffer
+ */
+int AppendCurrentTime(char* buffer, int bufferMaxLength) {
+    int curStrLen = strlen(buffer);
+    if (curStrLen >= bufferMaxLength)
+    {
+        return 1;
+    }
+    
+    TimeStruct curTime;
+    Time_dateToEpoch(&curTime);
+    
+    long fullTime = curTime.ss + (curTime.mn * 60) + (curTime.hh * 60 * 60) * 1000;
+    
+    sprintf(buffer+curStrLen, " %d", fullTime);
+}
 
 // MAC addresses
 #define RECEIVER_MAC_ADDR 0xC0, 0xB0, 0xA0, 0xFF, 0xFE, 0x00, 0x00, 0x01
@@ -44,10 +70,6 @@ sbit CA821X_RF_CS_DIR at TRISE3_bit;
 sbit CA821X_RF_IRQ_DIR at TRISD1_bit;
 
 sbit T1_DIR at TRISE7_bit;
-
-// Sending a message back to the ESP32 module
-//  with proper formatting
-void SendMessageOverUART(char* buffer, int len);
 
 /*
  * Initialize interrupts
@@ -149,11 +171,6 @@ uint8_t mac_rec[] = { RECEIVER_MAC_ADDR };
  */
 int handle_mcps_data_confirm(struct MCPS_DATA_confirm_pset *params)
 {   
-    char msg[] = "Message sent.";
-    SendMessageOverUART(msg, strlen(msg));
-    
-    fastBlinkLEDTwo(3);
-    
     return 0;
 }
 
@@ -166,35 +183,57 @@ int handle_mcps_data_confirm(struct MCPS_DATA_confirm_pset *params)
  */
 int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
 {
+    fastBlinkLEDTwo(3);
     // Handle incoming message
-    unsigned char output[OA_BUFFER_SIZE];
+    unsigned char output[ENC_MSG_BUFFER_SIZE] = { 0 };
+    unsigned char oa_msg[OA_BUFFER_SIZE] = { 0 };
+    
+    // Copy the incoming message to
+    //  the outgoing buffer
+    sprintf(oa_msg, "%s", params->Msdu);
+    //AppendCurrentTime(oa_msg, OA_BUFFER_SIZE);
     
 #if defined(APP_TRANSMITTER)
     
-    // Encrypt message and transmit to the Receiver board
-    Encrypt(params->Msdu, output);
-    mac_send(mac_rec, output, strlen(output) + 1);
+    // Encrypt the general message and append it
+    //  to the outging buffer
+    Encrypt(gen_msg, output);
+    //sprintf(oa_msg, "%s %s", params->Msdu, output);
+    
+    // Append the timestamp and send out
+    //AppendCurrentTime(oa_msg, OA_BUFFER_SIZE);
+    mac_send(mac_rec, output, strlen(oa_msg) + 1);
+    
     
 #elif defined(APP_RECIEVER)
-    
     // Send incoming message back via UART to the ESP32 Module
-    Decrypt(params->Msdu, output);
-    SendMessageOverUART(output, strlen(output));
-    fastBlinkLEDTwo(2);
+//     char innerMsg[ENC_MSG_BUFFER_SIZE] = { 0 };
+//     int delimCount = 0;
+//     for (int i = 0; i < OA_BUFFER_SIZE; i++) {
+//         if (delimCount < 2) {
+//             if (oa_msg[i] == ' ') {
+//                 delimCount++;
+//             }
+//             else {
+//                 innerMsg[i] = oa_msg[i];
+//             }
+//         }
+//     }
+    Decrypt(oa_msg, output);
+    
+    //AppendCurrentTime(oa_msg, OA_BUFFER_SIZE);
+    SendMessageOverUART("Y", strlen(oa_msg));
     
 #endif
-
     return 0;
 }
 
 int handle_mcps_error_indication(struct TDME_ERROR_indication_pset *params) {
-    fastBlinkLEDTwo(25);
     return -1;
 }
 
 int handle_mlme_comm_status_indication(struct MLME_COMM_STATUS_indication_pset *params) {
-    fastBlinkLEDTwo(5);
-    return -1;
+    return 0;
 } 
 
 /*
@@ -234,15 +273,11 @@ int system_init( void )
     // Initialize interrupts
     irq_init();
 
-//#if APP_RECIEVER
     // Set the data incoming callback
     api_cb.MCPS_DATA_indication = handle_mcps_data_indication;
-//#endif
 
-//#if APP_TRANSMITTER
     // Set the data confirmed callback
     api_cb.MCPS_DATA_confirm = handle_mcps_data_confirm;
-//#endif
     
     // Set the error handling callback
     api_cb.TDME_ERROR_indication = handle_mcps_error_indication;

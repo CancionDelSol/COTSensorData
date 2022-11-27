@@ -1,9 +1,3 @@
-// Setup flags
-#define ENC_NONE 1
-//#define ENC_AES 1
-//#define ENC_DES 1
-//#define ENC_ECC 1
-
 #include "utils.h"
 
 //#define ORIG_CODE 1
@@ -13,6 +7,8 @@
 #include "log.h"
 #include <stdio.h>
 #include "led.h"
+
+#include "__Time.h"
 
 // Method to read from UART3 into a buffer
 int ReadUARTIntoBuffer(char* buffer, int max) {
@@ -45,7 +41,8 @@ void SendMessageOverUART(char* buffer, int len) {
     UART3_Write('>');
 }
 
-
+void ca821x_bsp_cs_low();
+void ca821x_bsp_cs_high();
 void main() 
 {
     // Initialize LEDs
@@ -63,13 +60,11 @@ void main()
     mac_set_addr(mac_rec);
 #endif
     
-//#ifdef APP_TRANSMITTER
+    // Set PIB attributes
     mac_set_pan_id();
-//#endif
-    
-//#if defined(APP_RECIEVER)
     mac_rx_on();
-//#endif
+    
+    bool send_pending = false;
     
     // Notify ready
     fastBlinkLEDOne(3);
@@ -110,12 +105,19 @@ void main()
         }
         
         // Read input from ESP32 module
+        // Append the current time stamp
         if (UART3_Data_Ready()) {
-            char buffer[OA_BUFFER_SIZE];
+            char oa_msg[OA_BUFFER_SIZE] = { 0 };
+            char buffer[16] = { 0 };
+
+            //AppendCurrentTime(oa_msg, OA_BUFFER_SIZE);
             UART3_Read_Text(buffer, "/r/n", 1);
             
             mac_send(mac_trans, buffer, strlen(buffer) + 1);
         }
+        
+        
+        mac_process();
     }
 }
 
@@ -127,10 +129,4 @@ void RF_ISR() iv IVT_EXTERNAL_1 ilevel 7 ics ICS_SRS
     
     // Set is interrupted flag
     ca821x_irq_signal();
-    
-    // Notify interrupt fired
-    blinkLEDOne(1);
-    
-    // Process MAC
-    mac_process();
 }

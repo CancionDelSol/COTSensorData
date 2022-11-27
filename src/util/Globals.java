@@ -13,6 +13,7 @@ public class Globals {
     public static final String WIFI_PROTO_CONFIG_FILE = "WifiProtoConfig.cfg";
     public static final String BLUETOOTH_PROTO_CONFIG_FILE = "BluetoothProtoConfig.cfg";
     public static final String BLE_PROTO_CONFIG_FILE = "BLEProtoConfig.cfg";
+    public static final String ESP_ABRIDGED_MODULE_CONFIG_FILE = "ESPAbridgedConfig.cfg";
     //endregion
 
     //region Arrays

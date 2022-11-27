@@ -1,10 +1,15 @@
 #ifndef GEN_INIT
 #define GEN_INIT
 
-//#include "utils.h"
 #include "aes.h"
 #include "DES.h"
 #include "ecdh.h"
+
+// Encryption type flag
+#define ENC_NONE 1
+//#define ENC_AES 1
+//#define ENC_DES 1
+//#define ENC_ECC 1
 
 // Common to all algorithms
 int _areKeysGenerated = 0;
@@ -17,13 +22,23 @@ unsigned char* gen_msg = "DEADBEEF";
 //  versus the outgoing one. The buffer
 //  size should be the same, however.
 #if defined(ENC_NONE)
-    #define OA_BUFFER_SIZE 16
-#elif defined(ENC_AES)
-    #define OA_BUFFER_SIZE 16
-#elif defined(ENC_DES)
-    #define OA_BUFFER_SIZE 16
-#elif defined(ENC_ECC)
+    #define OA_BUFFER_SIZE 128
+    #define ENC_MSG_BUFFER_SIZE 8
+#endif
+
+#if defined(ENC_AES)
+    #define OA_BUFFER_SIZE 128
+    #define ENC_MSG_BUFFER_SIZE 16
+#endif
+
+#if defined(ENC_DES)
+    #define OA_BUFFER_SIZE 128
+    #define ENC_MSG_BUFFER_SIZE 16
+#endif
+
+#if defined(ENC_ECC)
     #define OA_BUFFER_SIZE ECC_PUB_KEY_SIZE
+    #define ENC_MSG_BUFFER_SIZE OA_BUFFER_SIZE
 #endif
 
 /*======================== DES ========================*/
@@ -203,6 +218,10 @@ void Encrypt(unsigned char* msg, unsigned char* output) {
 
 // Use to decrypt incoming wireless message
 void Decrypt(unsigned char* cipher, unsigned char* output) {
+    // Just decrypt the message, not the timestamps
+    char buffer[ENC_MSG_BUFFER_SIZE] = { 0 };
+    
+    
 #if defined(ENC_NONE)
     none_decrypt(cipher, output);
 #elif defined(ENC_AES)

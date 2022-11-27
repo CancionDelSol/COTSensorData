@@ -5,6 +5,10 @@
 
 #include "log.h"
 
+// Sending a message back to the ESP32 module
+//  with proper formatting
+void SendMessageOverUART(char* buffer, int len);
+
 static uint8_t _msdu_handle;
 
 void fastBlinkLEDTwo(int times);
@@ -48,12 +52,13 @@ uint8_t mac_reset()
     is_timeout = ca821x_irq_wait(TIMEOUT_MS(10));
     if (is_timeout)
     {
+        fastBlinkLEDTwo(10);
         LOG_ERROR("CA-821X connection timed out, check hardware.");
         return 1;
     }
-
+    
     status = ca821x_spi_receive((uint8_t*)&mac_message);
-
+    
     if (mac_message.CommandId != SPI_HWME_WAKEUP_INDICATION)
     {
         LOG_ERROR("Instead of wakeup indication, check status.");
@@ -135,8 +140,6 @@ uint8_t mac_process()
     {
         int rec = ca821x_spi_receive((uint8_t*)&mac_message);
         
-        fastBlinkLEDTwo(rec);
-        
         ca821x_downstream_dispatch(
             (uint8_t*)&mac_message, 
             mac_message.Length + 2
@@ -147,7 +150,7 @@ uint8_t mac_process()
         //  but seems to solve the issue
         //  related to only being able to
         //  receive one message
-        // mac_reset();
+        //mac_reset();
     }
     
     return 0;

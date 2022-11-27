@@ -4,27 +4,20 @@
 #define ENABLE_LEDS true
 
 void setLEDOneHigh() {
-    if (ENABLE_LEDS) {
         RB1_bit = 1;
-    }
 }
 void setLEDTwoHigh() {
-    if (ENABLE_LEDS) {
         RB2_bit = 1;
-    }
 }
 void setLEDOneLow() {
-    if (ENABLE_LEDS) {
         RB1_bit = 0;
-    }
 }
 void setLEDTwoLow() {
-    if (ENABLE_LEDS) {
         RB2_bit = 0;
-    }
 }
 
 void blinkLEDOne(int count) {
+    if (!ENABLE_LEDS) return;
     for (int i = 0; i < count; i++) {
         setLEDOneHigh();
         Delay_ms(250);
@@ -34,6 +27,7 @@ void blinkLEDOne(int count) {
 }
 
 void fastBlinkLEDOne(int count) {
+    if (!ENABLE_LEDS) return;
     for (int i = 0; i < count; i++) {
         setLEDOneHigh();
         Delay_ms(100);
@@ -43,6 +37,7 @@ void fastBlinkLEDOne(int count) {
 }
 
 void blinkLEDTwo(int count) {
+    if (!ENABLE_LEDS) return;
     for (int i = 0; i < count; i++) {
         setLEDTwoHigh();
         Delay_ms(250);
@@ -52,6 +47,7 @@ void blinkLEDTwo(int count) {
 }
 
 void fastBlinkLEDTwo(int count) {
+    if (!ENABLE_LEDS) return;
     for (int i = 0; i < count; i++) {
         setLEDTwoHigh();
         Delay_ms(100);
