@@ -183,7 +183,11 @@ int handle_mcps_data_confirm(struct MCPS_DATA_confirm_pset *params)
  */
 int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
 {
-    fastBlinkLEDTwo(3);
+    #ifdef APP_RECIEVER
+    
+    #else
+    fastBlinkLEDTwo(5);
+    #endif
     // Handle incoming message
     unsigned char output[ENC_MSG_BUFFER_SIZE] = { 0 };
     unsigned char oa_msg[OA_BUFFER_SIZE] = { 0 };
@@ -191,38 +195,21 @@ int handle_mcps_data_indication(struct MCPS_DATA_indication_pset *params)
     // Copy the incoming message to
     //  the outgoing buffer
     sprintf(oa_msg, "%s", params->Msdu);
-    //AppendCurrentTime(oa_msg, OA_BUFFER_SIZE);
     
 #if defined(APP_TRANSMITTER)
     
-    // Encrypt the general message and append it
-    //  to the outging buffer
+    // Encrypt the general message
     Encrypt(gen_msg, output);
-    //sprintf(oa_msg, "%s %s", params->Msdu, output);
     
     // Append the timestamp and send out
-    //AppendCurrentTime(oa_msg, OA_BUFFER_SIZE);
     mac_send(mac_rec, output, strlen(oa_msg) + 1);
     
-    
 #elif defined(APP_RECIEVER)
-    // Send incoming message back via UART to the ESP32 Module
-//     char innerMsg[ENC_MSG_BUFFER_SIZE] = { 0 };
-//     int delimCount = 0;
-//     for (int i = 0; i < OA_BUFFER_SIZE; i++) {
-//         if (delimCount < 2) {
-//             if (oa_msg[i] == ' ') {
-//                 delimCount++;
-//             }
-//             else {
-//                 innerMsg[i] = oa_msg[i];
-//             }
-//         }
-//     }
+    // Decrypt incoming message
     Decrypt(oa_msg, output);
     
     //AppendCurrentTime(oa_msg, OA_BUFFER_SIZE);
-    SendMessageOverUART("Y", strlen(oa_msg));
+    SendMessageOverUART(params->Msdu, strlen(params->Msdu));
     
 #endif
     return 0;

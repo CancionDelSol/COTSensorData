@@ -100,7 +100,7 @@ void main()
 #if defined(APP_TRANSMITTER)
             int resp = mac_send(mac_rec, gen_msg, strlen(gen_msg) + 1);
 #else
-            int resp = mac_send(mac_trans, gen_msg, strlen(gen_msg) + 1);
+            int resp = mac_send(mac_trans, gen_msg, strlen(gen_msg));
 #endif
         }
         
@@ -110,14 +110,11 @@ void main()
             char oa_msg[OA_BUFFER_SIZE] = { 0 };
             char buffer[16] = { 0 };
 
-            //AppendCurrentTime(oa_msg, OA_BUFFER_SIZE);
             UART3_Read_Text(buffer, "/r/n", 1);
             
-            mac_send(mac_trans, buffer, strlen(buffer) + 1);
+            mac_send(mac_trans, buffer, strlen(buffer));
         }
         
-        
-        mac_process();
     }
 }
 
@@ -129,4 +126,6 @@ void RF_ISR() iv IVT_EXTERNAL_1 ilevel 7 ics ICS_SRS
     
     // Set is interrupted flag
     ca821x_irq_signal();
+    
+    mac_process();
 }
