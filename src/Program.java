@@ -15,6 +15,7 @@ import implem.protocols.LoPanCommProto;
 import implem.protocols.BLECommProto;
 import implem.protocols.WifiCommProtoProto;
 import implem.ESPModule;
+import implem.ESPAbridged;
 import implem.encryptionAlgorithms.DummyEncAlg;
 import implem.encryptionAlgorithms.DESEncryptionAlg;
 import implem.encryptionAlgorithms.ECCEncryptionAlg;
@@ -356,6 +357,8 @@ public class Program extends ConfigurableBase {
                         results.add(res);
 
                         Logger.Gui("   " + res.getStatus() + " | " + res.getDuration());
+
+                        Thread.sleep(1000);
     
                     } catch (Exception exc) {
                         Logger.Error("   Exception during experiment: " + exc.getMessage());
@@ -460,7 +463,7 @@ public class Program extends ConfigurableBase {
     }
 
     private static void RunSerialMessenger() throws Exception {
-        ESPModule module = ESPModule.getModule();
+        ESPAbridged module = ESPAbridged.getModule();
 
         while (true) {
             Scanner scanner = new Scanner(System.in);
